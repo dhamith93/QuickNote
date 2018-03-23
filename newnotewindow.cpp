@@ -72,7 +72,6 @@ void NewNoteWindow::on_txtInput_cursorPositionChanged() {
 
 void NewNoteWindow::on_actionSave_triggered() {
     saveFile();
-    fileSaved = true;
 }
 
 void NewNoteWindow::on_actionHTML_triggered() {
@@ -116,7 +115,7 @@ void NewNoteWindow::closeEvent (QCloseEvent *event) {
         );
         if (resBtn == QMessageBox::Yes) {
             event->ignore();
-            saveFile();
+            saveFile();            
             event->accept();
         } else if (resBtn == QMessageBox::Cancel) {
             event->ignore();
@@ -157,7 +156,11 @@ void NewNoteWindow::saveFile() {
         string output = ui->txtInput->toPlainText().toUtf8().constData();
         out << output;
         out.close();
-        fileSaved = true;
+        if (!fileName.isEmpty()) {
+            fileSaved = true;
+            fromOpen = true;
+            setWindowTitle(fileName);
+        }
     } catch (exception ex) {
         QMessageBox msgBox;
         msgBox.setText("There was an error! please try again.");

@@ -52,13 +52,18 @@ public:
     void parse(string& input) {
         bool uListBegin = false, subListBegin = false, codeBegin = false, blockquoteBegin = false,
                 italicized = false, bolded = false, strikedOut = false, textStart = false, linkStart = false,
-                textComplete = false, linkComplete = false;
-        int count = 0;
+                textComplete = false, linkComplete = false, prevIsPara = false;
+        int count = 0, lineCount = 0;
         string temp = "", tempQuote = "", tempText = "", tempLink = "";
         split(input);
 
         for (auto& line : lineArray) {
             if (line.length() == 0) {
+                lineCount += 1;
+                if (lineCount >= 2) {
+                    elements.push_back(HtmlElement{"p", "<br />"});
+                    count += 1;
+                }
                 continue;
             }
             if (line.length() > 0 && !codeBegin && line.at(0) == '#') {
@@ -68,10 +73,12 @@ public:
                 string content = line.substr(hCount, line.length());
                 elements.push_back(HtmlElement {h, content});
                 count += 1;
+                prevIsPara = false;
             } else if (line == "---") {
                 uListBegin = false;
                 elements.push_back(HtmlElement {"hr", ""});
                 count += 1;
+                prevIsPara = false;
             } else if (line.size() > 2 && line.substr(0, 2) == "* ") {
                 if (!uListBegin) {
                     uListBegin = true;
@@ -83,6 +90,7 @@ public:
                     elements[count - 1].subElements.push_back(HtmlElement("li", item));
                     subListBegin = false;
                 }
+                prevIsPara = false;
             } else if (line.size() > 2 && line.substr(0, 4) == "  * ") {
                 if (uListBegin) {
                     string item = line.substr(3, line.length());
@@ -94,6 +102,7 @@ public:
                     int subLength = (int)elements[count - 1].subElements[length - 1].subElements.size();
                     elements[count - 1].subElements[length - 1].subElements[subLength - 1].subElements.push_back(HtmlElement("li", item));
                 }
+                prevIsPara = false;
             } else if (line.size() > 2 && line.at(0) == '[' && line.at(line.length() - 1) == ')') {
                 string inlineText = getStringBetweenDelimiters(line, "[", "]");
                 string link = getStringBetweenDelimiters(line, "(", ")");
@@ -103,6 +112,7 @@ public:
                     elements.push_back(HtmlElement{"a", inlineText, "href", link});
                     count += 1;
                 }
+                prevIsPara = false;
             } else if (line == "```") {
                 uListBegin = false;
                 if (!codeBegin) {
@@ -113,6 +123,7 @@ public:
                 count += 1;
                 codeBegin = false;
                 temp = "";
+                prevIsPara = false;
             } else if (codeBegin) {
                 temp += line + '\n';
                 continue;
@@ -122,6 +133,7 @@ public:
                     blockquoteBegin = true;
                 }
                 tempQuote += line.substr(1, line.length());
+                prevIsPara = false;
             } else {
                 uListBegin = false;
                 if (blockquoteBegin) {
@@ -248,7 +260,12 @@ public:
                         tempLink = "";
                     }
                 }
-                elements.push_back(HtmlElement{"p", content});
+                if (prevIsPara & (lineCount == 0)) {
+                    elements[count - 1].content += "<br />" + content;
+                } else {
+                    elements.push_back(HtmlElement{"p", content});
+                }
+                prevIsPara = true;
                 content = "";
                 count += 1;
             }
@@ -267,6 +284,7 @@ public:
                 italicized = false;
                 count += 1;
             }
+            lineCount = 0;
         }
 
     }
