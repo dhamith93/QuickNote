@@ -6,15 +6,23 @@ using namespace std;
 struct HtmlElement {
     string element;
     string content;
+    string attrb = "";
+    string attrbData;
     vector<HtmlElement> subElements;
 
     HtmlElement() {}
     HtmlElement(const string &element, const string &content) : element(element), content(content) { }
+    HtmlElement(const string &element, const string &content, const string &attrb, const string &attrbData)
+        : element(element), content(content), attrb(attrb), attrbData(attrbData) { }
 
     string str(int indent = 1) {
         ostringstream oss;
         string i(indent * 2, ' ');
-        oss << i << "<" << element << ">" << endl;
+        if (attrb.length() > 0) {
+            oss << i << "< " << element << " " << attrb << "=\"" << attrbData << "\" " << ">" << endl;
+        } else {
+            oss << i << "<" << element << ">" << endl;
+        }
         if (content.size() > 0) {
             if (this->element == "pre") {
                 indent = 0;

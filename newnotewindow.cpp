@@ -23,6 +23,7 @@ NewNoteWindow::NewNoteWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::NewNoteWindow) {
     ui->setupUi(this);
+
 }
 
 
@@ -41,7 +42,13 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
         file.close();
         ui->txtInput->setPlainText(QString::fromStdString(content));
         setText(content);
+    } else {
+        string input = ui->txtInput->toPlainText().toUtf8().constData();
+        if (input.size() > 0) {
+            setText(input);
+        }
     }
+
 }
 
 NewNoteWindow::~NewNoteWindow()
@@ -111,6 +118,8 @@ void NewNoteWindow::closeEvent (QCloseEvent *event) {
             event->ignore();
             saveFile();
             event->accept();
+        } else if (resBtn == QMessageBox::Cancel) {
+            event->ignore();
         } else {
             event->accept();
         }
