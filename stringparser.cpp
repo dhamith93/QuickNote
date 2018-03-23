@@ -43,7 +43,8 @@ private:
 
 public:
     void parse(string& input) {
-        bool uListBegin = false, subListBegin = false, codeBegin = false, blockquoteBegin = false, italicized = false, bolded = false;;
+        bool uListBegin = false, subListBegin = false, codeBegin = false, blockquoteBegin = false,
+                italicized = false, bolded = false, strikedOut = false;
         int count = 0;
         HtmlElement holding{};
         string temp = "", tempQuote = "";
@@ -60,7 +61,7 @@ public:
                 string content = line.substr(hCount, line.length());
                 elements.push_back(HtmlElement {h, content});
                 count += 1;
-            } else if (line == "------") {
+            } else if (line == "------" | line  == "======") {
                 uListBegin = false;
                 elements.push_back(HtmlElement {"hr", ""});
                 count += 1;
@@ -114,10 +115,12 @@ public:
                     tempQuote = "";
                 }
                 string content;
-                int aCount = 0;
+                int aCount = 0, tCount = 0;
                 for (auto& c : line) {
                     if (c == '*') {
                         aCount += 1;
+                    } else if (c == '~') {
+                        tCount += 1;
                     } else {
                         if (aCount == 1) {
                             if (italicized) {
@@ -136,6 +139,16 @@ public:
                                 bolded = true;
                             }
                         }
+                        if (tCount == 2) {
+                            if (strikedOut) {
+                                content += "</s>";
+                                strikedOut = false;
+                            } else {
+                                content += "<s>";
+                                strikedOut = true;
+                            }
+                        }
+                        tCount = 0;
                         aCount = 0;
                         content += c;
                     }
@@ -147,14 +160,17 @@ public:
             if (blockquoteBegin) {
                 elements.push_back(HtmlElement {"blockquote", tempQuote});
                 blockquoteBegin = false;
+                count += 1;
             }
             if (bolded) {
                 elements.push_back(HtmlElement{"span", "</strong>"});
                 bolded = false;
+                count += 1;
             }
             if (italicized) {
                 elements.push_back(HtmlElement{"span", "</em>"});
                 italicized = false;
+                count += 1;
             }
         }
 
