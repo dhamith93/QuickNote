@@ -230,13 +230,13 @@ public:
                             tempLink += c;
                         }
                     }
-                    if (textStart && !linkStart) {
+                    if (textStart &&  !linkStart) {
                         if (c != ']') {
                             tempText += c;
                         }
                     }
                     // link with [text](link)
-                    if (textStart && textComplete && linkStart && linkComplete) {
+                    if (textStart &&  textComplete &&  linkStart &&  linkComplete) {
                         textStart = false;
                         textComplete = false;
                         linkStart = false;
@@ -259,7 +259,7 @@ public:
                         tempLink = "";
                     }
                     // Link within < >
-                    if (!textComplete && linkStart && linkComplete) {
+                    if (!textComplete &&  linkStart &&  linkComplete) {
                         linkStart = false;
                         linkComplete = false;
                         string textToReplaceTemp = line.substr(startPos - 1, endPos - startPos + 1);
@@ -278,7 +278,7 @@ public:
                         tempLink = "";
                     }
                 }
-                if (prevIsPara && (lineCount == 0)) {
+                if (prevIsPara &&  (lineCount == 0)) {
                     content = elements[count - 1].content + "<br />" + content;
                     elements.pop_back();
                     count -= 1;
@@ -290,7 +290,7 @@ public:
                 count += 1;
             }
             if (blockquoteBegin) {
-                if (prevIsQuote && (lineCount == 0)) {
+                if (prevIsQuote &&  (lineCount == 0)) {
                     tempQuote = elements[count - 1].content + "<br />" + tempQuote;
                     elements.pop_back();
                     count -= 1;
