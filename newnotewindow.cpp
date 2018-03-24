@@ -61,7 +61,7 @@ void NewNoteWindow::on_txtInput_textChanged() {
     changeCount += 1;
     fileSaved = (fromOpen) ? (changeCount == 1) ? true : false : false;
     string input = ui->txtInput->toPlainText().toUtf8().constData();
-    if (input.size() > 0 & ui->actionPreview->isChecked()) {
+    if (input.size() > 0 && ui->actionPreview->isChecked()) {
         setText(input);
         setScrollPosition();
     }
@@ -150,7 +150,7 @@ void NewNoteWindow::setText(string &content) {
     parser.parse(content);
     vector<HtmlElement> elements = parser.getElements();
     string htmlText = "<!DOCTYPE html>\n<html><head></head>\n<body><style>.markdown-body {box-sizing: border-box;max-width: 980px;margin: 0 auto;padding: 45px;} </style><article class=\"markdown-body\">\n";
-    for (auto& element : elements) {
+    for (auto&& element : elements) {
         htmlText += element.str();
     }
     htmlText += "</article></body>\n</html>";
@@ -204,7 +204,7 @@ void NewNoteWindow::saveHtml() {
         parser.parse(content);
         vector<HtmlElement> elements = parser.getElements();
         string htmlText = "<!DOCTYPE html>\n<html><head></head>\n<body><style>.markdown-body {box-sizing: border-box;max-width: 980px;margin: 0 auto;padding: 45px;} " + style + " </style><article class=\"markdown-body\">\n";
-        for (auto& element : elements) {
+        for (auto&& element : elements) {
             htmlText += element.str();
         }
         htmlText += "</article></body>\n</html>";

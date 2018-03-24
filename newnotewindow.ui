@@ -23,7 +23,7 @@
 ### Header level 3
 #### Header level 4
 ##### Header level 5
-###### Header level 6
+
 ---
 
 * list item 1
@@ -37,14 +37,19 @@
   * sub list item 1
   * sub list item 2
   * sub list item 3
+
 ---
 
 This is a paragraph. You can make text **bold** or *italic*. Or you can ~~strikethrough~~ them. You also can add inline links [like this](http://www.google.com) and you can add regular links like this &lt;https://www.google.com/?q=dogs&gt;
+
 ~~this **is** a another~~ **paragraph *with* mixed ~~formatting~~**.
+
+&gt; this is a quote
 
 ---
 
 ```
+    // some code
     int main() {
         printf(&quot;Hello World!&quot;);
         return 0;
