@@ -150,7 +150,7 @@ void NewNoteWindow::setText(string &content) {
     parser.parse(content);
     vector<HtmlElement> elements = parser.getElements();
     string htmlText = "<!DOCTYPE html>\n<html><head></head>\n<body><style>.markdown-body {box-sizing: border-box;max-width: 980px;margin: 0 auto;padding: 45px;} </style><article class=\"markdown-body\">\n";
-    for (auto&& element : elements) {
+    for (auto& element : elements) {
         htmlText += element.str();
     }
     htmlText += "</article></body>\n</html>";
