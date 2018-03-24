@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QDebug>
 #include <QFileInfo>
+#include <QListWidgetItem>
 #include "newnotewindow.h"
 namespace Ui {
     class MainWindow;
@@ -23,6 +24,8 @@ class MainWindow : public QMainWindow
         void on_btnOpenNote_clicked();
 
         void closeEvent (QCloseEvent *event);
+
+        void on_listRecent_itemClicked(QListWidgetItem *item);
 
     private:
         Ui::MainWindow *ui;
