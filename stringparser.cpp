@@ -48,6 +48,52 @@ private:
         return str.substr (first, last);
     }
 
+    string parseString(string& line) {
+        string content;
+        bool italicized = false, bolded = false, strikedOut = false;
+        int aCount = 0, tCount = 0, charCount = 0;
+        for (auto& c : line) {
+            charCount += 1;
+            if (c == '*') {
+                aCount += 1;
+            } else if (c == '~') {
+                tCount += 1;
+            } else {
+                if (aCount == 1) {
+                    if (italicized) {
+                        content += "</em>";
+                        italicized = false;
+                    } else {
+                        content += "<em>";
+                        italicized = true;
+                    }
+                } else if (aCount == 2) {
+                    if (bolded) {
+                        content += "</strong>";
+                        bolded = false;
+                    } else {
+                        content += "<strong>";
+                        bolded = true;
+                    }
+                }
+                if (tCount == 2) {
+                    if (strikedOut) {
+                        content += "</s>";
+                        strikedOut = false;
+                    } else {
+                        content += "<s>";
+                        strikedOut = true;
+                    }
+                }
+                tCount = 0;
+                aCount = 0;
+                content += c;
+            }
+        }
+
+        return content;
+    }
+
 public:
     void parse(string& input) {
         bool uListBegin = false, subListBegin = false, codeBegin = false, blockquoteBegin = false,
@@ -91,6 +137,7 @@ public:
                 }
                 if (uListBegin) {
                     string item = line.substr(2, line.length());
+                    item = parseString(item);
                     elements[count - 1].subElements.push_back(HtmlElement("li", item));
                     subListBegin = false;
                 }
@@ -99,6 +146,7 @@ public:
             } else if (line.size() > 2 && line.substr(0, 4) == "  * ") {
                 if (uListBegin) {
                     string item = line.substr(3, line.length());
+                    item = parseString(item);
                     int length = (int)elements[count - 1].subElements.size();
                     if (!subListBegin) {
                         subListBegin = true;
@@ -230,13 +278,13 @@ public:
                             tempLink += c;
                         }
                     }
-                    if (textStart &&  !linkStart) {
+                    if (textStart && !linkStart) {
                         if (c != ']') {
                             tempText += c;
                         }
                     }
                     // link with [text](link)
-                    if (textStart &&  textComplete &&  linkStart &&  linkComplete) {
+                    if (textStart && textComplete && linkStart && linkComplete) {
                         textStart = false;
                         textComplete = false;
                         linkStart = false;
@@ -259,7 +307,7 @@ public:
                         tempLink = "";
                     }
                     // Link within < >
-                    if (!textComplete &&  linkStart &&  linkComplete) {
+                    if (!textComplete && linkStart && linkComplete) {
                         linkStart = false;
                         linkComplete = false;
                         string textToReplaceTemp = line.substr(startPos - 1, endPos - startPos + 1);
@@ -278,7 +326,7 @@ public:
                         tempLink = "";
                     }
                 }
-                if (prevIsPara &&  (lineCount == 0)) {
+                if (prevIsPara && (lineCount == 0)) {
                     content = elements[count - 1].content + "<br />" + content;
                     elements.pop_back();
                     count -= 1;
@@ -290,7 +338,7 @@ public:
                 count += 1;
             }
             if (blockquoteBegin) {
-                if (prevIsQuote &&  (lineCount == 0)) {
+                if (prevIsQuote && (lineCount == 0)) {
                     tempQuote = elements[count - 1].content + "<br />" + tempQuote;
                     elements.pop_back();
                     count -= 1;
@@ -313,7 +361,6 @@ public:
             }
             lineCount = 0;
         }
-
     }
 
     vector<HtmlElement> getElements() {
