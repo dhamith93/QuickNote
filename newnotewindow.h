@@ -38,6 +38,8 @@ class NewNoteWindow : public QMainWindow {
 
         void on_actionDOCX_triggered();
 
+        void on_actionChange_Font_triggered();
+
     private:
         Ui::NewNoteWindow *ui;
         QString fileName;

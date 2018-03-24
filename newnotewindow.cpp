@@ -105,13 +105,19 @@ void NewNoteWindow::on_actionDOCX_triggered() {
     }
 }
 
+void NewNoteWindow::on_actionChange_Font_triggered() {
+    bool ok;
+    QFont font = QFontDialog::getFont(&ok);
+    ui->txtInput->setFont(font);
+}
+
 void NewNoteWindow::closeEvent (QCloseEvent *event) {
     if (!fileSaved) {
         QMessageBox::StandardButton resBtn = QMessageBox::question(
-                    this, "",
-                    tr("Do you want to save the file?\n"),
-                    QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
-                    QMessageBox::Yes
+            this, "",
+            tr("Do you want to save the file?\n"),
+            QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
+            QMessageBox::Yes
         );
         if (resBtn == QMessageBox::Yes) {
             event->ignore();

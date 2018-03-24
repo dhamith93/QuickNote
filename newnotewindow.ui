@@ -80,6 +80,7 @@ p, li { white-space: pre-wrap; }
      <string>File</string>
     </property>
     <addaction name="actionSave"/>
+    <addaction name="actionChange_Font"/>
    </widget>
    <widget class="QMenu" name="menuExport">
     <property name="title">
@@ -117,6 +118,11 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="shortcut">
     <string>Meta+P</string>
+   </property>
+  </action>
+  <action name="actionChange_Font">
+   <property name="text">
+    <string>Change Font</string>
    </property>
   </action>
  </widget>
