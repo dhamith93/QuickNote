@@ -61,7 +61,7 @@ public:
             if (line.length() == 0) {
                 lineCount += 1;
                 if (lineCount >= 2) {
-                    elements.push_back(HtmlElement{"p", "<br />"});
+                    elements.push_back(HtmlElement{"p", " &nbsp;"});
                     count += 1;
                 }
                 continue;
@@ -261,10 +261,11 @@ public:
                     }
                 }
                 if (prevIsPara & (lineCount == 0)) {
-                    elements[count - 1].content += "<br />" + content;
-                } else {
-                    elements.push_back(HtmlElement{"p", content});
+                    content = elements[count - 1].content + "<br />" + content;
+                    elements.pop_back();
+                    count -= 1;
                 }
+                elements.push_back(HtmlElement{"p", content});
                 prevIsPara = true;
                 content = "";
                 count += 1;
