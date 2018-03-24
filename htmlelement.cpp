@@ -19,7 +19,11 @@ struct HtmlElement {
         ostringstream oss;
         string i(indent * 2, ' ');
         if (attrb.length() > 0) {
-            oss << i << "< " << element << " " << attrb << "=\"" << attrbData << "\" " << ">" << endl;
+            if (element == "img") {
+                oss << i << "< " << element << " " << attrb << "=\"" << attrbData << "\" " << "alt=\"" << content << "\"" << ">" << endl;
+            } else {
+                oss << i << "< " << element << " " << attrb << "=\"" << attrbData << "\" " << ">" << endl;
+            }
         } else {
             oss << i << "<" << element << ">" << endl;
         }
@@ -32,7 +36,9 @@ struct HtmlElement {
         for (auto& e : subElements) {
            oss << e.str(indent + 1);
         }
-        oss << i << "</" << element << ">" << endl;
+        if (element != "img") {
+            oss << i << "</" << element << ">" << endl;
+        }
 
         return oss.str();
     }

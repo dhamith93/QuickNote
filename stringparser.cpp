@@ -109,6 +109,16 @@ public:
                 }
                 prevIsPara = false;
                 prevIsQuote = false;
+            } else if (line.size() > 2 && line.substr(0, 2) == "![" && line.at(line.length() - 1) == ')') {
+                string inlineText = getStringBetweenDelimiters(line, "[", "]");
+                string link = getStringBetweenDelimiters(line, "(", ")");
+
+                if (link.length() > 0) {
+                    elements.push_back(HtmlElement{"p", ""});
+                    elements.push_back(HtmlElement{"img", inlineText, "src", link});
+                    count += 2;
+                }
+                prevIsPara = false;
             } else if (line.size() > 2 && line.at(0) == '[' && line.at(line.length() - 1) == ')') {
                 string inlineText = getStringBetweenDelimiters(line, "[", "]");
                 string link = getStringBetweenDelimiters(line, "(", ")");
