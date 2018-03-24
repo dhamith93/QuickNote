@@ -81,6 +81,7 @@ p, li { white-space: pre-wrap; }
     </property>
     <addaction name="actionSave"/>
     <addaction name="actionChange_Font"/>
+    <addaction name="actionPreview"/>
    </widget>
    <widget class="QMenu" name="menuExport">
     <property name="title">
@@ -123,6 +124,14 @@ p, li { white-space: pre-wrap; }
   <action name="actionChange_Font">
    <property name="text">
     <string>Change Font</string>
+   </property>
+  </action>
+  <action name="actionPreview">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Preview</string>
    </property>
   </action>
  </widget>

@@ -40,6 +40,8 @@ class NewNoteWindow : public QMainWindow {
 
         void on_actionChange_Font_triggered();
 
+        void on_actionPreview_changed();
+
     private:
         Ui::NewNoteWindow *ui;
         QString fileName;

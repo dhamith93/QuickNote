@@ -31,6 +31,7 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
     QMainWindow(parent),
     ui(new Ui::NewNoteWindow) {
     ui->setupUi(this);
+    ui->actionPreview->setChecked(true);
     if (filePath != "") {
         fromOpen = true;        
         fileName = QString::fromStdString(filePath);
@@ -60,7 +61,7 @@ void NewNoteWindow::on_txtInput_textChanged() {
     changeCount += 1;
     fileSaved = (fromOpen) ? (changeCount == 1) ? true : false : false;
     string input = ui->txtInput->toPlainText().toUtf8().constData();
-    if (input.size() > 0) {
+    if (input.size() > 0 & ui->actionPreview->isChecked()) {
         setText(input);
         setScrollPosition();
     }
@@ -109,6 +110,19 @@ void NewNoteWindow::on_actionChange_Font_triggered() {
     bool ok;
     QFont font = QFontDialog::getFont(&ok);
     ui->txtInput->setFont(font);
+}
+
+void NewNoteWindow::on_actionPreview_changed() {
+    if (ui->actionPreview->isChecked()) {
+        string input = ui->txtInput->toPlainText().toUtf8().constData();
+        if (input.size() > 0) {
+            setText(input);
+            setScrollPosition();
+        }
+        ui->previewWindow->show();
+    } else {
+        ui->previewWindow->hide();
+    }
 }
 
 void NewNoteWindow::closeEvent (QCloseEvent *event) {
