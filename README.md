@@ -5,7 +5,13 @@ QuickNote is a simple note app that uses subset of markdown syntax for formattin
 
 ### TODO
 
-* Complete syntax support
+[X] ~~Complete syntax support~~
+  [X] ~~Headers~~
+  [X] ~~Lists~~
+  [X] ~~Bold, Italic, Strikethrough~~
+  [X] ~~Images~~
+  [X] ~~Links~~ 
+[ ] Recent documents view
 
 ### Screenshots
 
