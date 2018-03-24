@@ -52,7 +52,7 @@ public:
     void parse(string& input) {
         bool uListBegin = false, subListBegin = false, codeBegin = false, blockquoteBegin = false,
                 italicized = false, bolded = false, strikedOut = false, textStart = false, linkStart = false,
-                textComplete = false, linkComplete = false, prevIsPara = false;
+                textComplete = false, linkComplete = false, prevIsPara = false, prevIsQuote = false;
         int count = 0, lineCount = 0;
         string temp = "", tempQuote = "", tempText = "", tempLink = "";
         split(input);
@@ -60,9 +60,12 @@ public:
         for (auto& line : lineArray) {
             if (line.length() == 0) {
                 lineCount += 1;
-                if (lineCount >= 2) {
-                    elements.push_back(HtmlElement{"p", " &nbsp;"});
-                    count += 1;
+                if (lineCount > 1) {
+                    if (!prevIsQuote) {
+                        elements.push_back(HtmlElement{"p", "&nbsp;"});
+                        count += 1;
+                    }
+                    prevIsQuote = false;
                 }
                 continue;
             }
@@ -74,6 +77,7 @@ public:
                 elements.push_back(HtmlElement {h, content});
                 count += 1;
                 prevIsPara = false;
+                prevIsQuote = false;
             } else if (line == "---") {
                 uListBegin = false;
                 elements.push_back(HtmlElement {"hr", ""});
@@ -91,6 +95,7 @@ public:
                     subListBegin = false;
                 }
                 prevIsPara = false;
+                prevIsQuote = false;
             } else if (line.size() > 2 && line.substr(0, 4) == "  * ") {
                 if (uListBegin) {
                     string item = line.substr(3, line.length());
@@ -103,6 +108,7 @@ public:
                     elements[count - 1].subElements[length - 1].subElements[subLength - 1].subElements.push_back(HtmlElement("li", item));
                 }
                 prevIsPara = false;
+                prevIsQuote = false;
             } else if (line.size() > 2 && line.at(0) == '[' && line.at(line.length() - 1) == ')') {
                 string inlineText = getStringBetweenDelimiters(line, "[", "]");
                 string link = getStringBetweenDelimiters(line, "(", ")");
@@ -113,6 +119,7 @@ public:
                     count += 1;
                 }
                 prevIsPara = false;
+                prevIsQuote = false;
             } else if (line == "```") {
                 uListBegin = false;
                 if (!codeBegin) {
@@ -124,6 +131,7 @@ public:
                 codeBegin = false;
                 temp = "";
                 prevIsPara = false;
+                prevIsQuote = false;
             } else if (codeBegin) {
                 temp += line + '\n';
                 continue;
@@ -267,13 +275,21 @@ public:
                 }
                 elements.push_back(HtmlElement{"p", content});
                 prevIsPara = true;
+                prevIsQuote = false;
                 content = "";
                 count += 1;
             }
             if (blockquoteBegin) {
+                if (prevIsQuote & (lineCount == 0)) {
+                    tempQuote = elements[count - 1].content + "<br />" + tempQuote;
+                    elements.pop_back();
+                    count -= 1;
+                }
                 elements.push_back(HtmlElement {"blockquote", tempQuote});
                 blockquoteBegin = false;
                 count += 1;
+                prevIsQuote = true;
+                tempQuote = "";
             }
             if (bolded) {
                 elements.push_back(HtmlElement{"span", "</strong>"});
