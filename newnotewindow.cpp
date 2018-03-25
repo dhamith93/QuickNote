@@ -33,6 +33,12 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
     ui(new Ui::NewNoteWindow) {
     ui->setupUi(this);
     ui->actionPreview->setChecked(true);
+    Database db;
+    if (db.fontConfigExists()) {
+        QFont font;
+        font.fromString(db.getFontConfig());
+        ui->txtInput->setFont(font);
+    }
     if (filePath != "") {
         fromOpen = true;        
         fileName = QString::fromStdString(filePath);
@@ -43,8 +49,7 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
         string content = buffer.str();
         file.close();
         ui->txtInput->setPlainText(QString::fromStdString(content));
-        setText(content);
-        Database db;
+        setText(content);        
         if (!db.checkIfExists(fileName)) {
             if (db.checkRowCountEq(10)) {
                 db.deleteOldest();
@@ -57,7 +62,6 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
             setText(input);
         }
     }
-
 }
 
 NewNoteWindow::~NewNoteWindow()
@@ -117,6 +121,8 @@ void NewNoteWindow::on_actionDOCX_triggered() {
 void NewNoteWindow::on_actionChange_Font_triggered() {
     bool ok;
     QFont font = QFontDialog::getFont(&ok);
+    Database db;
+    db.insertFontConfig(font.toString());
     ui->txtInput->setFont(font);
 }
 

@@ -29,6 +29,8 @@ public:
            QSqlQuery query;
            query.prepare("CREATE TABLE IF NOT EXISTS notes (path TEXT NOT NULL)");
            query.exec();
+           query.prepare("CREATE TABLE IF NOT EXISTS config (font TEXT NOT NULL)");
+           query.exec();
        }
     }
 
@@ -36,13 +38,7 @@ public:
         QSqlQuery query;
         query.prepare("INSERT INTO notes (path) VALUES (:path)");
         query.bindValue(":path", notePath);
-        if (query.exec()) {
-            return true;
-        } else {
-            qDebug() << "insert error: "
-                            << query.lastError();
-            return false;
-        }
+        return query.exec();
     }
 
     bool checkIfExists(const QString& notePath) {
@@ -85,5 +81,30 @@ public:
             paths.append(query.value(0).toString());
         }
         return paths;
+    }
+
+    bool fontConfigExists() {
+        QSqlQuery query("SELECT COUNT(*) FROM config");
+        query.first();
+        int count = query.value(0).toInt();
+        return (count > 0);
+    }
+
+    bool insertFontConfig(const QString& font) {
+        QSqlQuery query;
+        if (fontConfigExists()) {
+            query.prepare("UPDATE config SET font = :font WHERE rowid = 1");
+            query.bindValue(":font", font);
+        } else {
+            query.prepare("INSERT INTO config (font) VALUES (:font)");
+            query.bindValue(":font", font);
+        }
+        return query.exec();
+    }
+
+    QString getFontConfig() {
+        QSqlQuery query("SELECT font FROM config WHERE rowid = 1");
+        query.next();
+        return query.value(0).toString();
     }
 };
