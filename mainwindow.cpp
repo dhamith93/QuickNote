@@ -16,8 +16,6 @@ MainWindow::MainWindow(QWidget *parent) :
         for (auto& path : recentPaths) {
             ui->listRecent->addItem(path);
         }
-    } else {
-        ui->listRecent->addItem("No Recent notes...");
     }
 }
 
@@ -65,8 +63,6 @@ void MainWindow::on_listRecent_itemClicked(QListWidgetItem *item) {
             for (auto& path : recentPaths) {
                 ui->listRecent->addItem(path);
             }
-        } else {
-            ui->listRecent->addItem("No Recent notes...");
         }
     }
 }

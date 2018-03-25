@@ -11,7 +11,7 @@ QuickNote is a simple note app that uses subset of markdown syntax for formattin
   - [x] ~~Bold, Italic, Strikethrough~~
   - [x] ~~Images~~
   - [x] ~~Links~~ 
-- [ ] Recent documents view
+- [x] ~~Recent documents view~~
 
 ### Screenshots
 
