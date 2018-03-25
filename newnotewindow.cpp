@@ -10,7 +10,6 @@
     #define PANDOC_PATH "pandoc.exe"
     #define RM_COMMAND "del"
     #define OS "windows"
-    #define DBPATH "notePathDB.db"
 #elif __linux__
     #define PANDOC_PATH "pandoc"
     #define RM_COMMAND "rm"
@@ -19,7 +18,6 @@
     #define PANDOC_PATH "/usr/local/bin/pandoc"
     #define RM_COMMAND "rm"
     #define OS "macos"
-    #define DBPATH "../../../notePathDB.db"
 #endif
 
 NewNoteWindow::NewNoteWindow(QWidget *parent) :
@@ -46,7 +44,7 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
         file.close();
         ui->txtInput->setPlainText(QString::fromStdString(content));
         setText(content);
-        Database db(DBPATH);
+        Database db;
         if (!db.checkIfExists(fileName)) {
             if (db.checkRowCountEq(10)) {
                 db.deleteOldest();
@@ -194,7 +192,7 @@ void NewNoteWindow::saveFile() {
             fileSaved = true;
             fromOpen = true;
             setWindowTitle(fileName);            
-            Database db(DBPATH);
+            Database db;
             if (!db.checkIfExists(fileName)) {
                 if (db.checkRowCountEq(10)) {
                     db.deleteOldest();

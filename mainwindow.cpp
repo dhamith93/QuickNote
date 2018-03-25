@@ -4,20 +4,13 @@
 #include <QFileDialog>
 #include <QtWidgets>
 #include <QCloseEvent>
-#include <iostream>
 #include "database.cpp"
-
-#ifdef _WIN32
-    #define DBPATH "notePathDB.db"
-#else
-    #define DBPATH "../../../notePathDB.db"
-#endif
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    Database db(DBPATH);
+    Database db;
     QVector<QString> recentPaths = db.getRecents();
     if (recentPaths.size() > 0) {
         for (auto& path : recentPaths) {
@@ -60,11 +53,11 @@ void MainWindow::on_listRecent_itemClicked(QListWidgetItem *item) {
     try {
         newNote = new NewNoteWindow(this, item->text().toUtf8().constData());
         newNote->show();
-    } catch (exception ex) {
+    } catch (std::exception ex) {
         QMessageBox msgBox;
         msgBox.setText("Can't find the file!");
         msgBox.exec();
-        Database db(DBPATH);
+        Database db;
         db.deletePath(item->text().toUtf8().constData());
         QVector<QString> recentPaths = db.getRecents();
         ui->listRecent->clear();

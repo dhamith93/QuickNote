@@ -8,19 +8,27 @@
 #include <QDebug>
 #include <QSqlQuery>
 #include <QString>
-#include <iostream>
-using namespace std;
+#include <QStandardPaths>
 
 class Database {
 private:
     QSqlDatabase db;
 public:
-    Database(const QString& path) {
-        db = QSqlDatabase::addDatabase("QSQLITE");
-        db.setDatabaseName(path);
+    Database() {
+       QStringList paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+       db = QSqlDatabase::addDatabase("QSQLITE");
+       QString path = paths.at(0);
+       QDir dir;
+       dir.mkdir(paths.at(0));
+       path += "/notePathDB.db";
+       db.setDatabaseName(path);
 
        if (!db.open()) {
           qDebug() << "Error: connection error";
+       } else {
+           QSqlQuery query;
+           query.prepare("CREATE TABLE IF NOT EXISTS notes (path TEXT NOT NULL)");
+           query.exec();
        }
     }
 
@@ -53,7 +61,6 @@ public:
         QSqlQuery query("SELECT COUNT(*) FROM notes");
         query.first();
         int count = query.value(0).toInt();
-        cout << count << endl;
         return (count == x);
     }
 
@@ -77,7 +84,6 @@ public:
         QSqlQuery query("SELECT path FROM notes ORDER BY rowid DESC LIMIT 10");
         QVector<QString> paths;
         while (query.next()) {
-
             paths.append(query.value(0).toString());
         }
         return paths;
