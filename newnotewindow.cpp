@@ -49,11 +49,7 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
             if (db.checkRowCountEq(10)) {
                 db.deleteOldest();
             }
-            if (db.insertNote(fileName)) {
-                cout << "success" << endl;
-            } else {
-                cout << "error" << endl;
-            }
+            db.insertNote(fileName);
         }
     } else {
         string input = ui->txtInput->toPlainText().toUtf8().constData();
@@ -197,11 +193,7 @@ void NewNoteWindow::saveFile() {
                 if (db.checkRowCountEq(10)) {
                     db.deleteOldest();
                 }
-                if (db.insertNote(fileName)) {
-                    cout << "success" << endl;
-                } else {
-                    cout << "error" << endl;
-                }
+                db.insertNote(fileName);
             }
         }
     } catch (exception ex) {
