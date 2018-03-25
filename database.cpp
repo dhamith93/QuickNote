@@ -33,7 +33,6 @@ public:
     }
 
     bool insertNote(const QString& notePath) {
-        QSqlDatabase::drivers();
         QSqlQuery query;
         query.prepare("INSERT INTO notes (path) VALUES (:path)");
         query.bindValue(":path", notePath);
@@ -53,7 +52,6 @@ public:
         if (query.exec()) {
            return query.next();
         }
-
         return false;
     }
 
