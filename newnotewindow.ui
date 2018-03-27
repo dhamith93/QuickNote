@@ -26,17 +26,20 @@
 
 ---
 
+1. Item One
+2. Item Two
+  1. Sub Item One
+  2. Sub Item Two
+3. Item Three
+
 * list item 1
 * list item 2
-* list item 3
   * sub list item 1
   * sub list item 2
-  * sub list item 3
 * list item 4
 * list item 5 
-  * sub list item 1
-  * sub list item 2
-  * sub list item 3
+  1. sub list item 1
+  2. sub list utem 2
 
 ---
 
@@ -44,7 +47,10 @@ This is a paragraph. You can make text **bold** or *italic*. Or you can ~~strike
 
 ~~this **is** a another~~ **paragraph *with* mixed ~~formatting~~**.
 
+You also can add inline codes: `System.out.println(&quot;Hi!&quot;);`
+
 &gt; this is a quote
+&gt; &gt; this is a sub quote
 
 ---
 
@@ -54,7 +60,13 @@ This is a paragraph. You can make text **bold** or *italic*. Or you can ~~strike
         printf(&quot;Hello World!&quot;);
         return 0;
     }
-```</string>
+```
+```java
+    System.out.println(&quot;You can add language like that
+	to use syntax highlighting on HTML exports&quot;);
+```
+
+___</string>
       </property>
      </widget>
     </item>

@@ -28,340 +28,318 @@ private:
     }
 
     int getCharCount(string& line, char d) {
-        int count = 0;
-        for (auto& c : line) {
-            if (count >= 6) {
-                break;
-            }
-            if (c == d) {
+            int count = 0;
+            for (auto& c : line) {
+                if (c != d) {
+                    break;
+                }
                 count += 1;
-            } else {
-                break;
-            }
-        }
-        return count;
-    }
-
-    string getStringBetweenDelimiters(string& str, string d1, string d2, int offset = 1) {
-        unsigned first = str.find(d1) + offset;
-        unsigned last = (offset == 1) ? str.find(d2) - first : str.find(d2);
-        return str.substr (first, last);
-    }
-
-    string parseString(string& line) {
-        string content;
-        bool italicized = false, bolded = false, strikedOut = false;
-        int aCount = 0, tCount = 0, charCount = 0;
-        for (auto& c : line) {
-            charCount += 1;
-            if (c == '*') {
-                aCount += 1;
-            } else if (c == '~') {
-                tCount += 1;
-            } else {
-                if (aCount == 1) {
-                    if (italicized) {
-                        content += "</em>";
-                        italicized = false;
-                    } else {
-                        content += "<em>";
-                        italicized = true;
-                    }
-                } else if (aCount == 2) {
-                    if (bolded) {
-                        content += "</strong>";
-                        bolded = false;
-                    } else {
-                        content += "<strong>";
-                        bolded = true;
-                    }
+                if (count == 6 && d == 'h') {
+                    break;
                 }
-                if (tCount == 2) {
-                    if (strikedOut) {
-                        content += "</s>";
-                        strikedOut = false;
-                    } else {
-                        content += "<s>";
-                        strikedOut = true;
-                    }
-                }
-                tCount = 0;
-                aCount = 0;
-                content += c;
             }
+            return count;
         }
 
-        return content;
-    }
+        string getStringBetweenDelimiters(string& str, string d1, string d2, int offset = 1) {
+            unsigned first = str.find(d1) + offset;
+            unsigned last = (offset == 1) ? str.find(d2) - first : str.find(d2);
+            return str.substr (first, last);
+        }
 
-public:
-    void parse(string& input) {
-        bool uListBegin = false, subListBegin = false, codeBegin = false, blockquoteBegin = false,
-                italicized = false, bolded = false, strikedOut = false, textStart = false, linkStart = false,
-                textComplete = false, linkComplete = false, prevIsPara = false, prevIsQuote = false;
-        int count = 0, lineCount = 0;
-        string temp = "", tempQuote = "", tempText = "", tempLink = "";
-        split(input);
-
-        for (auto& line : lineArray) {
-            if (line.length() == 0) {
-                lineCount += 1;
-                if (lineCount > 1) {
-                    if (!prevIsQuote) {
-                        elements.push_back(HtmlElement{"p", "&nbsp;"});
-                        count += 1;
-                    }
-                    prevIsQuote = false;
+        string linkReplace(string& line, string& content, string& link, string& text, int& startPos, int& endPos) {
+            string temp = line.substr(startPos - 1, endPos - startPos + 1);
+            string textToReplace;
+            for (auto& c1 : temp) {
+                if (c1 == '[' || c1 == ']' || c1 == '(' || c1 == ')' || c1 == '?') {
+                    textToReplace += '\\';
                 }
-                continue;
+                textToReplace += c1;
             }
-            if (line.length() > 0 && !codeBegin && line.at(0) == '#') {
-                uListBegin = false;
-                int hCount = getCharCount(line, '#');
-                string h = "h" + to_string(hCount);
-                string content = line.substr(hCount, line.length());
-                elements.push_back(HtmlElement {h, content});
-                count += 1;
-                prevIsPara = false;
-                prevIsQuote = false;
-            } else if (line == "---") {
-                uListBegin = false;
-                elements.push_back(HtmlElement {"hr", ""});
-                count += 1;
-                prevIsPara = false;
-            } else if (line.size() > 2 && line.substr(0, 2) == "* ") {
-                if (!uListBegin) {
-                    uListBegin = true;
-                    elements.push_back(HtmlElement{"ul", ""});
-                    count += 1;
-                }
-                if (uListBegin) {
-                    string item = line.substr(2, line.length());
-                    item = parseString(item);
-                    elements[count - 1].subElements.push_back(HtmlElement("li", item));
-                    subListBegin = false;
-                }
-                prevIsPara = false;
-                prevIsQuote = false;
-            } else if (line.size() > 2 && line.substr(0, 4) == "  * ") {
-                if (uListBegin) {
-                    string item = line.substr(3, line.length());
-                    item = parseString(item);
-                    int length = (int)elements[count - 1].subElements.size();
-                    if (!subListBegin) {
-                        subListBegin = true;
-                        elements[count - 1].subElements[length - 1].subElements.push_back(HtmlElement{"ul", ""});
-                    }
-                    int subLength = (int)elements[count - 1].subElements[length - 1].subElements.size();
-                    elements[count - 1].subElements[length - 1].subElements[subLength - 1].subElements.push_back(HtmlElement("li", item));
-                }
-                prevIsPara = false;
-                prevIsQuote = false;
-            } else if (line.size() > 2 && line.substr(0, 2) == "![" && line.at(line.length() - 1) == ')') {
-                string inlineText = getStringBetweenDelimiters(line, "[", "]");
-                string link = getStringBetweenDelimiters(line, "(", ")");
+            content = regex_replace(content, regex(textToReplace), "<a href=\"" + link + "\">" + text + "</a>");
+            return content;
+        }
 
-                if (link.length() > 0) {
-                    elements.push_back(HtmlElement{"p", ""});
-                    elements.push_back(HtmlElement{"img", inlineText, "src", link});
-                    count += 2;
-                }
-                prevIsPara = false;
-            } else if (line.size() > 2 && line.at(0) == '[' && line.at(line.length() - 1) == ')') {
-                string inlineText = getStringBetweenDelimiters(line, "[", "]");
-                string link = getStringBetweenDelimiters(line, "(", ")");
+        bool prevElementIsSame(string e, int pos) {
+            if (elements.size() == 0) {
+                return false;
+            }
+            return (elements[pos].element == e);
+        }
 
-                if (inlineText.length() > 0 && link.length() > 0) {
-                    elements.push_back(HtmlElement{"p", ""});
-                    elements.push_back(HtmlElement{"a", inlineText, "href", link});
-                    count += 1;
-                }
-                prevIsPara = false;
-                prevIsQuote = false;
-            } else if (line == "```") {
-                uListBegin = false;
-                if (!codeBegin) {
-                    codeBegin = true;
+        string popLastElementContent(int& pos) {
+            string content = elements[pos].content;
+            elements.pop_back();
+            return content;
+        }
+
+        string popLastSubElementContent(int& pos, int& subPos) {
+            string content = elements[pos].subElements[subPos].content;
+            elements.pop_back();
+            return content;
+        }
+
+        string parseInline(string& line) {
+            int aCount = 0, tCount = 0, charCount = 0, startPos = 0, endPos = 0;
+            string content = "", tempLink, tempText;
+            bool isLinkStart = false, isLinkFinished = false, isTextStart = false, isTextFinished = false,
+                italicized = false, bolded = false, strikedOut = false, code = false;
+            for (auto& c : line) {
+                charCount += 1;
+                if (c == '*') {
+                    aCount += 1;
+                } else if (c == '~') {                    
+                    tCount += 1;
+                } else if (c == '[') {
+                    startPos = charCount;
+                    isTextStart = true;
+                    content += c;
                     continue;
-                }
-                elements.push_back(HtmlElement{"pre", temp});
-                count += 1;
-                codeBegin = false;
-                temp = "";
-                prevIsPara = false;
-                prevIsQuote = false;
-            } else if (codeBegin) {
-                temp += line + '\n';
-                continue;
-            } else if (line.size() > 2 && line.substr(0, 2) == "> ") {
-                uListBegin = false;
-                if (!blockquoteBegin) {
-                    blockquoteBegin = true;
-                }
-                tempQuote += line.substr(1, line.length());
-                prevIsPara = false;
-            } else {
-                uListBegin = false;
-                if (blockquoteBegin) {
-                    elements.push_back(HtmlElement {"blockquote", tempQuote});
-                    count += 1;
-                    blockquoteBegin = false;
-                    tempQuote = "";
-                }
-                string content;
-                int aCount = 0, tCount = 0, charCount = 0, startPos = 0, endPos = 0;
-                for (auto& c : line) {
-                    charCount += 1;
-                    if (c == '*') {
-                        aCount += 1;
-                    } else if (c == '~') {
-                        tCount += 1;
-                    } else if (c == '[') {
-                        startPos = charCount;
-                        textStart = true;
-                        content += c;
+                } else if (c == '(') {
+                    isLinkStart = true;
+                    content += c;
+                } else if (c == ']') {
+                    isTextFinished = true;
+                    content += c;
+                } else if (c == ')') {
+                    endPos = charCount;
+                    content += c;
+                    isLinkFinished = isTextFinished;
+                } else if (c == '<') {
+                    isLinkStart = true;
+                    content += c;
+                    startPos = charCount;
+                    isLinkFinished = false;
+                } else if (c == '>') {
+                    content += c;
+                    endPos = charCount;
+                    isLinkFinished = true;
+                } else if (c == '`') {
+                    if (code) {
+                        code = false;
+                        content += "</code>";
                         continue;
-                    } else if (c == '(') {
-                        linkStart = true;
-                        content += c;
-                        continue;
-                    } else if (c == ']') {
-                        textComplete = true;
-                        content += c;
-                    } else if (c == ')') {
-                        endPos = charCount;
-                        content += c;
-                        linkComplete = textComplete;
-                    } else if (c == '<') {
-                        linkStart = true;
-                        content += c;
-                        startPos = charCount;
-                        linkComplete = false;
-                        continue;
-                    } else if (c == '>') {
-                        content += c;
-                        endPos = charCount;
-                        linkComplete = true;
-                    } else {
-                        if (aCount == 1) {
-                            if (italicized) {
-                                content += "</em>";
-                                italicized = false;
-                            } else {
-                                content += "<em>";
-                                italicized = true;
-                            }
-                        } else if (aCount == 2) {
-                            if (bolded) {
-                                content += "</strong>";
-                                bolded = false;
-                            } else {
-                                content += "<strong>";
-                                bolded = true;
-                            }
-                        }
-                        if (tCount == 2) {
-                            if (strikedOut) {
-                                content += "</s>";
-                                strikedOut = false;
-                            } else {
-                                content += "<s>";
-                                strikedOut = true;
-                            }
-                        }
-                        tCount = 0;
-                        aCount = 0;
-                        content += c;
                     }
-                    if (linkStart) {
+                    code = true;
+                    content += "<code>";
+                } else {
+                    if (code) {
+                        content += c;
+                        continue;
+                    }
+                    if (isLinkStart) {
                         if (c != ')' && c != '>') {
                             tempLink += c;
                         }
                     }
-                    if (textStart && !linkStart) {
+                    if (isTextStart && !isLinkStart) {
                         if (c != ']') {
                             tempText += c;
                         }
                     }
-                    // link with [text](link)
-                    if (textStart && textComplete && linkStart && linkComplete) {
-                        textStart = false;
-                        textComplete = false;
-                        linkStart = false;
-                        linkComplete = false;
-
-                        string textToReplaceTemp = line.substr(startPos - 1, endPos - startPos + 1);
-                        string textToReplace;
-                        for (auto& c1 : textToReplaceTemp) {
-                            if (c1 == '[' || c1 == ']' || c1 == '(' || c1 == ')') {
-                                textToReplace += '\\';
-                            }
-                            textToReplace += c1;
+                    if (aCount == 1) {
+                        aCount = 0;
+                        if (italicized) {
+                            content += "</em>";
+                            italicized = false;
+                            content += c;
+                            continue;
                         }
-                        try {
-                            content = regex_replace(content, regex(textToReplace), "<a href=\"" + tempLink + "\">" + tempText + "</a>");
-                        } catch(exception ex) {
-
-                        }
-                        tempText = "";
-                        tempLink = "";
+                        content += "<em>";
+                        italicized = true;
                     }
-                    // Link within < >
-                    if (!textComplete && linkStart && linkComplete) {
-                        linkStart = false;
-                        linkComplete = false;
-                        string textToReplaceTemp = line.substr(startPos - 1, endPos - startPos + 1);
-                        string textToReplace;
-                        for (auto& c1 : textToReplaceTemp) {
-                            if (c1 == '?') {
-                                textToReplace += '\\';
-                            }
-                            textToReplace += c1;
+                    if (aCount == 2) {
+                        aCount = 0;
+                        if (bolded) {
+                            content += "</strong>";
+                            bolded = false;
+                            content += c;
+                            continue;
                         }
-                        try {
-                            content = regex_replace(content, regex(textToReplace), "<a href=\"" + tempLink + "\">" + tempLink + "</a>");
-                        } catch (exception ex) {
-
+                        content += "<strong>";
+                        bolded = true;
+                    }                    
+                    if (tCount == 2) {
+                        tCount = 0;
+                        if (strikedOut) {
+                            content += "</s>";
+                            strikedOut = false;
+                            content += c;
+                            continue;
                         }
-                        tempLink = "";
+                        content += "<s>";
+                        strikedOut = true;
                     }
+                    content += c;
+                    continue;
                 }
-                if (prevIsPara && (lineCount == 0)) {
-                    content = elements[count - 1].content + "<br />" + content;
-                    elements.pop_back();
-                    count -= 1;
+                // link with [text](link)
+                if (isTextStart && isTextFinished && isLinkStart && isLinkFinished) {
+                    isTextStart = false;
+                    isTextFinished = false;
+                    isLinkStart = false;
+                    isLinkFinished = false;
+                    content = linkReplace(line, content, tempLink, tempText, startPos, endPos);
+                    tempText = "";
+                    tempLink = "";
+                }
+                // Link within < >
+                if (!isTextFinished && isLinkStart && isLinkFinished) {
+                    isLinkStart = false;
+                    isLinkFinished = false;
+                    content = linkReplace(line, content, tempLink, tempLink, startPos, endPos);
+                    tempLink = "";
+                }
+
+            }
+            if (strikedOut || bolded || italicized) {
+                string str = (strikedOut) ? "s" : (bolded) ? "strong" : "em";
+                content += "<span></" + str + ">";
+            }
+            return content;
+        }
+public:
+        void parse(string& input) {
+            split(input);
+            int count = 0, emptyLineCount = 1; // emptyLineCount is 1 because string split function ignores first empty line
+            bool code = false;
+            string codeText, codeClass;
+            if (lineArray.size() < 1) {
+                throw invalid_argument("No elements in the list");
+            }
+            for (auto& line : lineArray) {
+                if (line == "" && !code) {
+                    emptyLineCount += 1;
+                    if (emptyLineCount >= 2) {
+                        elements.push_back(HtmlElement {"br", ""});
+                        count += 1;
+                    }
+                    continue;
+                }
+                if (!code && (line == "---" || line == "___")) {
+                    elements.push_back(HtmlElement {"hr", ""});
+                    count += 1;
+                    continue;
+                }
+                if (!code && line.at(0) == '#') {
+                    int headerLevel = getCharCount(line, '#');
+                    string h = "h" + to_string(headerLevel);
+                    string content = line.substr(headerLevel, line.length());
+                    elements.push_back(HtmlElement {h, content});
+                    count += 1;
+                    continue;
+                }
+                int length = line.length();
+                if (code && line != "```") {
+                    codeText += "<br>" + line;
+                    continue;
+                }
+                if (length >= 3) {
+                    string subStr = line.substr(0, 2);
+                    string subStr1 = line.substr(0, 3);
+                    if (subStr1 == "```") {
+                        if (code) {
+                            elements.push_back(HtmlElement{"pre", ""});
+                            elements[count].subElements.push_back(HtmlElement{"code", codeText, "class", codeClass});
+                            count += 1;
+                            code = false;
+                            codeText = "";
+                            continue;
+                        }
+                        code = true;
+                        codeClass = line.substr(3, line.length() - 1);
+                        continue;
+                    }
+                    if (length >= 4) {
+                        if (line.substr(0, 4) == "<!--") {
+                            continue;
+                        }
+                    }
+                    if (isdigit(line.at(0)) && line.at(1) == '.') {
+                        string content = "&nbsp; &nbsp; &nbsp;" + line;
+                        elements.push_back(HtmlElement{"p", content, "class", "ol-list-item"});
+                        count += 1;
+                        continue;
+                    }
+                    if (isdigit(line.at(2))) {
+                        if (length > 3) {
+                            if (line.at(3) == '.') {
+                                string content = "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;" + line;
+                                elements.push_back(HtmlElement{"p", content, "class", "ol-list-item"});
+                                count += 1;
+                                continue;
+                            }
+                        }
+                    }
+                    if (subStr == "* " || subStr == "- ") {
+                        string item = line.substr(2, line.length());
+                        item = parseInline(item);
+                        elements.push_back(HtmlElement{"ul", ""});
+                        elements[count].subElements.push_back(HtmlElement{"li", item});
+                        count += 1;
+                        continue;
+                    }
+                    subStr1 = line.substr(0, 4);
+                    if (subStr1 == "  * " || subStr1 == "  - " || subStr == "\t* " || subStr == "\t- ") {
+                        string item;
+                        if (subStr1 == "\t* " || subStr1 == "\t- ") {
+                            item = line.substr(2, line.length());
+                        }
+                        item = line.substr(3, line.length());
+                        item = parseInline(item);
+                        elements.push_back(HtmlElement{"ul", ""});
+                        elements[count].subElements.push_back(HtmlElement{"ul", ""});
+                        elements[count].subElements[0].subElements.push_back(HtmlElement{"li", item});
+                        count += 1;
+                        continue;
+                    }
+                    if (subStr1 == "> > ") {
+                        string quote = line.substr(3, line.length());
+                        if (prevElementIsSame("blockquote", count - 1)) {
+                            count -= 1;
+                            elements[count].subElements.push_back(HtmlElement{"blockquote", quote});
+                            count += 1;
+                            continue;
+                        }
+                        elements.push_back(HtmlElement{"blockquote", ""});
+                        elements[count].subElements.push_back(HtmlElement{"blockquote", quote});
+                        count += 1;
+                        continue;
+                    }
+                    if (subStr == "> ") {
+                        string quote = line.substr(2, line.length());
+                        int subCount = elements[count - 1].subElements.size();
+                        if (prevElementIsSame("blockquote", count - 1) && subCount == 0) {
+                            count -= 1;
+                            quote = popLastElementContent(count) + "<br />" + quote;
+                        }
+                        elements.push_back(HtmlElement{"blockquote", quote});
+                        count += 1;
+                        continue;
+                    }                    
+                    if (subStr == "![" && line.at(line.length() - 1) == ')') {
+                        string inlineText = getStringBetweenDelimiters(line, "[", "]");
+                        string link = getStringBetweenDelimiters(line, "(", ")");
+                        if (link.length() > 0) {
+                            elements.push_back(HtmlElement{"p", ""});
+                            elements.push_back(HtmlElement{"img", inlineText, "src", link});
+                            count += 2;
+                        }
+                        continue;
+                    }                                       
+                }
+                string content = parseInline(line);
+                if (emptyLineCount < 2) {
+                    if (prevElementIsSame("p", count - 1)) {
+                        count -= 1;
+                        content = popLastElementContent(count) + "<br />" + content;
+                    }
                 }
                 elements.push_back(HtmlElement{"p", content});
-                prevIsPara = true;
-                prevIsQuote = false;
-                content = "";
                 count += 1;
+                emptyLineCount = 1;
             }
-            if (blockquoteBegin) {
-                if (prevIsQuote && (lineCount == 0)) {
-                    tempQuote = elements[count - 1].content + "<br />" + tempQuote;
-                    elements.pop_back();
-                    count -= 1;
-                }
-                elements.push_back(HtmlElement {"blockquote", tempQuote});
-                blockquoteBegin = false;
-                count += 1;
-                prevIsQuote = true;
-                tempQuote = "";
-            }
-            if (bolded) {
-                elements.push_back(HtmlElement{"span", "</strong>"});
-                bolded = false;
-                count += 1;
-            }
-            if (italicized) {
-                elements.push_back(HtmlElement{"span", "</em>"});
-                italicized = false;
-                count += 1;
-            }
-            lineCount = 0;
         }
-    }
 
     vector<HtmlElement> getElements() {
         if (elements.size() > 0) {
