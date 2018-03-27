@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets sql
+QT       += core gui widgets webenginewidgets sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -29,12 +29,15 @@ SOURCES += \
     stringparser.cpp \
     htmlelement.cpp \
     newnotewindow.cpp \
-    database.cpp
+    database.cpp \
+    newwebenginenotewindow.cpp
 
 HEADERS += \
         mainwindow.h \
-    newnotewindow.h
+    newnotewindow.h \
+    newwebenginenotewindow.h
 
 FORMS += \
         mainwindow.ui \
-    newnotewindow.ui
+    newnotewindow.ui \
+    newwebenginenotewindow.ui

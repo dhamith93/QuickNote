@@ -260,17 +260,7 @@ public:
                         elements.push_back(HtmlElement{"p", content, "class", "ol-list-item"});
                         count += 1;
                         continue;
-                    }
-                    if (isdigit(line.at(2))) {
-                        if (length > 3) {
-                            if (line.at(3) == '.') {
-                                string content = "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;" + line;
-                                elements.push_back(HtmlElement{"p", content, "class", "ol-list-item"});
-                                count += 1;
-                                continue;
-                            }
-                        }
-                    }
+                    }                    
                     if (subStr == "* " || subStr == "- ") {
                         string item = line.substr(2, line.length());
                         item = parseInline(item);
@@ -279,20 +269,31 @@ public:
                         count += 1;
                         continue;
                     }
-                    subStr1 = line.substr(0, 4);
-                    if (subStr1 == "  * " || subStr1 == "  - " || subStr == "\t* " || subStr == "\t- ") {
-                        string item;
-                        if (subStr1 == "\t* " || subStr1 == "\t- ") {
-                            item = line.substr(2, line.length());
+                    if (length >= 5) {
+                        subStr1 = line.substr(0, 6);
+                        if (subStr1 == "    * " || subStr1 == "    - " || subStr == "\t* " || subStr == "\t- ") {
+                            string item;
+                            if (subStr1 == "\t* " || subStr1 == "\t- ") {
+                                item = line.substr(2, line.length());
+                            }
+                            item = line.substr(5, line.length());
+                            item = parseInline(item);
+                            elements.push_back(HtmlElement{"ul", ""});
+                            elements[count].subElements.push_back(HtmlElement{"ul", ""});
+                            elements[count].subElements[0].subElements.push_back(HtmlElement{"li", item});
+                            count += 1;
+                            continue;
                         }
-                        item = line.substr(3, line.length());
-                        item = parseInline(item);
-                        elements.push_back(HtmlElement{"ul", ""});
-                        elements[count].subElements.push_back(HtmlElement{"ul", ""});
-                        elements[count].subElements[0].subElements.push_back(HtmlElement{"li", item});
-                        count += 1;
-                        continue;
+                        if (isdigit(line.at(4))) {
+                            if (line.at(5) == '.') {
+                                string content = "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;" + line;
+                                elements.push_back(HtmlElement{"p", content, "class", "ol-list-item"});
+                                count += 1;
+                                continue;
+                            }
+                        }
                     }
+                    subStr1 = line.substr(0, 4);
                     if (subStr1 == "> > ") {
                         string quote = line.substr(3, line.length());
                         if (prevElementIsSame("blockquote", count - 1)) {
@@ -308,10 +309,12 @@ public:
                     }
                     if (subStr == "> ") {
                         string quote = line.substr(2, line.length());
-                        int subCount = elements[count - 1].subElements.size();
-                        if (prevElementIsSame("blockquote", count - 1) && subCount == 0) {
-                            count -= 1;
-                            quote = popLastElementContent(count) + "<br />" + quote;
+                        if (count > 0) {
+                            int subCount = elements[count - 1].subElements.size();
+                            if (prevElementIsSame("blockquote", count - 1) && subCount == 0) {
+                                count -= 1;
+                                quote = popLastElementContent(count) + "<br />" + quote;
+                            }
                         }
                         elements.push_back(HtmlElement{"blockquote", quote});
                         count += 1;

@@ -24,33 +24,44 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::on_btnNewNote_clicked() {
-    newNote = new NewNoteWindow(this, "");
-    newNote->show();
+    if (webEnginePreviewChecked) {
+        newWebEngineNote = new NewWebEngineNoteWindow(this, "");
+        newWebEngineNote->show();
+    } else {
+        newNote = new NewNoteWindow(this, "");
+        newNote->show();
+    }
+    this->hide();
 }
 
 void MainWindow::on_btnOpenNote_clicked() {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), QDir::homePath(), tr("Markdown (*.md)"));
     if (fileName.size() > 0) {
-        newNote = new NewNoteWindow(this, fileName.toUtf8().constData());
-        newNote->show();
+        if (webEnginePreviewChecked) {
+            newWebEngineNote = new NewWebEngineNoteWindow(this, fileName.toUtf8().constData());
+            newWebEngineNote->show();
+        } else {
+            newNote = new NewNoteWindow(this, fileName.toUtf8().constData());
+            newNote->show();
+        }
+        this->hide();
     }
 }
 
 void MainWindow::closeEvent (QCloseEvent *event) {
-    if (newNote != NULL) {
-        if (newNote->isVisible()) {
-            QMessageBox msgBox;
-            msgBox.setText("You have editor window(s) open. Close them first.");
-            msgBox.exec();
-            event->ignore();
-        }
-    }
+
 }
 
 void MainWindow::on_listRecent_itemClicked(QListWidgetItem *item) {
     try {
-        newNote = new NewNoteWindow(this, item->text().toUtf8().constData());
-        newNote->show();
+        if (webEnginePreviewChecked) {
+            newWebEngineNote = new NewWebEngineNoteWindow(this, item->text().toUtf8().constData());
+            newWebEngineNote->show();
+        } else {
+            newNote = new NewNoteWindow(this, item->text().toUtf8().constData());
+            newNote->show();
+        }
+        this->hide();
     } catch (std::exception ex) {
         QMessageBox msgBox;
         msgBox.setText("Can't find the file!");
@@ -65,4 +76,12 @@ void MainWindow::on_listRecent_itemClicked(QListWidgetItem *item) {
             }
         }
     }
+}
+
+void MainWindow::on_chkWebEnginePreview_stateChanged(int arg1) {
+    if (ui->chkWebEnginePreview->isChecked()) {
+        webEnginePreviewChecked = true;
+        return;
+    }
+    webEnginePreviewChecked = false;
 }
