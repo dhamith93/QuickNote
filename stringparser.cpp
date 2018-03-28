@@ -6,11 +6,7 @@
 #include "htmlelement.cpp"
 using namespace std;
 
-#ifdef _WIN32
-    #define NEWLINE '\r\n'
-#else
-    #define NEWLINE '\n'
-#endif
+#define NEWLINE '\n'
 
 class StringParser {
 private:
@@ -194,7 +190,7 @@ private:
             }
             if (strikedOut || bolded || italicized) {
                 string str = (strikedOut) ? "s" : (bolded) ? "strong" : "em";
-                content += "<span></" + str + ">";
+                content += "<span></" + str + ">" + "</span>";
             }
             return content;
         }
@@ -256,8 +252,9 @@ public:
                         }
                     }
                     if (isdigit(line.at(0)) && line.at(1) == '.') {
-                        string content = "&nbsp; &nbsp; &nbsp;" + line;
-                        elements.push_back(HtmlElement{"p", content, "class", "ol-list-item"});
+                        string item = parseInline(line);
+                        elements.push_back(HtmlElement{"ol", ""});
+                        elements[count].subElements.push_back(HtmlElement{"li", item, "style", "list-style-type: none;"});
                         count += 1;
                         continue;
                     }                    
@@ -269,14 +266,31 @@ public:
                         count += 1;
                         continue;
                     }
-                    if (length >= 5) {
+                    if (subStr == "\t*" || subStr == "\t-") {
+                        string item = line.substr(2, line.length());
+                        item = parseInline(item);
+                        elements.push_back(HtmlElement{"ul", ""});
+                        elements[count].subElements.push_back(HtmlElement{"ul", ""});
+                        elements[count].subElements[0].subElements.push_back(HtmlElement{"li", item});
+                        count += 1;
+                        continue;
+                    }
+                    if (line.at(0) == '\t' && isdigit(line.at(1))) {
+                        if ((isdigit(line.at(2)) && line.at(3) == '.') || line.at(2) == '.') {
+                            string item = line.substr(1, line.length());
+                            item = parseInline(item);
+                            elements.push_back(HtmlElement{"ol", ""});
+                            elements[count].subElements.push_back(HtmlElement{"ol", ""});
+                            elements[count].subElements[0].subElements.push_back(HtmlElement{"li", item, "style", "list-style-type: none;"});
+                            count += 1;
+                            continue;
+                        }
+                    }
+                    if (length >= 7) {
                         subStr1 = line.substr(0, 6);
-                        if (subStr1 == "    * " || subStr1 == "    - " || subStr == "\t* " || subStr == "\t- ") {
-                            string item;
-                            if (subStr1 == "\t* " || subStr1 == "\t- ") {
-                                item = line.substr(2, line.length());
-                            }
-                            item = line.substr(5, line.length());
+                        subStr = line.substr(0, 3);
+                        if (subStr1 == "    * " || subStr1 == "    - ") {
+                            string item = line.substr(5, line.length());
                             item = parseInline(item);
                             elements.push_back(HtmlElement{"ul", ""});
                             elements[count].subElements.push_back(HtmlElement{"ul", ""});
@@ -285,9 +299,11 @@ public:
                             continue;
                         }
                         if (isdigit(line.at(4))) {
-                            if (line.at(5) == '.') {
-                                string content = "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;" + line;
-                                elements.push_back(HtmlElement{"p", content, "class", "ol-list-item"});
+                            if (line.at(5) == '.' || (isdigit(line.at(4)) && line.at(6) == '.' )) {
+                                string item = parseInline(line);
+                                elements.push_back(HtmlElement{"ol", ""});
+                                elements[count].subElements.push_back(HtmlElement{"ol", ""});
+                                elements[count].subElements[0].subElements.push_back(HtmlElement{"li", item, "style", "list-style-type: none;"});
                                 count += 1;
                                 continue;
                             }

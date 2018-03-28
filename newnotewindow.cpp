@@ -7,7 +7,7 @@
 #include <QCloseEvent>
 
 #ifdef _WIN32
-    #define PANDOC_PATH "pandoc.exe"
+    #define PANDOC_PATH "pandoc"
     #define RM_COMMAND "del"
     #define OS "windows"
 #elif __linux__
@@ -32,6 +32,8 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
     ui(new Ui::NewNoteWindow) {
     ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose);
+    QFontMetrics metrics = ui->txtInput->fontMetrics();
+    ui->txtInput->setTabStopWidth(8 * metrics.width(' '));
     ui->actionPreview->setChecked(true);
     Database db;
     if (db.fontConfigExists()) {
@@ -150,9 +152,9 @@ void NewNoteWindow::closeEvent (QCloseEvent *event) {
             event->ignore();
         } else {
             event->accept();
+            this->close();
         }
     }
-    ((QWidget*)parent())->show();
 }
 
 void NewNoteWindow::setText(string &content) {

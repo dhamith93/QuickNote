@@ -7,7 +7,7 @@
 #include <QCloseEvent>
 
 #ifdef _WIN32
-    #define PANDOC_PATH "pandoc.exe"
+    #define PANDOC_PATH "pandoc"
     #define RM_COMMAND "del"
     #define OS "windows"
 #elif __linux__
@@ -32,6 +32,8 @@ NewWebEngineNoteWindow::NewWebEngineNoteWindow(QWidget *parent, string filePath)
     ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose);
     ui->txtInput->setStyleSheet("background-color: black; color:white;");
+    QFontMetrics metrics = ui->txtInput->fontMetrics();
+    ui->txtInput->setTabStopWidth(8 * metrics.width(' '));
     ui->previewWindow->hide();
     ui->actionPreview->setChecked(false);
     Database db;
@@ -138,10 +140,10 @@ void NewWebEngineNoteWindow::closeEvent (QCloseEvent *event) {
         } else if (resBtn == QMessageBox::Cancel) {
             event->ignore();
         } else {
-            event->accept();            
+            event->accept();
+            this->close();
         }
     }
-    ((QWidget*)parent())->show();
 }
 
 void NewWebEngineNoteWindow::setText(string &content) {

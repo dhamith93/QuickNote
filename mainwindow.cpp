@@ -25,26 +25,24 @@ MainWindow::~MainWindow() {
 
 void MainWindow::on_btnNewNote_clicked() {
     if (webEnginePreviewChecked) {
-        newWebEngineNote = new NewWebEngineNoteWindow(this, "");
+        newWebEngineNote = new NewWebEngineNoteWindow(NULL, "");
         newWebEngineNote->show();
     } else {
-        newNote = new NewNoteWindow(this, "");
+        newNote = new NewNoteWindow(NULL, "");
         newNote->show();
     }
-    this->hide();
 }
 
 void MainWindow::on_btnOpenNote_clicked() {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), QDir::homePath(), tr("Markdown (*.md)"));
     if (fileName.size() > 0) {
         if (webEnginePreviewChecked) {
-            newWebEngineNote = new NewWebEngineNoteWindow(this, fileName.toUtf8().constData());
+            newWebEngineNote = new NewWebEngineNoteWindow(NULL, fileName.toUtf8().constData());
             newWebEngineNote->show();
         } else {
-            newNote = new NewNoteWindow(this, fileName.toUtf8().constData());
+            newNote = new NewNoteWindow(NULL, fileName.toUtf8().constData());
             newNote->show();
         }
-        this->hide();
     }
 }
 
@@ -55,13 +53,13 @@ void MainWindow::closeEvent (QCloseEvent *event) {
 void MainWindow::on_listRecent_itemClicked(QListWidgetItem *item) {
     try {
         if (webEnginePreviewChecked) {
-            newWebEngineNote = new NewWebEngineNoteWindow(this, item->text().toUtf8().constData());
+            newWebEngineNote = new NewWebEngineNoteWindow(NULL, item->text().toUtf8().constData());
             newWebEngineNote->show();
+            newWebEngineNote->activateWindow();
         } else {
-            newNote = new NewNoteWindow(this, item->text().toUtf8().constData());
+            newNote = new NewNoteWindow(NULL, item->text().toUtf8().constData());
             newNote->show();
         }
-        this->hide();
     } catch (std::exception ex) {
         QMessageBox msgBox;
         msgBox.setText("Can't find the file!");
