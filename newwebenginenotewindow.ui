@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>New Note</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>QuickNote_icon.ico</normaloff>QuickNote_icon.ico</iconset>
+  </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>false</bool>
   </property>

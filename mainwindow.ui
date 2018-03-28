@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>QuickNote</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>QuickNote_icon.icns</normaloff>QuickNote_icon.icns</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>

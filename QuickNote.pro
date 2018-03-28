@@ -10,6 +10,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = QuickNote
 TEMPLATE = app
+win32:RC_ICONS += icons/QuickNote_icon.ico
+ICON = icons/QuickNote_icon.icns
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
