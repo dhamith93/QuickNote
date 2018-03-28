@@ -79,9 +79,18 @@ private:
             int aCount = 0, tCount = 0, charCount = 0, startPos = 0, endPos = 0;
             string content = "", tempLink, tempText;
             bool isLinkStart = false, isLinkFinished = false, isTextStart = false, isTextFinished = false,
-                italicized = false, bolded = false, strikedOut = false, code = false;
+                italicized = false, bolded = false, strikedOut = false, code = false, escape = false;
             for (auto& c : line) {
                 charCount += 1;
+                if (escape) {
+                    content += c;
+                    escape = false;
+                    continue;
+                }
+                if (c == '\\') {
+                    escape = true;
+                    continue;
+                }
                 if (c == '*') {
                     aCount += 1;
                 } else if (c == '~') {                    
@@ -204,7 +213,11 @@ public:
                 throw invalid_argument("No elements in the list");
             }
             for (auto& line : lineArray) {
-                if (line == "" && !code) {
+                if (code && line != "```") {
+                    codeText += "<br>" + line;
+                    continue;
+                }
+                if (line == "") {
                     emptyLineCount += 1;
                     if (emptyLineCount >= 2) {
                         elements.push_back(HtmlElement {"br", ""});
@@ -212,12 +225,12 @@ public:
                     }
                     continue;
                 }
-                if (!code && (line == "---" || line == "___")) {
+                if (line == "---" || line == "___") {
                     elements.push_back(HtmlElement {"hr", ""});
                     count += 1;
                     continue;
                 }
-                if (!code && line.at(0) == '#') {
+                if (line.at(0) == '#') {
                     int headerLevel = getCharCount(line, '#');
                     string h = "h" + to_string(headerLevel);
                     string content = line.substr(headerLevel, line.length());
@@ -225,11 +238,7 @@ public:
                     count += 1;
                     continue;
                 }
-                int length = line.length();
-                if (code && line != "```") {
-                    codeText += "<br>" + line;
-                    continue;
-                }
+                int length = line.length();                
                 if (length >= 3) {
                     string subStr = line.substr(0, 2);
                     string subStr1 = line.substr(0, 3);
