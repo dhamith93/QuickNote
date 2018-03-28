@@ -115,6 +115,7 @@ ___</string>
      <string>Export</string>
     </property>
     <addaction name="actionHTML"/>
+    <addaction name="actionPDF"/>
     <addaction name="actionDOCX"/>
    </widget>
    <addaction name="menuFile"/>
@@ -152,6 +153,14 @@ ___</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionPDF">
+   <property name="text">
+    <string>PDF</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+P</string>
    </property>
   </action>
  </widget>

@@ -78,17 +78,26 @@ void NewWebEngineNoteWindow::on_actionHTML_triggered() {
     saveHtml();
 }
 
+void NewWebEngineNoteWindow::on_actionPDF_triggered() {
+    string input = ui->txtInput->toPlainText().toUtf8().constData();
+    if (input.size() > 0) {
+        setText(input);
+        QString qsPath = QFileDialog::getSaveFileName(this, tr("Export File"), QDir::homePath(), tr("PDF (*.pdf)"));
+        ui->previewWindow->page()->printToPdf(qsPath);
+    }
+}
+
 void NewWebEngineNoteWindow::on_actionDOCX_triggered() {
     QString qsPath = QFileDialog::getSaveFileName(this, tr("Export File"), QDir::homePath(), tr("docx (*.docx)"));
     QString qsTempPath = qsPath + QString::fromStdString(".md");
     string path = qsPath.toUtf8().constData();
     string tempPath = qsTempPath.toUtf8().constData();
-    saveFile(tempPath);
-    tempPath = "\"" + tempPath + "\"";
-    path = " \"" + path + "\"";
+    saveFile(tempPath);    
     string command = (string)PANDOC_PATH + " -s " + tempPath + " -o" + path;
     try {
         if (path != "") {
+            tempPath = "\"" + tempPath + "\"";
+            path = " \"" + path + "\"";
             system(command.c_str());
             if (OS == "windows") {
                 qsTempPath = QDir::toNativeSeparators(qsTempPath);

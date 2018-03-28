@@ -39,6 +39,8 @@ class NewWebEngineNoteWindow : public QMainWindow
 
         void on_actionPreview_changed();
 
+        void on_actionPDF_triggered();
+
     private:
         Ui::NewWebEngineNoteWindow *ui;
         QString fileName;

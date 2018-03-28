@@ -323,6 +323,7 @@ public:
                         count += 1;
                         continue;
                     }
+                    subStr = line.substr(0, 2);
                     if (subStr == "> ") {
                         string quote = line.substr(2, line.length());
                         if (count > 0) {
