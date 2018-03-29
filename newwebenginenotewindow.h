@@ -2,6 +2,7 @@
 #define NEWWEBENGINENOTEWINDOW_H
 
 #include <QMainWindow>
+#include "database.h"
 
 namespace Ui {
     class NewWebEngineNoteWindow;
@@ -44,6 +45,7 @@ class NewWebEngineNoteWindow : public QMainWindow
     private:
         Ui::NewWebEngineNoteWindow *ui;
         QString fileName;
+        Database db;
         bool fileSaved = false;
         bool fromOpen = false;
         int changeCount = 0;

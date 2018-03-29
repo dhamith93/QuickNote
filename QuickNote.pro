@@ -37,7 +37,8 @@ SOURCES += \
 HEADERS += \
         mainwindow.h \
     newnotewindow.h \
-    newwebenginenotewindow.h
+    newwebenginenotewindow.h \
+    database.h
 
 FORMS += \
         mainwindow.ui \

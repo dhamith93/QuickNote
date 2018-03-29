@@ -2,7 +2,6 @@
 #include "ui_newwebenginenotewindow.h"
 #include <QtWidgets>
 #include "stringparser.cpp"
-#include "database.cpp"
 #include <fstream>
 #include <QCloseEvent>
 
@@ -36,7 +35,6 @@ NewWebEngineNoteWindow::NewWebEngineNoteWindow(QWidget *parent, string filePath)
     ui->txtInput->setTabStopWidth(8 * metrics.width(' '));
     ui->previewWindow->hide();
     ui->actionPreview->setChecked(false);
-    Database db;
     if (db.fontConfigExists()) {
         QFont font;
         font.fromString(db.getFontConfig());
@@ -115,11 +113,12 @@ void NewWebEngineNoteWindow::on_actionDOCX_triggered() {
 }
 
 void NewWebEngineNoteWindow::on_actionChange_Font_triggered() {
-    bool ok;
-    QFont font = QFontDialog::getFont(&ok);
-    Database db;
-    db.insertFontConfig(font.toString());
-    ui->txtInput->setFont(font);
+    bool changed;
+    QFont font = QFontDialog::getFont(&changed);
+    if (changed) {
+        db.insertFontConfig(font.toString());
+        ui->txtInput->setFont(font);
+    }
 }
 
 void NewWebEngineNoteWindow::on_actionPreview_changed() {
@@ -173,16 +172,15 @@ void NewWebEngineNoteWindow::saveFile() {
     if (!fromOpen) {
         fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::homePath(), tr("Markdown (*.md)"));
     }
-    try {
-        ofstream out(fileName.toUtf8().constData());
-        string output = ui->txtInput->toPlainText().toUtf8().constData();
-        out << output;
-        out.close();
+    try {        
         if (!fileName.isEmpty()) {
+            ofstream out(fileName.toUtf8().constData());
+            string output = ui->txtInput->toPlainText().toUtf8().constData();
+            out << output;
+            out.close();
             fileSaved = true;
             fromOpen = true;
             setWindowTitle(fileName);
-            Database db;
             if (!db.checkIfExists(fileName)) {
                 if (db.checkRowCountEq(10)) {
                     db.deleteOldest();

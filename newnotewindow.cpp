@@ -2,7 +2,6 @@
 #include "ui_newnotewindow.h"
 #include <QtWidgets>
 #include "stringparser.cpp"
-#include "database.cpp"
 #include <fstream>
 #include <QCloseEvent>
 
@@ -35,7 +34,6 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
     QFontMetrics metrics = ui->txtInput->fontMetrics();
     ui->txtInput->setTabStopWidth(8 * metrics.width(' '));
     ui->actionPreview->setChecked(true);
-    Database db;
     if (db.fontConfigExists()) {
         QFont font;
         font.fromString(db.getFontConfig());
@@ -93,12 +91,12 @@ void NewNoteWindow::on_actionDOCX_triggered() {
     QString qsTempPath = qsPath + QString::fromStdString(".md");
     string path = qsPath.toUtf8().constData();
     string tempPath = qsTempPath.toUtf8().constData();
-    saveFile(tempPath);
-    tempPath = "\"" + tempPath + "\"";
-    path = " \"" + path + "\"";
+    saveFile(tempPath);    
     string command = (string)PANDOC_PATH + " -s " + tempPath + " -o" + path;
     try {
         if (path != "") {
+            tempPath = "\"" + tempPath + "\"";
+            path = " \"" + path + "\"";
             system(command.c_str());
             if (OS == "windows") {
                 qsTempPath = QDir::toNativeSeparators(qsTempPath);
@@ -116,11 +114,12 @@ void NewNoteWindow::on_actionDOCX_triggered() {
 }
 
 void NewNoteWindow::on_actionChange_Font_triggered() {
-    bool ok;
-    QFont font = QFontDialog::getFont(&ok);
-    Database db;
-    db.insertFontConfig(font.toString());
-    ui->txtInput->setFont(font);
+    bool changed;
+    QFont font = QFontDialog::getFont(&changed);
+    if (changed) {
+        db.insertFontConfig(font.toString());
+        ui->txtInput->setFont(font);
+    }
 }
 
 void NewNoteWindow::on_actionPreview_changed() {
@@ -183,16 +182,15 @@ void NewNoteWindow::saveFile() {
     if (!fromOpen) {
         fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::homePath(), tr("Markdown (*.md)"));
     }
-    try {
-        ofstream out(fileName.toUtf8().constData());
-        string output = ui->txtInput->toPlainText().toUtf8().constData();
-        out << output;
-        out.close();
+    try {        
         if (!fileName.isEmpty()) {
+            ofstream out(fileName.toUtf8().constData());
+            string output = ui->txtInput->toPlainText().toUtf8().constData();
+            out << output;
+            out.close();
             fileSaved = true;
             fromOpen = true;
-            setWindowTitle(fileName);            
-            Database db;
+            setWindowTitle(fileName);
             if (!db.checkIfExists(fileName)) {
                 if (db.checkRowCountEq(10)) {
                     db.deleteOldest();

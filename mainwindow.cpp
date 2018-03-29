@@ -4,7 +4,6 @@
 #include <QFileDialog>
 #include <QtWidgets>
 #include <QCloseEvent>
-#include "database.cpp"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -64,7 +63,6 @@ void MainWindow::on_listRecent_itemClicked(QListWidgetItem *item) {
         QMessageBox msgBox;
         msgBox.setText("Can't find the file!");
         msgBox.exec();
-        Database db;
         db.deletePath(item->text().toUtf8().constData());
         QVector<QString> recentPaths = db.getRecents();
         ui->listRecent->clear();
