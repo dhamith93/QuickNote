@@ -31,8 +31,6 @@ NewWebEngineNoteWindow::NewWebEngineNoteWindow(QWidget *parent, string filePath)
     ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose);
     ui->txtInput->setStyleSheet("background-color: black; color:white;");
-    QFontMetrics metrics = ui->txtInput->fontMetrics();
-    ui->txtInput->setTabStopWidth(8 * metrics.width(' '));
     ui->previewWindow->hide();
     ui->actionPreview->setChecked(false);
     if (db.fontConfigExists()) {

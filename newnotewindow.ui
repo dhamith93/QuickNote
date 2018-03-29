@@ -84,6 +84,9 @@ You also can add inline codes: `System.out.println(&quot;Hi!&quot;);`
 
 ___</string>
       </property>
+      <property name="tabStopWidth">
+       <number>40</number>
+      </property>
      </widget>
     </item>
     <item>

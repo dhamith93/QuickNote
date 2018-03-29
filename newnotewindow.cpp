@@ -31,8 +31,6 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
     ui(new Ui::NewNoteWindow) {
     ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose);
-    QFontMetrics metrics = ui->txtInput->fontMetrics();
-    ui->txtInput->setTabStopWidth(8 * metrics.width(' '));
     ui->actionPreview->setChecked(true);
     if (db.fontConfigExists()) {
         QFont font;
