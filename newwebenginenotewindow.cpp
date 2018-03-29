@@ -54,12 +54,17 @@ NewWebEngineNoteWindow::NewWebEngineNoteWindow(QWidget *parent, string filePath)
             }
             db.insertNote(fileName);
         }
+    } else {
+        setWindowModified(true);
     }
 }
 
 void NewWebEngineNoteWindow::on_txtInput_textChanged() {
     changeCount += 1;
     fileSaved = (fromOpen) ? (changeCount == 1) ? true : false : false;
+    if (!fileSaved) {
+        setWindowModified(true);
+    }
     string input = ui->txtInput->toPlainText().toUtf8().constData();
     if (input.size() > 0 && ui->actionPreview->isChecked()) {
         setText(input);
@@ -178,6 +183,7 @@ void NewWebEngineNoteWindow::saveFile() {
             out.close();
             fileSaved = true;
             fromOpen = true;
+            setWindowModified(false);
             setWindowTitle(fileName);
             if (!db.checkIfExists(fileName)) {
                 if (db.checkRowCountEq(10)) {

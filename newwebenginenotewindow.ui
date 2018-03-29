@@ -40,6 +40,9 @@
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QPlainTextEdit" name="txtInput">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
        <property name="plainText">
         <string># Header level 1
 ## Header level 2

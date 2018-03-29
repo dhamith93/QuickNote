@@ -32,6 +32,7 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
     ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose);
     ui->actionPreview->setChecked(true);
+    ui->txtInput->setStyleSheet("background-color: black; color:white;");
     if (db.fontConfigExists()) {
         QFont font;
         font.fromString(db.getFontConfig());
@@ -55,6 +56,7 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
             db.insertNote(fileName);
         }
     } else {
+        setWindowModified(true);
         string input = ui->txtInput->toPlainText().toUtf8().constData();
         if (input.size() > 0) {
             setText(input);
@@ -65,6 +67,9 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
 void NewNoteWindow::on_txtInput_textChanged() {
     changeCount += 1;
     fileSaved = (fromOpen) ? (changeCount == 1) ? true : false : false;
+    if (!fileSaved) {
+        setWindowModified(true);
+    }
     string input = ui->txtInput->toPlainText().toUtf8().constData();
     if (input.size() > 0 && ui->actionPreview->isChecked()) {
         setText(input);
@@ -188,6 +193,7 @@ void NewNoteWindow::saveFile() {
             out.close();
             fileSaved = true;
             fromOpen = true;
+            setWindowModified(false);
             setWindowTitle(fileName);
             if (!db.checkIfExists(fileName)) {
                 if (db.checkRowCountEq(10)) {
