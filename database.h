@@ -35,6 +35,12 @@ class Database {
         bool insertFontConfig(const QString& font);
 
         QString getFontConfig();
+
+        bool colorConfigExists();
+
+        bool insertColorConfig(const QString& color, const QString& color1,  const QString type);
+
+        QString getColorConfig(const QString type);
 };
 
 

@@ -2,11 +2,12 @@
 
 ![QuickNote](icons/QuickNote_icon.png)
 
-QuickNote is a simple note app that uses subset of markdown syntax for formatting. It can save your notes in markdown format and export them to html, pdf or docx format. QuickNote uses pandoc for docx exports. There is syntax highlighting in exported html and WebEngine preview thanks to [highlight.js](https://highlightjs.org). Internet connection required to syntax highlighting to be activated on exported html file or WebEngine preview.
+QuickNote is a simple note app that uses subset of markdown syntax for formatting. It can save your notes in markdown format and export them to html, pdf or docx format. QuickNote uses pandoc for docx exports and wkhtmltopdf for pdf exports. There is syntax highlighting in exported/pretty previewed html thanks to [highlight.js](https://highlightjs.org). Internet connection required to syntax highlighting to be activated on exported/pretty previewed html file.
 
 ### Features
 - Markdown Formatting
-- Live Preview
+- Live Preview [basic html]
+- Pretty Preview [html+css+js]
 - Export to HTML, PDF and docx
 - Save as .md
 - Recent note list
@@ -26,9 +27,10 @@ QuickNote is a simple note app that uses subset of markdown syntax for formattin
 - [x] Export
   - [x] HTML
   - [x] DOCX
-  - [x] PDF (On webEnginePreview)
+  - [x] PDF
 - [x] Syntax highlighting in exported HTML
-- [x] WebEngine Preview with full HTML+CSS support
+- [x] ~~WebEngine Preview with full HTML+CSS support~~
+- [x] Pretty Preview with default browser
 - [ ] Categories/Tags ? 
 
 ### Screenshots
@@ -37,5 +39,3 @@ QuickNote is a simple note app that uses subset of markdown syntax for formattin
 ![](screenshots/MainWindow.png)
 
 ![](screenshots/NewNoteWindow.png)
-
-![](screenshots/WebEnginePreview.png)

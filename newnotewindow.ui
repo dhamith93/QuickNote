@@ -32,9 +32,13 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="QPlainTextEdit" name="txtInput">
-      <property name="plainText">
-       <string># Header level 1
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QPlainTextEdit" name="txtInput">
+       <property name="plainText">
+        <string># Header level 1
 ## Header level 2
 ### Header level 3
 #### Header level 4
@@ -83,21 +87,23 @@ You also can add inline codes: `System.out.println(&quot;Hi!&quot;);`
 ```
 
 ___</string>
-      </property>
-      <property name="tabStopWidth">
-       <number>40</number>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QTextBrowser" name="previewWindow">
-      <property name="html">
-       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+       </property>
+       <property name="tabStopWidth">
+        <number>40</number>
+       </property>
+      </widget>
+      <widget class="QTextBrowser" name="previewWindow">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="html">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.SF NS Text'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -118,15 +124,25 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionSave"/>
     <addaction name="actionChange_Font"/>
     <addaction name="actionPreview"/>
+    <addaction name="actionPretty_Preview"/>
    </widget>
    <widget class="QMenu" name="menuExport">
     <property name="title">
      <string>Export</string>
     </property>
     <addaction name="actionHTML"/>
+    <addaction name="actionPDF"/>
     <addaction name="actionDOCX"/>
    </widget>
+   <widget class="QMenu" name="menuEditor_Theme">
+    <property name="title">
+     <string>Editor Theme</string>
+    </property>
+    <addaction name="actionSet_Background_Color"/>
+    <addaction name="actionSet_Font_Color"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEditor_Theme"/>
    <addaction name="menuExport"/>
   </widget>
   <action name="actionSave">
@@ -147,7 +163,7 @@ p, li { white-space: pre-wrap; }
     <string>DOCX</string>
    </property>
    <property name="toolTip">
-    <string>DOCX</string>
+    <string>Requires pandoc</string>
    </property>
   </action>
   <action name="actionChange_Font">
@@ -164,6 +180,29 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionPretty_Preview">
+   <property name="text">
+    <string>Pretty Preview</string>
+   </property>
+  </action>
+  <action name="actionPDF">
+   <property name="text">
+    <string>PDF</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+P</string>
+   </property>
+  </action>
+  <action name="actionSet_Background_Color">
+   <property name="text">
+    <string>Set Background Color</string>
+   </property>
+  </action>
+  <action name="actionSet_Font_Color">
+   <property name="text">
+    <string>Set Font Color</string>
    </property>
   </action>
  </widget>

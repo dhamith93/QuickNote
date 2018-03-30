@@ -31,6 +31,8 @@ class NewNoteWindow : public QMainWindow {
 
         void saveHtml();
 
+        QString tempSaveHtml();
+
         void closeEvent (QCloseEvent *event);
 
         void on_actionSave_triggered();
@@ -42,6 +44,16 @@ class NewNoteWindow : public QMainWindow {
         void on_actionChange_Font_triggered();
 
         void on_actionPreview_changed();
+
+        void on_actionPretty_Preview_triggered();
+
+        void on_actionSet_Background_Color_triggered();
+
+        void on_actionSet_Font_Color_triggered();
+
+        void setColor(QColor color1, QString type);
+
+        void on_actionPDF_triggered();
 
     private:
         Ui::NewNoteWindow *ui;

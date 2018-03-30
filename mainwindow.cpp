@@ -23,25 +23,15 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::on_btnNewNote_clicked() {
-    if (webEnginePreviewChecked) {
-        newWebEngineNote = new NewWebEngineNoteWindow(NULL, "");
-        newWebEngineNote->show();
-    } else {
-        newNote = new NewNoteWindow(NULL, "");
-        newNote->show();
-    }
+    newNote = new NewNoteWindow(NULL, "");
+    newNote->show();
 }
 
 void MainWindow::on_btnOpenNote_clicked() {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), QDir::homePath(), tr("Markdown (*.md)"));
     if (fileName.size() > 0) {
-        if (webEnginePreviewChecked) {
-            newWebEngineNote = new NewWebEngineNoteWindow(NULL, fileName.toUtf8().constData());
-            newWebEngineNote->show();
-        } else {
-            newNote = new NewNoteWindow(NULL, fileName.toUtf8().constData());
-            newNote->show();
-        }
+        newNote = new NewNoteWindow(NULL, fileName.toUtf8().constData());
+        newNote->show();
     }
 }
 
@@ -51,14 +41,8 @@ void MainWindow::closeEvent (QCloseEvent *event) {
 
 void MainWindow::on_listRecent_itemClicked(QListWidgetItem *item) {
     try {
-        if (webEnginePreviewChecked) {
-            newWebEngineNote = new NewWebEngineNoteWindow(NULL, item->text().toUtf8().constData());
-            newWebEngineNote->show();
-            newWebEngineNote->activateWindow();
-        } else {
-            newNote = new NewNoteWindow(NULL, item->text().toUtf8().constData());
-            newNote->show();
-        }
+        newNote = new NewNoteWindow(NULL, item->text().toUtf8().constData());
+        newNote->show();
     } catch (std::exception ex) {
         QMessageBox msgBox;
         msgBox.setText("Can't find the file!");
@@ -72,12 +56,4 @@ void MainWindow::on_listRecent_itemClicked(QListWidgetItem *item) {
             }
         }
     }
-}
-
-void MainWindow::on_chkWebEnginePreview_stateChanged(int arg1) {
-    if (ui->chkWebEnginePreview->isChecked()) {
-        webEnginePreviewChecked = true;
-        return;
-    }
-    webEnginePreviewChecked = false;
 }

@@ -8,14 +8,15 @@ Database::Database() {
    dir.mkdir(paths.at(0));
    path += "/notePathDB.db";
    db.setDatabaseName(path);
-
    if (!db.open()) {
       qDebug() << "Error: connection error";
    } else {
        QSqlQuery query;
        query.prepare("CREATE TABLE IF NOT EXISTS notes (path TEXT NOT NULL)");
        query.exec();
-       query.prepare("CREATE TABLE IF NOT EXISTS config (font TEXT NOT NULL)");
+       query.prepare("CREATE TABLE IF NOT EXISTS font_config (font TEXT NOT NULL)");
+       query.exec();
+       query.prepare("CREATE TABLE IF NOT EXISTS color_config (background TEXT NOT NULL, font TEXT NOT NULL)");
        query.exec();
    }
 }
@@ -70,7 +71,7 @@ QVector<QString> Database::getRecents() {
 }
 
 bool Database::fontConfigExists() {
-    QSqlQuery query("SELECT COUNT(*) FROM config");
+    QSqlQuery query("SELECT COUNT(*) FROM font_config");
     query.first();
     int count = query.value(0).toInt();
     return (count > 0);
@@ -79,18 +80,55 @@ bool Database::fontConfigExists() {
 bool Database::insertFontConfig(const QString& font) {
     QSqlQuery query;
     if (fontConfigExists()) {
-        query.prepare("UPDATE config SET font = :font WHERE rowid = 1");
-        query.bindValue(":font", font);
+        query.prepare("UPDATE font_config SET font = :font WHERE rowid = 1");
     } else {
-        query.prepare("INSERT INTO config (font) VALUES (:font)");
-        query.bindValue(":font", font);
+        query.prepare("INSERT INTO font_config (font) VALUES (:font)");
     }
+    query.bindValue(":font", font);
     return query.exec();
 }
 
 QString Database::getFontConfig() {
-    QSqlQuery query("SELECT font FROM config WHERE rowid = 1");
+    QSqlQuery query("SELECT font FROM font_config WHERE rowid = 1");
     query.next();
     return query.value(0).toString();
 }
 
+bool Database::colorConfigExists() {
+    QSqlQuery query("SELECT COUNT(*) FROM color_config");
+    query.first();
+    int count = query.value(0).toInt();
+    return (count > 0);
+}
+
+bool Database::insertColorConfig(const QString& color, const QString& color1,  const QString type) {
+    QSqlQuery query(db);
+    if (colorConfigExists()) {
+        if (type == "background") {
+            query.prepare("UPDATE color_config SET background = :color WHERE rowid = 1");
+        } else {
+            query.prepare("UPDATE color_config SET font = :color WHERE rowid = 1");
+        }
+    } else {
+        if (type == "background") {
+            query.prepare("INSERT INTO color_config (background, font) VALUES (:color, :color1)");
+        } else {
+            query.prepare("INSERT INTO color_config (font, background) VALUES (:color, :color1)");
+        }
+        query.bindValue(":color1", color1);
+    }
+    query.bindValue(":color", color);
+    return query.exec();
+}
+
+QString Database::getColorConfig(const QString type) {
+    QSqlQuery query;
+    if (type == "background") {
+        query.prepare("SELECT background FROM color_config WHERE rowid = 1");
+    } else {
+        query.prepare("SELECT font FROM color_config WHERE rowid = 1");
+    }
+    query.exec();
+    query.next();
+    return query.value(0).toString();
+}

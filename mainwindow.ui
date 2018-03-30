@@ -45,7 +45,7 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>300</height>
+           <height>340</height>
           </size>
          </property>
          <property name="html">
@@ -54,8 +54,10 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.SF NS Text'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; text-decoration: underline;&quot;&gt;Welcome to QuickNote!&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;QuickNote is a simple lightweight note app uses a subset of markdown syntax for formatting. List of all available syntax and how to use them are in the default text when creating a new note. Raw files are saved in md format and it can be exported to html or docx. To export, open/create the note and select Export -&amp;gt; HTML/DOCX from the menu. &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Important: QuickNote uses pandoc to export files to docx. You can find more about pandoc from here: &lt;/span&gt;&lt;span style=&quot; text-decoration: underline;&quot;&gt;https://pandoc.org/&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;QuickNote is a simple lightweight note app uses a subset of markdown syntax for formatting. List of all available syntax and how to use them are in the default text when creating a new note. Raw files are saved in md format and it can be exported to html, pdf or docx. To export, open/create the note and select Export -&amp;gt; HTML/PDF/DOCX from the menu. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Important: QuickNote uses pandoc to export files to docx and wkhtmltopdf to export files to pdf. You can find more about them and install instructions from : &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;gt; &lt;span style=&quot; text-decoration: underline;&quot;&gt;https://pandoc.org/&lt;/span&gt; &lt;/p&gt;
+&lt;p style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;gt; &lt;span style=&quot; text-decoration: underline;&quot;&gt;https://wkhtmltopdf.org&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -69,9 +71,9 @@ p, li { white-space: pre-wrap; }
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
-           <widget class="QCheckBox" name="chkWebEnginePreview">
+           <widget class="QPushButton" name="btnOpenNote">
             <property name="text">
-             <string>WebEngine Preview</string>
+             <string>Open Note</string>
             </property>
            </widget>
           </item>
@@ -87,13 +89,6 @@ p, li { white-space: pre-wrap; }
              </size>
             </property>
            </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="btnOpenNote">
-            <property name="text">
-             <string>Open Note</string>
-            </property>
-           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="btnNewNote">
