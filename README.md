@@ -31,7 +31,7 @@ QuickNote is a simple note app that uses subset of markdown syntax for formattin
 - [x] Syntax highlighting in exported HTML
 - [x] ~~WebEngine Preview with full HTML+CSS support~~
 - [x] Pretty Preview with default browser
-- [x] Categories/Tags ? 
+- [ ] Categories/Tags ? 
 
 ### Screenshots
 
