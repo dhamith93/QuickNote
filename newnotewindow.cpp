@@ -34,7 +34,8 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
     ui(new Ui::NewNoteWindow) {
     ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose);
-    ui->actionPreview->setChecked(true);    
+    //ui->actionPreview->setChecked(false);
+    ui->previewWindow->hide();
     if (db.colorConfigExists()) {
         QString background = db.getColorConfig("background");
         QString color = db.getColorConfig("font");
@@ -154,9 +155,15 @@ void NewNoteWindow::on_actionPreview_changed() {
             setScrollPosition();
         }
         ui->previewWindow->show();
+        int w = this->width();
+        this->setFixedWidth(w * 2);
     } else {
         ui->previewWindow->hide();
+        int w = ui->txtInput->width();
+        this->setFixedWidth(w);
     }
+    this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
+    this->setMinimumSize(0,0);
 }
 
 void NewNoteWindow::on_actionPretty_Preview_triggered() {
@@ -203,9 +210,8 @@ void NewNoteWindow::setText(string &content) {
     StringParser parser;
     parser.parse(content);
     vector<HtmlElement> elements = parser.getElements();
-    string style = "";
     string htmlText = "<!DOCTYPE html>\n<html><head></head>\n<body><style>.markdown-body {box-sizing: border-box;max-width: 980px;"
-                      "margin: 0 auto;} .markdown-body {font-size: 16px;color: #24292e;font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\";font-size: 16px;line-height: 1.5;padding: 100px;}.markdown-body pre, .markdown-body code{ font-size: 14px;} </style><article class=\"markdown-body\">\n";
+                      "margin: 0 auto;}</style><article class=\"markdown-body\">\n";
     for (auto& element : elements) {
         htmlText += element.str();
     }
