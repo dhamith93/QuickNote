@@ -267,11 +267,19 @@ public:
                     count += 1;
                     continue;
                 }
-                if (subStr == "* " || subStr == "- ") {
+                if (subStr == "* " || subStr == "- ") {                    
                     string item = line.substr(2, line.length());
                     item = parseInline(item);
                     elements.push_back(HtmlElement{"ul", ""});
-                    elements[count].subElements.push_back(HtmlElement{"li", item});
+                    if (item.at(0) == '#') {
+                        int headerLevel = getCharCount(item, '#');
+                        string h = 'h' + to_string(headerLevel);
+                        item = item.substr(headerLevel, item.length());
+                        elements[count].subElements.push_back(HtmlElement{"li", ""});
+                        elements[count].subElements[0].subElements.push_back(HtmlElement {h, item});
+                    } else {
+                        elements[count].subElements.push_back(HtmlElement{"li", item});
+                    }
                     count += 1;
                     continue;
                 }

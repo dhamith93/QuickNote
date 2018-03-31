@@ -203,7 +203,9 @@ void NewNoteWindow::setText(string &content) {
     StringParser parser;
     parser.parse(content);
     vector<HtmlElement> elements = parser.getElements();
-    string htmlText = "<!DOCTYPE html>\n<html><head></head>\n<body><style>.markdown-body {box-sizing: border-box;max-width: 980px;margin: 0 auto;padding: 45px;} </style><article class=\"markdown-body\">\n";
+    string style = "";
+    string htmlText = "<!DOCTYPE html>\n<html><head></head>\n<body><style>.markdown-body {box-sizing: border-box;max-width: 980px;"
+                      "margin: 0 auto;} .markdown-body {font-size: 16px;color: #24292e;font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\";font-size: 16px;line-height: 1.5;padding: 100px;}.markdown-body pre, .markdown-body code{ font-size: 14px;} </style><article class=\"markdown-body\">\n";
     for (auto& element : elements) {
         htmlText += element.str();
     }
@@ -264,7 +266,7 @@ void NewNoteWindow::saveHtml() {
         StringParser parser;
         parser.parse(content);
         vector<HtmlElement> elements = parser.getElements();
-        string htmlText = "<!DOCTYPE html>\n<html><head></head>\n<body><style>.markdown-body {box-sizing: border-box;max-width: 980px;margin: 0 auto;padding: 45px;} " + style + " </style><link rel=\"stylesheet\" href=\"http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css\"><article class=\"markdown-body\">\n";
+        string htmlText = "<!DOCTYPE html>\n<html><head></head>\n<body><style>.markdown-body {box-sizing: border-box;max-width: 980px;margin: 0 auto;} " + style + " </style><link rel=\"stylesheet\" href=\"http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css\"><article class=\"markdown-body\">\n";
         for (auto&& element : elements) {
             htmlText += element.str();
         }
@@ -291,7 +293,7 @@ QString NewNoteWindow::tempSaveHtml() {
     StringParser parser;
     parser.parse(content);
     vector<HtmlElement> elements = parser.getElements();
-    string htmlText = "<!DOCTYPE html>\n<html><head></head>\n<body><style>.markdown-body {box-sizing: border-box;max-width: 980px;margin: 0 auto;padding: 45px;} " + style + " </style><link rel=\"stylesheet\" href=\"http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css\"><article class=\"markdown-body\">\n";
+    string htmlText = "<!DOCTYPE html>\n<html><head></head>\n<body><style>.markdown-body {box-sizing: border-box;max-width: 980px;margin: 0 auto;} " + style + " </style><link rel=\"stylesheet\" href=\"http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css\"><article class=\"markdown-body\">\n";
     for (auto&& element : elements) {
         htmlText += element.str();
     }
