@@ -159,8 +159,8 @@ void NewNoteWindow::on_actionPreview_changed() {
         this->setFixedWidth(w * 2);
     } else {
         ui->previewWindow->hide();
-        int w = ui->txtInput->width();
-        this->setFixedWidth(w);
+        int w = this->width();
+        this->setFixedWidth(w / 2);
     }
     this->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
     this->setMinimumSize(0,0);
