@@ -28,6 +28,12 @@ class MainWindow : public QMainWindow
 
         void on_listRecent_itemClicked(QListWidgetItem *item);
 
+        void on_cmbTags_currentTextChanged(const QString &arg1);
+
+        void on_listNotesByTag_itemClicked(QListWidgetItem *item);
+
+        bool event(QEvent *e);
+
     private:
         Ui::MainWindow *ui;
         NewNoteWindow *newNote;

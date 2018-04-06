@@ -3,6 +3,7 @@
 #include <sstream>
 #include <fstream>
 #include <regex>
+#include "cst_string.h"
 #include "htmlelement.cpp"
 using namespace std;
 
@@ -14,47 +15,7 @@ private:
     vector<string> lineArray;
     vector<HtmlElement> elements;
     char lineBreak = NEWLINE;
-
-    void split(string& str) {
-        string token;
-        istringstream tokenStream(str);
-        while (getline(tokenStream, token, lineBreak)) {
-            lineArray.push_back(token);
-        }
-    }
-
-    int getCharCount(string& line, char d) {
-        int count = 0;
-        for (auto& c : line) {
-            if (c != d) {
-                break;
-            }
-            count += 1;
-            if (count == 6 && d == 'h') {
-                break;
-            }
-        }
-        return count;
-    }
-
-    string getStringBetweenDelimiters(string& str, string d1, string d2, int offset = 1) {
-        unsigned first = str.find(d1) + offset;
-        unsigned last = (offset == 1) ? str.find(d2) - first : str.find(d2);
-        return str.substr (first, last);
-    }
-
-    string linkReplace(string& line, string& content, string& link, string& text, int& startPos, int& endPos) {
-        string temp = line.substr(startPos - 1, endPos - startPos + 1);
-        string textToReplace;
-        for (auto& c1 : temp) {
-            if (c1 == '[' || c1 == ']' || c1 == '(' || c1 == ')' || c1 == '?') {
-                textToReplace += '\\';
-            }
-            textToReplace += c1;
-        }
-        content = regex_replace(content, regex(textToReplace), "<a href=\"" + link + "\">" + text + "</a>");
-        return content;
-    }
+    CstString strng;
 
     bool prevElementIsSame(string e, int pos) {
         if (elements.size() == 0) {
@@ -184,7 +145,7 @@ private:
                 isTextFinished = false;
                 isLinkStart = false;
                 isLinkFinished = false;
-                content = linkReplace(line, content, tempLink, tempText, startPos, endPos);
+                content = strng.linkReplace(line, content, tempLink, tempText, startPos, endPos);
                 tempText = "";
                 tempLink = "";
             }
@@ -192,7 +153,7 @@ private:
             if (!isTextFinished && isLinkStart && isLinkFinished) {
                 isLinkStart = false;
                 isLinkFinished = false;
-                content = linkReplace(line, content, tempLink, tempLink, startPos, endPos);
+                content = strng.linkReplace(line, content, tempLink, tempLink, startPos, endPos);
                 tempLink = "";
             }
 
@@ -205,7 +166,7 @@ private:
     }
 public:
     void parse(string& input) {
-        split(input);
+        lineArray = strng.split(input, lineBreak);
         int count = 0, emptyLineCount = 1; // emptyLineCount is 1 because string split function ignores first empty line
         bool code = false;
         string codeText, codeClass;
@@ -231,7 +192,7 @@ public:
                 continue;
             }
             if (line.at(0) == '#') {
-                int headerLevel = getCharCount(line, '#');
+                int headerLevel = strng.getCharCount(line, '#');
                 string h = "h" + to_string(headerLevel);
                 string content = line.substr(headerLevel, line.length());
                 elements.push_back(HtmlElement {h, content});
@@ -272,7 +233,7 @@ public:
                     item = parseInline(item);
                     elements.push_back(HtmlElement{"ul", ""});
                     if (item.at(0) == '#') {
-                        int headerLevel = getCharCount(item, '#');
+                        int headerLevel = strng.getCharCount(item, '#');
                         string h = 'h' + to_string(headerLevel);
                         item = item.substr(headerLevel, item.length());
                         elements[count].subElements.push_back(HtmlElement{"li", ""});
@@ -355,8 +316,8 @@ public:
                     continue;
                 }
                 if (subStr == "![" && line.at(line.length() - 1) == ')') {
-                    string inlineText = getStringBetweenDelimiters(line, "[", "]");
-                    string link = getStringBetweenDelimiters(line, "(", ")");
+                    string inlineText = strng.subStrBetween(line, "[", "]");
+                    string link = strng.subStrBetween(line, "(", ")");
                     if (link.length() > 0) {
                         elements.push_back(HtmlElement{"p", ""});
                         elements.push_back(HtmlElement{"img", inlineText, "src", link});

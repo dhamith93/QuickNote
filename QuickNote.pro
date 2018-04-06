@@ -31,12 +31,14 @@ SOURCES += \
     stringparser.cpp \
     htmlelement.cpp \
     newnotewindow.cpp \
-    database.cpp
+    database.cpp \
+    cst_string.cpp
 
 HEADERS += \
         mainwindow.h \
     newnotewindow.h \
-    database.h
+    database.h \
+    cst_string.h
 
 FORMS += \
         mainwindow.ui \

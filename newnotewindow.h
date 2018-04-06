@@ -2,6 +2,7 @@
 #define NEWNOTEWINDOW_H
 
 #include <QMainWindow>
+#include <vector>
 #include "database.h"
 
 namespace Ui {
@@ -62,6 +63,8 @@ class NewNoteWindow : public QMainWindow {
         bool fileSaved = false;
         bool fromOpen = false;
         int changeCount = 0;
+        std::string tagLine;
+        std::vector<std::string> tagArr;
 };
 
 #endif // NEWNOTEWINDOW_H

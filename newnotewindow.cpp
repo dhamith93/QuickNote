@@ -2,6 +2,7 @@
 #include "ui_newnotewindow.h"
 #include <QtWidgets>
 #include "stringparser.cpp"
+#include "cst_string.h"
 #include <fstream>
 #include <QCloseEvent>
 
@@ -59,7 +60,7 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
         file.close();
         ui->txtInput->setPlainText(QString::fromStdString(content));
         setText(content);        
-        if (!db.checkIfExists(fileName)) {
+        if (!db.recentNoteExists(fileName)) {
             if (db.checkRowCountEq(10)) {
                 db.deleteOldest();
             }
@@ -81,6 +82,21 @@ void NewNoteWindow::on_txtInput_textChanged() {
         setWindowModified(true);
     }
     string input = ui->txtInput->toPlainText().toUtf8().constData();
+    if (input.size() > 0 && input.at(0) == '%') {
+        CstString CstStr;
+        vector<string> strArr = CstStr.split(input, '\n', 2);
+        string firstLine = strArr[0];
+        int length = firstLine.length();
+        if (length > 1) {
+            if (firstLine.at(length - 1) == '%') {
+                if (tagLine != firstLine) {
+                    string str = CstStr.subStrBetween(strArr[0], "%", "%");
+                    tagArr = CstStr.split(str, ' ');
+                }
+                input = (strArr.size() > 1) ? input.substr(length + 1, input.length()) : "";
+            }
+        }
+    }
     if (input.size() > 0 && ui->actionPreview->isChecked()) {
         setText(input);
         setScrollPosition();
@@ -151,6 +167,17 @@ void NewNoteWindow::on_actionPreview_changed() {
     if (ui->actionPreview->isChecked()) {
         string input = ui->txtInput->toPlainText().toUtf8().constData();
         if (input.size() > 0) {
+            if (input.at(0) == '%') {
+                CstString CstStr;
+                vector<string> strArr = CstStr.split(input, '\n', 2);
+                string firstLine = strArr[0];
+                int length = firstLine.length();
+                if (length > 1) {
+                    if (firstLine.at(length - 1) == '%') {
+                        input = (strArr.size() > 1) ? input.substr(length + 1, input.length()) : "";
+                    }
+                }
+            }
             setText(input);
             setScrollPosition();
         }
@@ -243,11 +270,21 @@ void NewNoteWindow::saveFile() {
             fromOpen = true;
             setWindowModified(false);
             setWindowTitle(fileName);
-            if (!db.checkIfExists(fileName)) {
+            if (!db.recentNoteExists(fileName)) {
                 if (db.checkRowCountEq(10)) {
                     db.deleteOldest();
                 }
                 db.insertNote(fileName);
+            }
+            if (!db.taggedNoteExists(fileName)) {
+                if (tagArr.size() > 0) {
+                    db.insertNoteWithTags(fileName, tagArr);
+                }
+            } else {
+                db.deleteTags(db.getRowId(fileName.toUtf8().constData()));
+                if (tagArr.size() > 0) {
+                    db.updateTags(fileName, tagArr);
+                }
             }
         }
     } catch (exception ex) {
