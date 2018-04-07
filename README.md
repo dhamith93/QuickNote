@@ -11,6 +11,7 @@ QuickNote is a simple note app that uses subset of markdown syntax for formattin
 - Export to HTML, PDF and docx
 - Save as .md
 - Recent note list
+- Organize notes with tags
 
 ### TODO
 
