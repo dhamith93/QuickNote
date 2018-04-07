@@ -2,7 +2,7 @@
 
 ![QuickNote](icons/QuickNote_icon.png)
 
-QuickNote is a simple note app that uses subset of markdown syntax for formatting. It can save your notes in markdown format and export them to html, pdf or docx format. QuickNote uses pandoc for docx exports and wkhtmltopdf for pdf exports. There is syntax highlighting in exported/pretty previewed html thanks to [highlight.js](https://highlightjs.org). Internet connection required to syntax highlighting to be activated on exported/pretty previewed html file.
+QuickNote is a simple note app that uses subset of markdown syntax for formatting. It can save your notes in markdown format and export them to html, pdf or docx format. QuickNote uses pandoc for docx exports and wkhtmltopdf for pdf exports. There is syntax highlighting in exported/pretty previewed html thanks to [highlight.js](https://highlightjs.org). Internet connection required to syntax highlighting to be activated on exported/pretty previewed html file. GitHub markdown css thanks to <https://github.com/sindresorhus/github-markdown-css>
 
 ### Features
 - Markdown Formatting
