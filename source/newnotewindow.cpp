@@ -1,8 +1,8 @@
-#include "newnotewindow.h"
+#include "headers/newnotewindow.h"
 #include "ui_newnotewindow.h"
 #include <QtWidgets>
 #include "stringparser.cpp"
-#include "cst_string.h"
+#include "headers/cst_string.h"
 #include <fstream>
 #include <QCloseEvent>
 
@@ -10,17 +10,14 @@
     #define PANDOC_PATH "cd C:\\\"Program Files (x86)\"\\Pandoc\\ && pandoc.exe "
     #define WKHTMLTO_PATH "C:\\\"Program Files\"\\wkhtmltopdf\\bin\\wkhtmltopdf.exe "
     #define RM_COMMAND "del"
-    #define OS "windows"
 #elif __linux__
     #define PANDOC_PATH "pandoc"
-#define WKHTMLTO_PATH "wkhtmltopdf"
+    #define WKHTMLTO_PATH "wkhtmltopdf"
     #define RM_COMMAND "rm"
-    #define OS "linux"
 #else
     #define PANDOC_PATH "/usr/local/bin/pandoc"
     #define WKHTMLTO_PATH "/usr/local/bin/wkhtmltopdf --lowquality "
     #define RM_COMMAND "rm"
-    #define OS "macos"
 #endif
 
 NewNoteWindow::NewNoteWindow(QWidget *parent) :
@@ -29,13 +26,11 @@ NewNoteWindow::NewNoteWindow(QWidget *parent) :
     ui->setupUi(this);
 }
 
-
 NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
     QMainWindow(parent),
     ui(new Ui::NewNoteWindow) {
     ui->setupUi(this);
     setAttribute(Qt::WA_DeleteOnClose);
-    //ui->actionPreview->setChecked(false);
     ui->previewWindow->hide();
     if (db.colorConfigExists()) {
         QString background = db.getColorConfig("background");
@@ -67,7 +62,7 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
             db.insertNote(fileName);
         }
     } else {
-        setWindowModified(true);
+        setWindowModified(true); // Sets 'content modified' on macos. It prompts save window on exit
         string input = ui->txtInput->toPlainText().toUtf8().constData();
         if (input.size() > 0) {
             setText(input);
@@ -76,12 +71,15 @@ NewNoteWindow::NewNoteWindow(QWidget *parent, string filePath) :
 }
 
 void NewNoteWindow::on_txtInput_textChanged() {
+    // change count needed to make sure opening files doesn't show up as unsaved work
+    // as loading text from file triggers txtInput_textChanged(). So first change is ignored
     changeCount += 1;
     fileSaved = (fromOpen) ? (changeCount == 1) ? true : false : false;
     if (!fileSaved) {
         setWindowModified(true);
     }
     string input = ui->txtInput->toPlainText().toUtf8().constData();
+    // Tags. if first line is starting and ending with '%', this split tags and fills tagArr
     if (input.size() > 0 && input.at(0) == '%') {
         CstString CstStr;
         vector<string> strArr = CstStr.split(input, '\n', 2);
@@ -167,6 +165,7 @@ void NewNoteWindow::on_actionPreview_changed() {
     if (ui->actionPreview->isChecked()) {
         string input = ui->txtInput->toPlainText().toUtf8().constData();
         if (input.size() > 0) {
+            // If there is a tag line at the firts line, it gets remove from the preview
             if (input.at(0) == '%') {
                 CstString CstStr;
                 vector<string> strArr = CstStr.split(input, '\n', 2);

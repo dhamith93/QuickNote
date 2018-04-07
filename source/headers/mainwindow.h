@@ -24,8 +24,6 @@ class MainWindow : public QMainWindow
 
         void on_btnOpenNote_clicked();
 
-        void closeEvent (QCloseEvent *event);
-
         void on_listRecent_itemClicked(QListWidgetItem *item);
 
         void on_cmbTags_currentTextChanged(const QString &arg1);

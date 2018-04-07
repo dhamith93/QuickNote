@@ -1,6 +1,6 @@
-#include "mainwindow.h"
+#include "headers/mainwindow.h"
 #include "ui_mainwindow.h"
-#include "newnotewindow.h"
+#include "headers/newnotewindow.h"
 #include <QFileDialog>
 #include <QtWidgets>
 #include <QCloseEvent>
@@ -29,19 +29,16 @@ void MainWindow::on_btnOpenNote_clicked() {
     }
 }
 
-void MainWindow::closeEvent (QCloseEvent *event) {
-
-}
-
 void MainWindow::on_listRecent_itemClicked(QListWidgetItem *item) {
+    std::string path = item->text().toUtf8().constData();
     try {
-        newNote = new NewNoteWindow(NULL, item->text().toUtf8().constData());
+        newNote = new NewNoteWindow(NULL, path);
         newNote->show();
     } catch (std::exception ex) {
         QMessageBox msgBox;
         msgBox.setText("Can't find the file!");
         msgBox.exec();
-        db.deletePath(item->text().toUtf8().constData());
+        db.deletePath(QString::fromStdString(path));
         QVector<QString> recentPaths = db.getRecents();
         ui->listRecent->clear();
         if (recentPaths.size() > 0) {
@@ -68,14 +65,15 @@ void MainWindow::on_cmbTags_currentTextChanged(const QString &arg1) {
 }
 
 void MainWindow::on_listNotesByTag_itemClicked(QListWidgetItem *item) {
+    std::string path = item->text().toUtf8().constData();
     try {
-        newNote = new NewNoteWindow(NULL, item->text().toUtf8().constData());
+        newNote = new NewNoteWindow(NULL, path);
         newNote->show();
     } catch (std::exception ex) {
         QMessageBox msgBox;
         msgBox.setText("Can't find the file!");
         msgBox.exec();
-        db.deleteTaggedPath(item->text().toUtf8().constData());
+        db.deleteTaggedPath(QString::fromStdString(path));
         ui->cmbTags->clear();
         QVector<QString> tags = db.getTags();
         if (tags.size() > 0) {

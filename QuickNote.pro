@@ -26,20 +26,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-    stringparser.cpp \
-    htmlelement.cpp \
-    newnotewindow.cpp \
-    database.cpp \
-    cst_string.cpp
+        source/main.cpp \
+        source/mainwindow.cpp \
+    source/stringparser.cpp \
+    source/htmlelement.cpp \
+    source/newnotewindow.cpp \
+    source/database.cpp \
+    source/cst_string.cpp
 
 HEADERS += \
-        mainwindow.h \
-    newnotewindow.h \
-    database.h \
-    cst_string.h
+        source/headers/mainwindow.h \
+    source/headers/newnotewindow.h \
+    source/headers/database.h \
+    source/headers/cst_string.h
 
 FORMS += \
-        mainwindow.ui \
-    newnotewindow.ui
+        ui/mainwindow.ui \
+    ui/newnotewindow.ui

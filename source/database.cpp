@@ -1,4 +1,4 @@
-#include "database.h"
+#include "headers/database.h"
 
 Database::Database() {
    QStringList paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
@@ -35,18 +35,16 @@ bool Database::insertNote(const QString& notePath) {
 bool Database::insertNoteWithTags(const QString& notePath, const std::vector<std::string> &tags) {
     QSqlQuery query;
     bool result;
-    if (!taggedNoteExists(notePath)) {
-        query.prepare("INSERT INTO notes (path) VALUES (:path)");
-        query.bindValue(":path", notePath);
-        query.exec();
-        QVariant qv = query.lastInsertId();
-        int noteId = qv.toInt();
-        if (noteId != 0) {
-            for (auto& tag : tags) {
-                result = insertTag(tag, noteId);
-            }
-            return result;
+    query.prepare("INSERT INTO notes (path) VALUES (:path)");
+    query.bindValue(":path", notePath);
+    query.exec();
+    QVariant qv = query.lastInsertId();
+    int noteId = qv.toInt();
+    if (noteId != 0) {
+        for (auto& tag : tags) {
+            result = insertTag(tag, noteId);
         }
+        return result;
     }
     return false;
 }

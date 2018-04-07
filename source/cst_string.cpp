@@ -1,4 +1,4 @@
-#include "cst_string.h"
+#include "headers/cst_string.h"
 using namespace std;
 
 CstString::CstString() { }
