@@ -115,9 +115,11 @@ void NewNoteWindow::saveFile() {
 void NewNoteWindow::on_noteText_textChanged() {
     changeCount += 1;
     fileSaved = (openedFile) ? (changeCount == 1) ? true : false : false;
+    #ifdef Q_OS_DARWIN
     if (!fileSaved) {
         setWindowModified(true);
     }
+    #endif
 }
 
 void NewNoteWindow::on_actionSave_triggered() {

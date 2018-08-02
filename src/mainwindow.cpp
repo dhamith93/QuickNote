@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
                 QMainWindow(parent),
                 ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    this->setStyleSheet("QMainWindow, QStatusBar { background-color: #252525; border: none; }");
+    this->setStyleSheet("QMainWindow { background-color: #252525; border: none; }");
     setWindowFlags(Qt::Dialog | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
 }
 
