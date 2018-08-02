@@ -1,28 +1,45 @@
 #include "headers/database.h"
+#include <QSqlDatabase>
+#include <QSql>
+#include <QSqlError>
+#include <QSqlRecord>
+#include <QSqlQuery>
+#include <QVector>
+#include <QVariant>
+#include <QDir>
+#include <QStandardPaths>
+#include <QString>
+#include <vector>
+#include <QDebug>
 
 Database::Database() {
-   QStringList paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
-   db = QSqlDatabase::addDatabase("QSQLITE");
-   QString path = paths.at(0);
-   QDir dir;
-   dir.mkdir(paths.at(0));
-   path += "/notePathDB.db";
-   db.setDatabaseName(path);
-   if (!db.open()) {
-      qDebug() << "Error: connection error";
-   } else {
-       QSqlQuery query;
-       query.prepare("CREATE TABLE IF NOT EXISTS notes (path TEXT NOT NULL)");
-       query.exec();
-       query.prepare("CREATE TABLE IF NOT EXISTS tags (note_id INT NOT NULL, tag NOT NULL)");
-       query.exec();
-       query.prepare("CREATE TABLE IF NOT EXISTS recent_notes (path TEXT NOT NULL)");
-       query.exec();
-       query.prepare("CREATE TABLE IF NOT EXISTS font_config (font TEXT NOT NULL)");
-       query.exec();
-       query.prepare("CREATE TABLE IF NOT EXISTS color_config (background TEXT NOT NULL, font TEXT NOT NULL)");
-       query.exec();
+    if (!Database::createConnection()) {
+        qDebug() << "Error: connection error";
+    } else {
+        QSqlQuery query;
+        query.prepare("CREATE TABLE IF NOT EXISTS notes (path TEXT NOT NULL)");
+        query.exec();
+        query.prepare("CREATE TABLE IF NOT EXISTS tags (note_id INT NOT NULL, tag NOT NULL)");
+        query.exec();
+        query.prepare("CREATE TABLE IF NOT EXISTS recent_notes (path TEXT NOT NULL)");
+        query.exec();
+        query.prepare("CREATE TABLE IF NOT EXISTS font_config (font TEXT NOT NULL)");
+        query.exec();
    }
+}
+
+bool Database::createConnection() {
+    // macos: ~/Library/Application Support/<QuickNote>/ linux: ~/.local/share/QuickNote
+    QString dbPath = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation).at(0) + "/note.db";
+    #ifdef Q_OS_WIN
+    dbPath = QDir::currentPath() + "\\note.db"; // windows: PWD
+    #endif
+    if (!QSqlDatabase::contains()) {
+        QSqlDatabase::addDatabase("QSQLITE");
+    }
+    QSqlDatabase db = QSqlDatabase::database();
+    db.setDatabaseName(dbPath);
+    return db.open();
 }
 
 bool Database::insertNote(const QString& notePath) {
@@ -41,9 +58,9 @@ bool Database::insertNoteWithTags(const QString& notePath, const std::vector<std
     QVariant qv = query.lastInsertId();
     int noteId = qv.toInt();
     if (noteId != 0) {
-        for (auto& tag : tags) {
+        for (auto& tag : tags)
             result = insertTag(tag, noteId);
-        }
+
         return result;
     }
     return false;
@@ -53,9 +70,9 @@ bool Database::updateTags(const QString& notePath, const std::vector<std::string
     int noteId = getRowId(notePath.toUtf8().constData());
     bool result;
     if (noteId != 0) {
-        for (auto& tag : tags) {
+        for (auto& tag : tags)
             result = insertTag(tag, noteId);
-        }
+
         return result;
     }
     return false;
@@ -89,9 +106,9 @@ bool Database::deleteTags(const int& noteId) {
 QVector<QString> Database::getTags() {
     QSqlQuery query("SELECT tag FROM tags");
     QVector<QString> tags;
-    while (query.next()) {
+    while (query.next())
         tags.append(query.value(0).toString());
-    }
+
     return tags;
 }
 
@@ -99,19 +116,20 @@ QVector<QString> Database::getNotesByTag(std::string& tag) {
     QSqlQuery query;
     std::vector<int> ids;
     QVector<QString> paths;
-    query.prepare("SELECT note_id FROM tags WHERE tag = :tag");
-    query.bindValue(":tag", QString::fromStdString(tag));
-    if (query.exec()) {
-        while (query.next()) {
-            ids.push_back(query.value(0).toInt());
-        }
-    }
-    for (auto& id : ids) {
-        query.prepare("SELECT path FROM notes WHERE rowid = :id");
-        query.bindValue(":id", QString::fromStdString(std::to_string(id)));
+    if (!tag.empty()) {
+        query.prepare("SELECT note_id FROM tags WHERE tag = :tag");
+        query.bindValue(":tag", QString::fromStdString(tag));
         if (query.exec()) {
-            query.next();
-            paths.append(query.value(0).toString());
+            while (query.next())
+                ids.push_back(query.value(0).toInt());
+        }
+        for (auto& id : ids) {
+            query.prepare("SELECT path FROM notes WHERE rowid = :id");
+            query.bindValue(":id", QString::fromStdString(std::to_string(id)));
+            if (query.exec()) {
+                query.next();
+                paths.append(query.value(0).toString());
+            }
         }
     }
     return paths;
@@ -121,9 +139,9 @@ bool Database::recentNoteExists(const QString& notePath) {
     QSqlQuery query;
     query.prepare("SELECT path FROM recent_notes WHERE path = (:path)");
     query.bindValue(":path", notePath);
-    if (query.exec()) {
+    if (query.exec())
        return query.next();
-    }
+
     return false;
 }
 
@@ -131,9 +149,9 @@ bool Database::taggedNoteExists(const QString& notePath) {
     QSqlQuery query;
     query.prepare("SELECT path FROM notes WHERE path = (:path)");
     query.bindValue(":path", notePath);
-    if (query.exec()) {
+    if (query.exec())
        return query.next();
-    }
+
     return false;
 }
 
@@ -172,16 +190,17 @@ bool Database::deleteTaggedPath(const QString& notePath) {
 QVector<QString> Database::getRecents() {
     QSqlQuery query("SELECT path FROM recent_notes ORDER BY rowid DESC LIMIT 10");
     QVector<QString> paths;
-    while (query.next()) {
+    while (query.next())
         paths.append(query.value(0).toString());
-    }
+
     return paths;
 }
 
 bool Database::fontConfigExists() {
     QSqlQuery query("SELECT COUNT(*) FROM font_config");
     query.first();
-    int count = query.value(0).toInt();
+    int count = 0;
+    count = query.value(0).toInt();
     return (count > 0);
 }
 
@@ -198,45 +217,6 @@ bool Database::insertFontConfig(const QString& font) {
 
 QString Database::getFontConfig() {
     QSqlQuery query("SELECT font FROM font_config WHERE rowid = 1");
-    query.next();
-    return query.value(0).toString();
-}
-
-bool Database::colorConfigExists() {
-    QSqlQuery query("SELECT COUNT(*) FROM color_config");
-    query.first();
-    int count = query.value(0).toInt();
-    return (count > 0);
-}
-
-bool Database::insertColorConfig(const QString& color, const QString& color1,  const QString type) {
-    QSqlQuery query(db);
-    if (colorConfigExists()) {
-        if (type == "background") {
-            query.prepare("UPDATE color_config SET background = :color WHERE rowid = 1");
-        } else {
-            query.prepare("UPDATE color_config SET font = :color WHERE rowid = 1");
-        }
-    } else {
-        if (type == "background") {
-            query.prepare("INSERT INTO color_config (background, font) VALUES (:color, :color1)");
-        } else {
-            query.prepare("INSERT INTO color_config (font, background) VALUES (:color, :color1)");
-        }
-        query.bindValue(":color1", color1);
-    }
-    query.bindValue(":color", color);
-    return query.exec();
-}
-
-QString Database::getColorConfig(const QString type) {
-    QSqlQuery query;
-    if (type == "background") {
-        query.prepare("SELECT background FROM color_config WHERE rowid = 1");
-    } else {
-        query.prepare("SELECT font FROM color_config WHERE rowid = 1");
-    }
-    query.exec();
     query.next();
     return query.value(0).toString();
 }

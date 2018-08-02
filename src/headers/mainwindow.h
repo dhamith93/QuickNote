@@ -2,11 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QDebug>
-#include <QFileInfo>
 #include <QListWidgetItem>
 #include "newnotewindow.h"
 #include "database.h"
+
 namespace Ui {
     class MainWindow;
 }
@@ -20,21 +19,18 @@ class MainWindow : public QMainWindow
         ~MainWindow();
 
     private slots:
-        void on_btnNewNote_clicked();
-
-        void on_btnOpenNote_clicked();
-
-        void on_listRecent_itemClicked(QListWidgetItem *item);
-
-        void on_cmbTags_currentTextChanged(const QString &arg1);
-
-        void on_listNotesByTag_itemClicked(QListWidgetItem *item);
-
+        void on_newNoteBtn_clicked();
         bool event(QEvent *e);
+
+        void on_fileListOptions_currentTextChanged(const QString &arg1);
+
+        void on_fileList_itemClicked(QListWidgetItem *item);
+
+        void on_actionOpen_triggered();
 
     private:
         Ui::MainWindow *ui;
-        NewNoteWindow *newNote;
+        NewNoteWindow *newNoteWindow;
         Database db;
 };
 

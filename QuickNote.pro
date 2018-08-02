@@ -1,10 +1,10 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2018-03-21T08:11:42
+# Project created by QtCreator 2018-07-30T13:19:00
 #
 #-------------------------------------------------
 
-QT       += core gui widgets sql
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -26,20 +26,49 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        source/main.cpp \
-        source/mainwindow.cpp \
-    source/stringparser.cpp \
-    source/htmlelement.cpp \
-    source/newnotewindow.cpp \
-    source/database.cpp \
-    source/cst_string.cpp
+        src/main.cpp \
+        src/mainwindow.cpp \
+        src/newnotewindow.cpp \
+        src/plaintextedit.cpp \
+        src/highlighter.cpp \
+        src/database.cpp \
+        src/mdLite/tree.cpp \
+        src/mdLite/tokenizer.cpp
 
 HEADERS += \
-        source/headers/mainwindow.h \
-    source/headers/newnotewindow.h \
-    source/headers/database.h \
-    source/headers/cst_string.h
+        src/headers/mainwindow.h \
+        src/headers/newnotewindow.h \
+        src/headers/plaintextedit.h \
+        src/headers/highlighter.h \
+        src/headers/database.h \
+        src/mdLite/token.h \
+        src/mdLite/tree.h \
+        src/mdLite/tokenizer.h
+
 
 FORMS += \
-        ui/mainwindow.ui \
-    ui/newnotewindow.ui
+        mainwindow.ui \
+    newnotewindow.ui
+
+macx {
+    QMAKE_CXXFLAGS += -std=c++11
+    _BOOST_PATH = /usr/local/Cellar/boost/1.66.0
+    INCLUDEPATH += "$${_BOOST_PATH}/include/"
+    LIBS += -L$${_BOOST_PATH}/lib
+    LIBS += -lboost_system -lboost_filesystem -lboost_regex
+    LIBS += -framework AppKit -framework Foundation
+    OBJECTIVE_SOURCES = src/macosuihandler.mm
+    HEADERS += \
+        src/headers/macosuihandler.h
+    BUNDLE = $$OUT_PWD/$$TARGET$$quote(.app)/Contents
+    QMAKE_POST_LINK += ditto \"$$PWD/html/header.html\" \"$$BUNDLE/Resources/\";
+    QMAKE_POST_LINK += ditto \"$$PWD/html/footer.html\" \"$$BUNDLE/Resources/\";
+}
+
+win32 {
+    INCLUDEPATH += D:\windows\boost_1_67_0
+    LIBS += -LD:\windows\boost_1_67_0\stage\lib \
+            -llibboost_regex-mgw53-mt-d-x32-1_67 \
+            -llibboost_filesystem-mgw53-mt-d-x32-1_67 \
+            -llibboost_system-mgw53-mt-d-x32-1_67
+}
