@@ -2,7 +2,7 @@
 # Created by https://www.gitignore.io/api/qt,qml,c++,macos
 
 ### QT
-*.pro.user
+QuickNote.pro.user
 
 ### C++ ###
 # Prerequisites
