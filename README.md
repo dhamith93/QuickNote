@@ -14,9 +14,9 @@ formatted text as HTML.
 - Save as .md
 - Recent note list
 - Organize notes with tags
+- Change editor font
 
 ### Screenshots
 
 ![](screenshots/main.png)
 
-![](screenshots/new_note.png)

@@ -1,13 +1,19 @@
 #include "headers/mainwindow.h"
 #include "ui_mainwindow.h"
-#include "headers/newnotewindow.h"
 #include "headers/database.h"
+#include "headers/highlighter.h"
+#include "mdLite/token.h"
+#include "mdLite/tokenizer.h"
+#include <QClipboard>
 #include <QDebug>
 #include <QDir>
-#include <QMessageBox>
 #include <QFileDialog>
 #include <QFileInfo>
-
+#include <QFontDialog>
+#include <QMessageBox>
+#include <QTextDocumentFragment>
+#include <sstream>
+#include <fstream>
 
 #ifdef Q_OS_DARWIN
     #include "headers/macosuihandler.h"
@@ -17,31 +23,233 @@ MainWindow::MainWindow(QWidget *parent) :
                 QMainWindow(parent),
                 ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    this->setStyleSheet("QMainWindow { background-color: #252525; border: none; }");
-    setWindowFlags(Qt::Dialog | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+    init();
 }
 
 MainWindow::~MainWindow() {
     delete ui;
 }
 
+void MainWindow::init() {
+    this->setStyleSheet("QMainWindow { background-color: #505050; border: none; }");
+    ui->splitter->setStretchFactor (0,0);
+    ui->splitter->setStretchFactor (1,1);
+    ui->noteText->setStyleSheet("QPlainTextEdit { padding: 5% 25% 0 25%; color: white; background-color: #252525; border:none; }");
+    ui->openedNotePath->setStyleSheet("color: white;");
+    highlighter = new Highlighter(this);
+    highlighter->setDocument(ui->noteText->document());
+    fileSaved = true;
+    openedFile = true;
+    changeCount = 0;
+
+    if (db.fontConfigExists()) {
+        QFont font;
+        font.fromString(db.getFontConfig());
+        ui->noteText->setFont(font);
+    }
+
+    resetFileList();
+}
+
+void MainWindow::openFile(QString &filePath) {
+    if (filePath != "") {
+        if (!fileSaved) {
+            if (!fileSavePromt())
+                return;
+        }
+        fileName = filePath;
+        ui->openedNotePath->setText("Path: " + filePath);
+        std::ifstream file(filePath.toStdString());
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        std::string content = buffer.str();
+        file.close();
+        fileSaved = true;
+        openedFile = true;
+        changeCount = 0;
+        ui->noteText->setPlainText(QString::fromStdString(content));
+        if (!db.recentNoteExists(filePath)) {
+            if (db.checkRowCountEq(20)) {
+                db.deleteOldest();
+            }
+            db.insertNote(filePath);
+        }
+        #ifdef Q_OS_DARWIN
+        setWindowModified(false);
+        #endif
+    } else {
+        #ifdef Q_OS_DARWIN
+        setWindowModified(true);
+        #endif
+    }
+}
+
+bool MainWindow::fileSavePromt() {
+    QMessageBox msgBox;
+    msgBox.setText("Unsaved Note");
+    msgBox.setInformativeText("Do you want to save your changes?");
+    msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Save);
+    int ret = msgBox.exec();
+
+    if (ret == QMessageBox::Save) {
+        if (!saveFile())
+            return false;
+    } else if (ret == QMessageBox::Cancel) {
+        return false;
+    }
+
+    return true;
+}
+
+bool MainWindow::saveFile() {
+    try {
+        if (!openedFile || fileName.isEmpty() || fileName == "") {
+            fileName = QFileDialog::getSaveFileName(this, tr("Save Note"), QDir::homePath(), tr("Markdown (*.md)"));
+            if (fileName.isEmpty())
+                return false;
+        }
+    } catch (std::exception ex) {
+        return false;
+    }
+
+    try {
+        std::ofstream out(fileName.toUtf8().constData());
+        std::string output = ui->noteText->toPlainText().toUtf8().constData();
+        out << output;
+        out.close();
+        fileSaved = true;
+        openedFile = true;
+
+        #ifdef Q_OS_DARWIN
+        setWindowModified(false);
+        #endif
+
+        Tokenizer tokenizer;
+        tokenizer.tokenize(output);
+        tagArr = tokenizer.getTags();
+
+        if (!db.recentNoteExists(fileName)) {
+            if (db.checkRowCountEq(20)) {
+                db.deleteOldest();
+            }
+            db.insertNote(fileName);
+        }
+        if (!db.taggedNoteExists(fileName)) {
+            if (tagArr.size() > 0) {
+                db.insertNoteWithTags(fileName, tagArr);
+            }
+        } else {
+            db.deleteTags(db.getRowId(fileName.toUtf8().constData()));
+            if (tagArr.size() > 0) {
+                db.updateTags(fileName, tagArr);
+            }
+        }
+    } catch (std::exception ex) {
+        fileSaved = false;
+        QMessageBox msgBox;
+        msgBox.setText("There was an error! please try again.");
+        msgBox.exec();
+        return false;
+    }
+
+    return true;
+}
+
+void MainWindow::resetFileList() {
+    ui->fileListOptions->blockSignals(true);
+    ui->fileList->clear();
+    ui->fileListOptions->clear();
+    ui->fileListOptions->addItem("Recent Notes");
+    QVector<QString> recentPaths = db.getRecents();
+    QVector<QString> tags = db.getTags();
+    if (recentPaths.size() > 0) {
+        for (auto& path : recentPaths)
+            ui->fileList->addItem(path);
+    }
+    if (tags.size() > 0) {
+        QStringList tagList = tags.toList();
+        tagList.removeDuplicates();
+        ui->fileListOptions->addItems(tagList);
+    }
+    ui->fileListOptions->blockSignals(false);
+}
+
+std::string MainWindow::getFileContent(std::string path) {
+    try {
+        std::ifstream ifs(path);
+        std::string output((std::istreambuf_iterator<char>(ifs)),
+                            (std::istreambuf_iterator<char>()));
+        ifs.close();
+        return output;
+    } catch(const std::exception& e) { }
+
+    return "";
+}
+
 void MainWindow::on_newNoteBtn_clicked() {
-    newNoteWindow = new NewNoteWindow(NULL, "");
-    newNoteWindow->show();
-    #ifdef Q_OS_DARWIN
-    MacOSUIHandler::setTitleBar(*newNoteWindow);
-    #endif
+    if (openedFile && !fileSaved) {
+        if (!fileSavePromt())
+            return;
+    }
+    fileSaved = false;
+    openedFile = false;
+    fileName = "";
+    ui->openedNotePath->setText("");
+    ui->noteText->setPlainText("# New note");
+    changeCount = 0;
+}
+
+void MainWindow::on_openNoteBtn_clicked() {
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), QDir::homePath(), tr("Markdown (*.md)"));
+    if (fileName.size() > 0) {
+        openFile(fileName);
+        resetFileList();
+    }
 }
 
 void MainWindow::on_actionOpen_triggered() {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), QDir::homePath(), tr("Markdown (*.md)"));
     if (fileName.size() > 0) {
-        newNoteWindow = new NewNoteWindow(NULL, fileName.toUtf8().constData());
-        newNoteWindow->show();
-        #ifdef Q_OS_DARWIN
-        MacOSUIHandler::setTitleBar(*newNoteWindow);
-        #endif
+        openFile(fileName);
+        resetFileList();
     }
+}
+
+void MainWindow::on_actionSave_triggered() {
+    if (!fileSaved)
+        saveFile();
+}
+
+void MainWindow::on_actionCopy_selection_as_HTML_triggered() {
+    QString selection = ui->noteText->textCursor().selection().toPlainText() + "\n";
+    std::string text = selection.toStdString();
+    Tokenizer tokenizer;
+    tokenizer.tokenize(text);
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(QString::fromStdString(tokenizer.getHTML()));
+}
+
+void MainWindow::on_actionExport_HTML_triggered() {
+    std::string text = ui->noteText->toPlainText().toStdString();
+    Tokenizer tokenizer;
+    tokenizer.tokenize(text);
+
+    QString htmlSavePath = QFileDialog::getSaveFileName(this, tr("Export HTML File"), QDir::homePath(), tr("HTML (*.html)"));
+    std::ofstream out(htmlSavePath.toUtf8().constData());
+    std::string headerPath = "html/header.html";
+    std::string footerPath = "html/footer.html";
+
+    #ifdef Q_OS_DARWIN
+    headerPath = "../Resources/header.html";
+    footerPath = "../Resources/footer.html";
+    #endif
+
+    std::string output = getFileContent(headerPath);
+    output += tokenizer.getHTML();
+    output += getFileContent(footerPath);
+    out << output;
+    out.close();
 }
 
 void MainWindow::on_fileListOptions_currentTextChanged(const QString &arg1) {
@@ -64,39 +272,34 @@ void MainWindow::on_fileListOptions_currentTextChanged(const QString &arg1) {
 }
 
 void MainWindow::on_fileList_itemClicked(QListWidgetItem *item) {
-    QString path = item->text().toUtf8().constData();
-    bool fileExists = QFileInfo::exists(path) && QFileInfo(path).isFile();
-    if (fileExists) {
-        newNoteWindow = new NewNoteWindow(NULL, path.toStdString());
-        newNoteWindow->show();
-        #ifdef Q_OS_DARWIN
-        MacOSUIHandler::setTitleBar(*newNoteWindow);
-        #endif
-    } else {
-        QMessageBox msgBox;
-        msgBox.setText("Can't find the file! Maybe it was deleted or moved?\n");
-        msgBox.exec();
+    QString filePath = item->text().toUtf8().constData();
+    if (fileSaved && filePath == fileName)
+        return;
+    openFile(filePath);
+}
+
+void MainWindow::on_noteText_textChanged() {
+    changeCount += 1;
+    fileSaved = (openedFile) ? (changeCount == 1) ? true : false : false;
+    #ifdef Q_OS_DARWIN
+    if (!fileSaved) {
+        setWindowModified(true);
+    }
+    #endif
+}
+
+void MainWindow::on_actionChange_Font_triggered() {
+    bool changed;
+    QFont font = QFontDialog::getFont(&changed);
+    if (changed) {
+        db.insertFontConfig(font.toString());
+        ui->noteText->setFont(font);
     }
 }
 
-bool MainWindow::event(QEvent *e) {
-    if (e->type() == QEvent::WindowActivate) {
-        ui->fileListOptions->blockSignals(true);
-        ui->fileList->clear();
-        ui->fileListOptions->clear();
-        ui->fileListOptions->addItem("Recent Notes");
-        QVector<QString> recentPaths = db.getRecents();
-        QVector<QString> tags = db.getTags();
-        if (recentPaths.size() > 0) {
-            for (auto& path : recentPaths)
-                ui->fileList->addItem(path);
-        }
-        if (tags.size() > 0) {
-            QStringList tagList = tags.toList();
-            tagList.removeDuplicates();
-            ui->fileListOptions->addItems(tagList);
-        }
-        ui->fileListOptions->blockSignals(false);
+void MainWindow::closeEvent (QCloseEvent *event) {
+    if (!fileSaved) {
+        if (!fileSavePromt())
+            event->ignore();
     }
-    return QWidget::event(e);
 }

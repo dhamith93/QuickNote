@@ -9,6 +9,7 @@ class PlainTextEdit : public QPlainTextEdit {
         PlainTextEdit(QWidget *parent = 0);
     protected:
         virtual void keyPressEvent(QKeyEvent *event);
+        virtual void focusOutEvent(QFocusEvent* e);
 };
 
 #endif // PLAINTEXTEDIT_H

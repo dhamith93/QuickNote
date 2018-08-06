@@ -1,5 +1,4 @@
 #include "headers/plaintextedit.h"
-#include <QDebug>
 
 PlainTextEdit::PlainTextEdit(QWidget *parent) : QPlainTextEdit(parent) { }
 
@@ -11,4 +10,12 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
     }
 
     QPlainTextEdit::keyPressEvent(event);
+}
+
+void PlainTextEdit::focusOutEvent(QFocusEvent *event) {
+    if (event->reason() == Qt::TabFocusReason) {
+        this->setFocus();
+        return;
+    }
+    QPlainTextEdit::focusOutEvent(event);
 }

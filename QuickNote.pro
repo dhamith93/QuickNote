@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui sql widgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -28,7 +28,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         src/main.cpp \
         src/mainwindow.cpp \
-        src/newnotewindow.cpp \
         src/plaintextedit.cpp \
         src/highlighter.cpp \
         src/database.cpp \
@@ -37,7 +36,6 @@ SOURCES += \
 
 HEADERS += \
         src/headers/mainwindow.h \
-        src/headers/newnotewindow.h \
         src/headers/plaintextedit.h \
         src/headers/highlighter.h \
         src/headers/database.h \
@@ -47,8 +45,7 @@ HEADERS += \
 
 
 FORMS += \
-        mainwindow.ui \
-    newnotewindow.ui
+        mainwindow.ui
 
 macx {
     QMAKE_CXXFLAGS += -std=c++11
