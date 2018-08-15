@@ -257,7 +257,12 @@ void MainWindow::on_actionExport_HTML_triggered() {
 }
 
 void MainWindow::on_actionEncrypt_note_triggered() {
-    QString pswd = QInputDialog::getText(0, "Encrypt Note", "Enter the passphrase...", QLineEdit::Password);
+    QString pswd = QInputDialog::getText(
+                        0,
+                        "Encrypt Note",
+                        "Enter the passphrase...\nNOTE: Please remember your password! This can't be reversed without it.",
+                        QLineEdit::Password
+                    );
     std::string input = ui->noteText->toPlainText().toStdString();
     std::string passphrase = pswd.toStdString();
 

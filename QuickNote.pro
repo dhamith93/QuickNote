@@ -72,4 +72,7 @@ win32 {
             -llibboost_regex-mgw53-mt-d-x32-1_67 \
             -llibboost_filesystem-mgw53-mt-d-x32-1_67 \
             -llibboost_system-mgw53-mt-d-x32-1_67
+
+    INCLUDEPATH += C:/dev/cryptopp700/
+    LIBS += -LC:/dev/cryptopp700/release/ -llibcryptopp
 }
