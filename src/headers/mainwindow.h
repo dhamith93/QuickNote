@@ -31,6 +31,10 @@ class MainWindow : public QMainWindow
         void on_actionCopy_selection_as_HTML_triggered();
         void on_actionExport_HTML_triggered();
 
+        void on_actionEncrypt_note_triggered();
+
+        void on_actionDecrypt_Note_triggered();
+
     private:
         Ui::MainWindow *ui;
         Highlighter *highlighter;

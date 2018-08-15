@@ -31,6 +31,7 @@ SOURCES += \
         src/plaintextedit.cpp \
         src/highlighter.cpp \
         src/database.cpp \
+        src/encryption.cpp \
         src/mdLite/tree.cpp \
         src/mdLite/tokenizer.cpp
 
@@ -39,10 +40,10 @@ HEADERS += \
         src/headers/plaintextedit.h \
         src/headers/highlighter.h \
         src/headers/database.h \
+        src/headers/encryption.h \
         src/mdLite/token.h \
         src/mdLite/tree.h \
         src/mdLite/tokenizer.h
-
 
 FORMS += \
         mainwindow.ui
@@ -60,6 +61,9 @@ macx {
     BUNDLE = $$OUT_PWD/$$TARGET$$quote(.app)/Contents
     QMAKE_POST_LINK += ditto \"$$PWD/html/header.html\" \"$$BUNDLE/Resources/\";
     QMAKE_POST_LINK += ditto \"$$PWD/html/footer.html\" \"$$BUNDLE/Resources/\";
+
+    INCLUDEPATH += "/Users/dhamith/Downloads/cryptopp700/"
+    LIBS += "/Users/dhamith/Downloads/cryptopp700/libcryptopp.a"
 }
 
 win32 {

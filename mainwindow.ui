@@ -318,8 +318,7 @@ QPushButton:pressed {
            <string notr="true"/>
           </property>
           <property name="plainText">
-           <string># New note
-</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -377,6 +376,7 @@ QPushButton:pressed {
     <addaction name="actionCopy_selection_as_HTML"/>
     <addaction name="actionExport_HTML"/>
     <addaction name="actionEncrypt_note"/>
+    <addaction name="actionDecrypt_Note"/>
    </widget>
    <addaction name="menuOpen"/>
    <addaction name="menuNote"/>
@@ -421,6 +421,14 @@ QPushButton:pressed {
   <action name="actionExport_HTML">
    <property name="text">
     <string>Export HTML</string>
+   </property>
+  </action>
+  <action name="actionDecrypt_Note">
+   <property name="text">
+    <string>Decrypt Note</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+D</string>
    </property>
   </action>
  </widget>

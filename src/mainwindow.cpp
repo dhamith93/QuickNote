@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "headers/database.h"
 #include "headers/highlighter.h"
+#include "headers/encryption.h"
 #include "mdLite/token.h"
 #include "mdLite/tokenizer.h"
 #include <QClipboard>
@@ -10,6 +11,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFontDialog>
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QTextDocumentFragment>
 #include <sstream>
@@ -18,6 +20,8 @@
 #ifdef Q_OS_DARWIN
     #include "headers/macosuihandler.h"
 #endif
+
+QString enc = "";
 
 MainWindow::MainWindow(QWidget *parent) :
                 QMainWindow(parent),
@@ -34,7 +38,7 @@ void MainWindow::init() {
     this->setStyleSheet("QMainWindow { background-color: #505050; border: none; }");
     ui->splitter->setStretchFactor (0,0);
     ui->splitter->setStretchFactor (1,1);
-    ui->noteText->setStyleSheet("QPlainTextEdit { padding: 5% 25% 0 25%; color: white; background-color: #252525; border:none; }");
+    ui->noteText->setStyleSheet("QPlainTextEdit { padding: 5% 5% 0 5%; color: white; background-color: #252525; border:none; }");
     ui->openedNotePath->setStyleSheet("color: white;");
     highlighter = new Highlighter(this);
     highlighter->setDocument(ui->noteText->document());
@@ -250,6 +254,45 @@ void MainWindow::on_actionExport_HTML_triggered() {
     output += getFileContent(footerPath);
     out << output;
     out.close();
+}
+
+void MainWindow::on_actionEncrypt_note_triggered() {
+    QString pswd = QInputDialog::getText(0, "Encrypt Note", "Enter the passphrase...", QLineEdit::Password);
+    std::string input = ui->noteText->toPlainText().toStdString();
+    std::string passphrase = pswd.toStdString();
+
+    if (passphrase.empty())
+        return;
+
+    std::string encryptedText = Encryption::encrypt(input, passphrase);
+
+    if (!encryptedText.empty()) {
+        ui->noteText->setPlainText(QString::fromStdString(encryptedText));
+    } else {
+        QMessageBox msgBox;
+        msgBox.setText("Something went wrong during encryption...");
+        msgBox.exec();
+    }
+
+}
+
+void MainWindow::on_actionDecrypt_Note_triggered() {
+    QString pswd = QInputDialog::getText(0, "Decrypt Note", "Enter the passphrase...", QLineEdit::Password);
+    std::string input = ui->noteText->toPlainText().toStdString();
+    std::string passphrase = pswd.toStdString();
+
+    if (passphrase.empty())
+        return;
+
+    std::string decryptedText = Encryption::decrypt(input, passphrase);
+
+    if (!decryptedText.empty()) {
+        ui->noteText->setPlainText(QString::fromStdString(decryptedText));
+    } else {
+        QMessageBox msgBox;
+        msgBox.setText("It seems like your note is not encrypted...");
+        msgBox.exec();
+    }
 }
 
 void MainWindow::on_fileListOptions_currentTextChanged(const QString &arg1) {
