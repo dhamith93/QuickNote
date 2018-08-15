@@ -8,7 +8,7 @@ std::string Encryption::encrypt(std::string content, std::string passphrase) {
     byte iv[AES::BLOCKSIZE];
     prng.GenerateBlock(iv, sizeof(iv));
     std::string ivString(reinterpret_cast< char const* >(iv));
-    SecByteBlock key(AES::MAX_KEYLENGTH+AES::BLOCKSIZE);
+    SecByteBlock key(AES::MAX_KEYLENGTH + AES::BLOCKSIZE);
 
     std::string encrypted, output;
 
@@ -39,11 +39,11 @@ std::string Encryption::decrypt(std::string content, std::string passphrase) {
     if (base64Decoded.substr(0, 9) != "encrypted")
         return "";
 
-    unsigned first = base64Decoded.find("encrypted") + 9; // 9 = encrypted length
+    unsigned first = base64Decoded.find("encrypted") + 9; // 9 = "encrypted" length
     unsigned last = base64Decoded.find("__ENDIV");
     ivString = base64Decoded.substr(first, last - first);
 
-    first = base64Decoded.find("__ENDIV") + 7; // 7 = __ENDIV length
+    first = base64Decoded.find("__ENDIV") + 7; // 7 = "__ENDIV" length
 
     base64Decoded = base64Decoded.substr(first);
 

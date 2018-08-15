@@ -9,6 +9,7 @@ formatted text as HTML.
 ### Features
 - Markdown Formatting
 - Markdown syntax highlighting
+- Note encryption/decryption
 - Export to HTML
 - Copy selection as HTML
 - Save as .md
