@@ -7,6 +7,7 @@
 #include <QVector>
 #include <QVariant>
 #include <QDir>
+#include <QDateTime>
 #include <QStandardPaths>
 #include <QString>
 #include <vector>
@@ -19,9 +20,9 @@ Database::Database() {
         QSqlQuery query;
         query.prepare("CREATE TABLE IF NOT EXISTS notes (path TEXT NOT NULL)");
         query.exec();
-        query.prepare("CREATE TABLE IF NOT EXISTS tags (note_id INT NOT NULL, tag NOT NULL)");
+        query.prepare("CREATE TABLE IF NOT EXISTS tags (note_id INT NOT NULL, tag TEXT NOT NULL)");
         query.exec();
-        query.prepare("CREATE TABLE IF NOT EXISTS recent_notes (path TEXT NOT NULL)");
+        query.prepare("CREATE TABLE IF NOT EXISTS recent_notes (note_id INT NOT NULL, date_opened TEXT NOT NULL)");
         query.exec();
         query.prepare("CREATE TABLE IF NOT EXISTS font_config (font TEXT NOT NULL)");
         query.exec();
@@ -44,32 +45,50 @@ bool Database::createConnection() {
 
 bool Database::insertNote(const QString& notePath) {
     QSqlQuery query;
-    query.prepare("INSERT INTO recent_notes (path) VALUES (:path)");
+    query.prepare("INSERT INTO notes (path) VALUES (:path)");
     query.bindValue(":path", notePath);
-    return query.exec();
+    if (query.exec())
+        return insertRecentNote(getRowId(notePath.toStdString()));
+    return false;
 }
 
 bool Database::insertNoteWithTags(const QString& notePath, const std::vector<std::string> &tags) {
-    QSqlQuery query;
-    bool result;
+    QSqlQuery query;    
     query.prepare("INSERT INTO notes (path) VALUES (:path)");
     query.bindValue(":path", notePath);
     query.exec();
     QVariant qv = query.lastInsertId();
     int noteId = qv.toInt();
+    insertRecentNote(noteId);
     if (noteId != 0) {
+        bool result;
         for (auto& tag : tags)
             result = insertTag(tag, noteId);
 
         return result;
     }
     return false;
+}
+
+bool Database::insertRecentNote(const int noteId) {
+    QSqlQuery query;
+    query.prepare("INSERT INTO recent_notes (note_id, date_opened) VALUES (:note_id, datetime('now', 'localtime'))");
+    query.bindValue(":note_id", noteId);
+    return query.exec();
+}
+
+bool Database::updateOpenedDate(const QString &notePath) {
+    int noteId = getRowId(notePath.toStdString());
+    QSqlQuery query;
+    query.prepare("UPDATE recent_notes SET date_opened = datetime('now', 'localtime') WHERE note_id = :note_id");
+    query.bindValue(":note_id", noteId);
+    return query.exec();
 }
 
 bool Database::updateTags(const QString& notePath, const std::vector<std::string> &tags) {
-    int noteId = getRowId(notePath.toUtf8().constData());
-    bool result;
+    int noteId = getRowId(notePath.toUtf8().constData());    
     if (noteId != 0) {
+        bool result;
         for (auto& tag : tags)
             result = insertTag(tag, noteId);
 
@@ -78,14 +97,17 @@ bool Database::updateTags(const QString& notePath, const std::vector<std::string
     return false;
 }
 
-int Database::getRowId(const std::string path) {
+int Database::getRowId(const std::string& path) {
     QSqlQuery query;
     query.prepare("SELECT rowid FROM notes WHERE path = (:path)");
     query.bindValue(":path", QString::fromStdString(path));
-    query.exec();
-    query.next();
-    int id = query.value(0).toInt();
-    return id;
+
+    if (query.exec()) {
+        if (query.next())
+            return query.value(0).toInt();
+    }
+
+    return -1;
 }
 
 bool Database::insertTag(const std::string& tag, const int& noteId) {
@@ -101,6 +123,15 @@ bool Database::deleteTags(const int& noteId) {
     query.prepare("DELETE FROM tags WHERE note_id = (:note_id)");
     query.bindValue(":note_id", noteId);
     return query.exec();
+}
+
+QVector<QString> Database::getNotes() {
+    QSqlQuery query("SELECT path FROM notes");
+    QVector<QString> notes;
+    while (query.next())
+        notes.append(query.value(0).toString());
+
+    return notes;
 }
 
 QVector<QString> Database::getTags() {
@@ -135,10 +166,24 @@ QVector<QString> Database::getNotesByTag(std::string& tag) {
     return paths;
 }
 
-bool Database::recentNoteExists(const QString& notePath) {
+bool Database::noteExists(const QString& notePath) {
     QSqlQuery query;
-    query.prepare("SELECT path FROM recent_notes WHERE path = (:path)");
+    query.prepare("SELECT path FROM notes WHERE path = (:path)");
     query.bindValue(":path", notePath);
+
+    if (query.exec())
+       return query.next();
+
+    return false;
+}
+
+bool Database::recentNoteExists(const QString& notePath) {
+    int rowId = getRowId(notePath.toStdString());
+
+    QSqlQuery query;
+    query.prepare("SELECT note_id FROM recent_notes WHERE note_id = (:note_id)");
+    query.bindValue(":note_id", rowId);
+
     if (query.exec())
        return query.next();
 
@@ -155,40 +200,32 @@ bool Database::taggedNoteExists(const QString& notePath) {
     return false;
 }
 
-bool Database::checkRowCountEq(const int& x) {
-    QSqlQuery query("SELECT COUNT(*) FROM recent_notes");
-    query.first();
-    int count = query.value(0).toInt();
-    return (count == x);
-}
-
-bool Database::deleteOldest() {
-    QSqlQuery query("SELECT rowid FROM recent_notes ORDER BY rowid ASC LIMIT 1");
-    query.first();
-    int id = query.value(0).toInt();
-    query.prepare("DELETE FROM recent_notes WHERE rowid = (:id)");
-    query.bindValue(":id", id);
-    return query.exec();
-}
-
 bool Database::deletePath(const QString& notePath) {
     QSqlQuery query;
-    query.prepare("DELETE FROM recent_notes WHERE path = (:path)");
+    int noteId = getRowId(notePath.toStdString());
+    query.prepare("DELETE FROM notes WHERE path = (:path)");
     query.bindValue(":path", notePath);
-    return query.exec();
+
+    if (query.exec()) {
+        query.prepare("DELETE FROM recent_notes WHERE note_id = (:note_id)");
+        query.bindValue(":note_id", noteId);
+        return query.exec();
+    }
+
+    return false;
 }
 
 bool Database::deleteTaggedPath(const QString& notePath) {
-    int noteId = getRowId(notePath.toUtf8().constData());
-    QSqlQuery query;
-    query.prepare("DELETE FROM notes WHERE path = (:path)");
-    query.bindValue(":path", notePath);
-    query.exec();
-    return deleteTags(noteId);
+    int noteId = getRowId(notePath.toStdString());
+
+    if (deletePath(notePath))
+        return deleteTags(noteId);
+
+    return false;
 }
 
 QVector<QString> Database::getRecents() {
-    QSqlQuery query("SELECT path FROM recent_notes ORDER BY rowid DESC LIMIT 10");
+    QSqlQuery query("SELECT path FROM recent_notes INNER JOIN notes ON notes.rowid = recent_notes.note_id ORDER BY date_opened DESC LIMIT 10");
     QVector<QString> paths;
     while (query.next())
         paths.append(query.value(0).toString());

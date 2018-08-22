@@ -61,6 +61,26 @@ void MainWindow::openFile(QString &filePath) {
             if (!fileSavePromt())
                 return;
         }
+
+        bool fileExists = QFileInfo::exists(filePath) && QFileInfo(filePath).isFile();
+
+        if (!fileExists) {
+            QMessageBox msgBox;
+            msgBox.setText("Can't find the note");
+            msgBox.setInformativeText("It seems like the note '.md' file was deleted!\n Do you want to delete the record?");
+            msgBox.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+            msgBox.setDefaultButton(QMessageBox::Yes);
+            // this is required to make the MessageBox wider
+            QSpacerItem* horizontalSpacer = new QSpacerItem(300, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+            QGridLayout* layout = (QGridLayout*)msgBox.layout();
+            layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
+
+            if (msgBox.exec() == QMessageBox::Yes)
+                db.deleteTaggedPath(filePath);
+
+            return;
+        }
+
         fileName = filePath;
         ui->openedNotePath->setText("Path: " + filePath);
         std::ifstream file(filePath.toStdString());
@@ -72,12 +92,27 @@ void MainWindow::openFile(QString &filePath) {
         openedFile = true;
         changeCount = 0;
         ui->noteText->setPlainText(QString::fromStdString(content));
-        if (!db.recentNoteExists(filePath)) {
-            if (db.checkRowCountEq(20)) {
-                db.deleteOldest();
+
+        if (!db.noteExists(filePath)) {
+            Tokenizer tokenizer;
+            tokenizer.tokenize(content);
+            tagArr.clear();
+            tagArr = tokenizer.getTags();
+
+            if (tagArr.size() > 0) {
+                db.insertNoteWithTags(filePath, tagArr);
+            } else {
+                db.insertNote(filePath);
             }
-            db.insertNote(filePath);
         }
+
+        if (!db.recentNoteExists(filePath)) {
+            qDebug() << db.getRowId(filePath.toStdString());
+            db.insertRecentNote(db.getRowId(filePath.toStdString()));
+        } else {
+            db.updateOpenedDate(filePath);
+        }
+
         #ifdef Q_OS_DARWIN
         setWindowModified(false);
         #endif
@@ -113,7 +148,7 @@ bool MainWindow::saveFile() {
             if (fileName.isEmpty())
                 return false;
         }
-    } catch (std::exception ex) {
+    } catch (std::exception& ex) {
         return false;
     }
 
@@ -131,17 +166,13 @@ bool MainWindow::saveFile() {
 
         Tokenizer tokenizer;
         tokenizer.tokenize(output);
-        tagArr = tokenizer.getTags();
+        tagArr = tokenizer.getTags();        
 
-        if (!db.recentNoteExists(fileName)) {
-            if (db.checkRowCountEq(20)) {
-                db.deleteOldest();
-            }
-            db.insertNote(fileName);
-        }
-        if (!db.taggedNoteExists(fileName)) {
+        if (!db.noteExists(fileName)) {
             if (tagArr.size() > 0) {
                 db.insertNoteWithTags(fileName, tagArr);
+            } else {
+                db.insertNote(fileName);
             }
         } else {
             db.deleteTags(db.getRowId(fileName.toUtf8().constData()));
@@ -149,7 +180,9 @@ bool MainWindow::saveFile() {
                 db.updateTags(fileName, tagArr);
             }
         }
-    } catch (std::exception ex) {
+
+        resetFileList();
+    } catch (std::exception& ex) {
         fileSaved = false;
         QMessageBox msgBox;
         msgBox.setText("There was an error! please try again.");
@@ -165,6 +198,7 @@ void MainWindow::resetFileList() {
     ui->fileList->clear();
     ui->fileListOptions->clear();
     ui->fileListOptions->addItem("Recent Notes");
+    ui->fileListOptions->addItem("All Notes");
     QVector<QString> recentPaths = db.getRecents();
     QVector<QString> tags = db.getTags();
     if (recentPaths.size() > 0) {
@@ -315,11 +349,16 @@ void MainWindow::on_actionDecrypt_Note_triggered() {
 
 void MainWindow::on_fileListOptions_currentTextChanged(const QString &arg1) {
     std::string tag = arg1.toUtf8().constData();
-    if (tag == "Recent Notes") {
+    if (tag == "Recent Notes" || tag == "All Notes") {
         ui->fileList->clear();
-        QVector<QString> recentPaths = db.getRecents();
-        if (recentPaths.size() > 0) {
-            for (auto& path : recentPaths)
+        QVector<QString> paths;
+        if (tag == "All Notes") {
+            paths = db.getNotes();
+        } else {
+            paths = db.getRecents();
+        }
+        if (paths.size() > 0) {
+            for (auto& path : paths)
                 ui->fileList->addItem(path);
         }
     } else {
@@ -337,6 +376,8 @@ void MainWindow::on_fileList_itemClicked(QListWidgetItem *item) {
     if (fileSaved && filePath == fileName)
         return;
     openFile(filePath);
+    if (ui->fileListOptions->currentText() == "Recent Notes")
+        resetFileList();
 }
 
 void MainWindow::on_noteText_textChanged() {
