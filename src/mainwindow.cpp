@@ -263,6 +263,20 @@ void MainWindow::on_actionEncrypt_note_triggered() {
                         "Enter the passphrase...\nNOTE: Please remember your password! This can't be reversed without it.",
                         QLineEdit::Password
                     );
+    QString pswd1 = QInputDialog::getText(
+                        0,
+                        "Encrypt Note",
+                        "Enter the passphrase again...\nNOTE: Please remember your password! This can't be reversed without it.",
+                        QLineEdit::Password
+                    );
+
+    if (pswd != pswd1) {
+        QMessageBox msgBox;
+        msgBox.setText("Passphrase don't match!");
+        msgBox.exec();
+        return;
+    }
+
     std::string input = ui->noteText->toPlainText().toStdString();
     std::string passphrase = pswd.toStdString();
 
@@ -278,7 +292,6 @@ void MainWindow::on_actionEncrypt_note_triggered() {
         msgBox.setText("Something went wrong during encryption...");
         msgBox.exec();
     }
-
 }
 
 void MainWindow::on_actionDecrypt_Note_triggered() {
