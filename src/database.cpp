@@ -1,17 +1,16 @@
 #include "headers/database.h"
+#include <QDebug>
+#include <QDir>
 #include <QSqlDatabase>
 #include <QSql>
 #include <QSqlError>
 #include <QSqlRecord>
 #include <QSqlQuery>
-#include <QVector>
-#include <QVariant>
-#include <QDir>
-#include <QDateTime>
 #include <QStandardPaths>
 #include <QString>
+#include <QVector>
+#include <QVariant>
 #include <vector>
-#include <QDebug>
 
 Database::Database() {
     if (!Database::createConnection()) {
@@ -30,7 +29,8 @@ Database::Database() {
 }
 
 bool Database::createConnection() {
-    // macos: ~/Library/Application Support/<QuickNote>/ linux: ~/.local/share/QuickNote
+    // macos: ~/Library/Application Support/<QuickNote>/
+    // linux: ~/.local/share/QuickNote
     QString dbPath = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation).at(0) + "/note.db";
     #ifdef Q_OS_WIN
     dbPath = QDir::currentPath() + "\\note.db"; // windows: PWD

@@ -107,7 +107,6 @@ void MainWindow::openFile(QString &filePath) {
         }
 
         if (!db.recentNoteExists(filePath)) {
-            qDebug() << db.getRowId(filePath.toStdString());
             db.insertRecentNote(db.getRowId(filePath.toStdString()));
         } else {
             db.updateOpenedDate(filePath);
@@ -176,9 +175,8 @@ bool MainWindow::saveFile() {
             }
         } else {
             db.deleteTags(db.getRowId(fileName.toUtf8().constData()));
-            if (tagArr.size() > 0) {
-                db.updateTags(fileName, tagArr);
-            }
+            if (tagArr.size() > 0)
+                db.updateTags(fileName, tagArr);            
         }
 
         resetFileList();
@@ -384,9 +382,8 @@ void MainWindow::on_noteText_textChanged() {
     changeCount += 1;
     fileSaved = (openedFile) ? (changeCount == 1) ? true : false : false;
     #ifdef Q_OS_DARWIN
-    if (!fileSaved) {
+    if (!fileSaved)
         setWindowModified(true);
-    }
     #endif
 }
 
