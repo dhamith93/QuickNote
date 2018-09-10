@@ -30,7 +30,10 @@ class Database
         QVector<QString> getRecents();
         bool fontConfigExists();
         bool insertFontConfig(const QString& font);
-        QString getFontConfig();       
+        QString getFontConfig();
+        bool displayModeExists();
+        bool insertDisplayMode(const QString& font);
+        QString getDisplayMode();
 };
 
 #endif // DATABASE_H

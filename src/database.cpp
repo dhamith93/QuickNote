@@ -25,6 +25,8 @@ Database::Database() {
         query.exec();
         query.prepare("CREATE TABLE IF NOT EXISTS font_config (font TEXT NOT NULL)");
         query.exec();
+        query.prepare("CREATE TABLE IF NOT EXISTS display_mode (mode TEXT NOT NULL)");
+        query.exec();
    }
 }
 
@@ -254,6 +256,31 @@ bool Database::insertFontConfig(const QString& font) {
 
 QString Database::getFontConfig() {
     QSqlQuery query("SELECT font FROM font_config WHERE rowid = 1");
+    query.next();
+    return query.value(0).toString();
+}
+
+bool Database::displayModeExists() {
+    QSqlQuery query("SELECT COUNT(*) FROM display_mode");
+    query.first();
+    int count = 0;
+    count = query.value(0).toInt();
+    return (count > 0);
+}
+
+bool Database::insertDisplayMode(const QString& mode) {
+    QSqlQuery query;
+    if (displayModeExists()) {
+        query.prepare("UPDATE display_mode SET mode = :mode WHERE rowid = 1");
+    } else {
+        query.prepare("INSERT INTO display_mode (mode) VALUES (:mode)");
+    }
+    query.bindValue(":mode", mode);
+    return query.exec();
+}
+
+QString Database::getDisplayMode() {
+    QSqlQuery query("SELECT mode FROM display_mode WHERE rowid = 1");
     query.next();
     return query.value(0).toString();
 }

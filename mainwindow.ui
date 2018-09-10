@@ -276,8 +276,51 @@ QPushButton:pressed {
             <height>16777215</height>
            </size>
           </property>
+          <property name="styleSheet">
+           <string notr="true">QListView {
+    show-decoration-selected: 1; 
+}
+
+QListView::item {
+    height:30px;
+    font-size: 14pt;
+}
+
+QListView::item:alternate {
+    background: #EEEEEE;
+}
+
+QListView::item:selected {
+    border: 1px solid #448EF2;
+}
+
+QListView::item:selected:!active {
+    background: #77AFFC;
+}
+
+QListView::item:selected:active {
+    background: #448EF2;
+}
+
+QListView::item:hover {
+    background: #009EFF;
+    color: #FFFFFF
+}</string>
+          </property>
           <property name="autoScroll">
            <bool>true</bool>
+          </property>
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="showDropIndicator" stdset="0">
+           <bool>false</bool>
+          </property>
+          <property name="textElideMode">
+           <enum>Qt::ElideLeft</enum>
+          </property>
+          <property name="isWrapping" stdset="0">
+           <bool>false</bool>
           </property>
           <property name="layoutMode">
            <enum>QListView::SinglePass</enum>
@@ -286,7 +329,7 @@ QPushButton:pressed {
            <enum>QListView::ListMode</enum>
           </property>
           <property name="wordWrap">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <item>
            <property name="text">
@@ -365,9 +408,18 @@ QPushButton:pressed {
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuDisplay_Mode">
+     <property name="title">
+      <string>Display Mode</string>
+     </property>
+     <addaction name="actionLight"/>
+     <addaction name="actionDark"/>
+    </widget>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionChange_Font"/>
+    <addaction name="menuDisplay_Mode"/>
+    <addaction name="actionShow_Word_Count"/>
    </widget>
    <widget class="QMenu" name="menuNote">
     <property name="title">
@@ -429,6 +481,30 @@ QPushButton:pressed {
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+D</string>
+   </property>
+  </action>
+  <action name="actionLight">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Light</string>
+   </property>
+  </action>
+  <action name="actionDark">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Dark</string>
+   </property>
+  </action>
+  <action name="actionShow_Word_Count">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Word Count</string>
    </property>
   </action>
  </widget>

@@ -30,10 +30,11 @@ class MainWindow : public QMainWindow
         void on_actionChange_Font_triggered();
         void on_actionCopy_selection_as_HTML_triggered();
         void on_actionExport_HTML_triggered();
-
         void on_actionEncrypt_note_triggered();
-
         void on_actionDecrypt_Note_triggered();
+        void on_actionLight_triggered();
+        void on_actionDark_triggered();
+        void on_actionShow_Word_Count_triggered();
 
     private:
         Ui::MainWindow *ui;
@@ -43,7 +44,9 @@ class MainWindow : public QMainWindow
         std::vector<std::string> tagArr;
         bool fileSaved;
         bool openedFile;
+        bool showWordCount;
         int changeCount;
+        std::string displayMode;
 
         void closeEvent(QCloseEvent *event);
         void init();
@@ -52,6 +55,9 @@ class MainWindow : public QMainWindow
         bool fileSavePromt();
         bool saveFile();
         std::string getFileContent(std::string path);
+        void setDisplayModeLight();
+        void setDisplayModeDark();
+        QString getWordCount();
 };
 
 #endif // MAINWINDOW_H

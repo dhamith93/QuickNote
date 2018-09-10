@@ -34,22 +34,32 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::init() {
+void MainWindow::init() {    
     this->setStyleSheet("QMainWindow { background-color: #505050; border: none; }");
     ui->splitter->setStretchFactor (0,0);
     ui->splitter->setStretchFactor (1,1);
     ui->noteText->setStyleSheet("QPlainTextEdit { padding: 5% 5% 0 5%; color: white; background-color: #252525; border:none; }");
     ui->openedNotePath->setStyleSheet("color: white;");
+    ui->actionDark->setChecked(true);
+
     highlighter = new Highlighter(this);
     highlighter->setDocument(ui->noteText->document());
     fileSaved = true;
     openedFile = true;
+    showWordCount = false;
     changeCount = 0;
 
     if (db.fontConfigExists()) {
         QFont font;
         font.fromString(db.getFontConfig());
         ui->noteText->setFont(font);
+    }
+
+    if (db.displayModeExists()) {
+        if (db.getDisplayMode() == "light") {
+            setDisplayModeLight();
+        }
+        // default is `dark`. else is not needed
     }
 
     resetFileList();
@@ -209,6 +219,25 @@ void MainWindow::resetFileList() {
         ui->fileListOptions->addItems(tagList);
     }
     ui->fileListOptions->blockSignals(false);
+}
+
+void MainWindow::setDisplayModeLight() {
+    ui->actionLight->setChecked(true);
+    ui->actionDark->setChecked(false);
+    ui->noteText->setStyleSheet("QPlainTextEdit { padding: 5% 5% 0 5%; color: #454545; background-color: #FAFAFA; border:none; }");
+    db.insertDisplayMode("light");
+}
+
+void MainWindow::setDisplayModeDark() {
+    ui->actionDark->setChecked(true);
+    ui->actionLight->setChecked(false);
+    ui->noteText->setStyleSheet("QPlainTextEdit { padding: 5% 5% 0 5%; color: white; background-color: #252525; border:none; }");
+    db.insertDisplayMode("dark");
+}
+
+QString MainWindow::getWordCount() {
+    int wordCount = ui->noteText->toPlainText().split(QRegExp("(\\s|\\n|\\r)+"), QString::SkipEmptyParts).count();
+    return QString::number(wordCount);
 }
 
 std::string MainWindow::getFileContent(std::string path) {
@@ -374,8 +403,10 @@ void MainWindow::on_fileList_itemClicked(QListWidgetItem *item) {
     if (fileSaved && filePath == fileName)
         return;
     openFile(filePath);
-    if (ui->fileListOptions->currentText() == "Recent Notes")
+    if (ui->fileListOptions->currentText() == "Recent Notes") {
         resetFileList();
+        ui->fileList->setCurrentIndex(ui->fileList->model()->index(0, 0));
+    }
 }
 
 void MainWindow::on_noteText_textChanged() {
@@ -385,6 +416,13 @@ void MainWindow::on_noteText_textChanged() {
     if (!fileSaved)
         setWindowModified(true);
     #endif
+
+    if (showWordCount) {
+        QString wordCountText = "Word Count: " + getWordCount();
+        if (openedFile)
+            wordCountText += " | Path: " + fileName;
+        ui->openedNotePath->setText(wordCountText);
+    }
 }
 
 void MainWindow::on_actionChange_Font_triggered() {
@@ -396,9 +434,28 @@ void MainWindow::on_actionChange_Font_triggered() {
     }
 }
 
+void MainWindow::on_actionLight_triggered() {
+    setDisplayModeLight();
+}
+
+void MainWindow::on_actionDark_triggered() {
+    setDisplayModeDark();
+}
+
 void MainWindow::closeEvent (QCloseEvent *event) {
     if (!fileSaved) {
         if (!fileSavePromt())
             event->ignore();
     }
+}
+
+void MainWindow::on_actionShow_Word_Count_triggered() {
+    this->showWordCount = (!this->showWordCount);
+    QString text = "";
+    if (openedFile && !fileName.isEmpty())
+        text = "| Path: " + fileName;
+    if (this->showWordCount) {
+        text = "Word Count: " + getWordCount() + text;
+    }
+    ui->openedNotePath->setText(text);
 }
