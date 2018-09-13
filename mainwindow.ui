@@ -282,7 +282,7 @@ QPushButton:pressed {
 }
 
 QListView::item {
-    height:30px;
+    height: 30px;
     font-size: 14pt;
 }
 
@@ -316,6 +316,9 @@ QListView::item:hover {
           <property name="showDropIndicator" stdset="0">
            <bool>false</bool>
           </property>
+          <property name="alternatingRowColors">
+           <bool>false</bool>
+          </property>
           <property name="textElideMode">
            <enum>Qt::ElideLeft</enum>
           </property>
@@ -325,8 +328,14 @@ QListView::item:hover {
           <property name="layoutMode">
            <enum>QListView::SinglePass</enum>
           </property>
+          <property name="spacing">
+           <number>0</number>
+          </property>
           <property name="viewMode">
            <enum>QListView::ListMode</enum>
+          </property>
+          <property name="uniformItemSizes">
+           <bool>false</bool>
           </property>
           <property name="wordWrap">
            <bool>true</bool>

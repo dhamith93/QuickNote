@@ -40,8 +40,6 @@ class Highlighter : public QSyntaxHighlighter
         QTextCharFormat strongFormat;
         QTextCharFormat emFormat;
         QTextCharFormat strikeFormat;
-        QTextCharFormat bracketBetweenFormat;
-        QTextCharFormat paranBetweenFormat;
         QTextCharFormat tagFormat;
 };
 

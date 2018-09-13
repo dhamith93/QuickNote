@@ -41,6 +41,8 @@ class MainWindow : public QMainWindow
         Highlighter *highlighter;
         Database db;
         QString fileName;
+        QString darkStyles;
+        QString lightStyles;
         std::vector<std::string> tagArr;
         bool fileSaved;
         bool openedFile;
@@ -50,11 +52,12 @@ class MainWindow : public QMainWindow
 
         void closeEvent(QCloseEvent *event);
         void init();
-        void resetFileList();
+        void resetFileList();        
         void openFile(QString &filePath);
         bool fileSavePromt();
         bool saveFile();
         std::string getFileContent(std::string path);
+        void openedFileHelper();
         void setDisplayModeLight();
         void setDisplayModeDark();
         QString getWordCount();

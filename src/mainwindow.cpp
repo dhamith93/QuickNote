@@ -35,15 +35,26 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::init() {    
+    darkStyles = "QPlainTextEdit { padding: 5% 5% 0 5%; color: white; background-color: #252525; border:none; }";
+    lightStyles = "QPlainTextEdit { padding: 5% 5% 0 5%; color: #454545; background-color: #FAFAFA; border:none; }";
+
     this->setStyleSheet("QMainWindow { background-color: #505050; border: none; }");
     ui->splitter->setStretchFactor (0,0);
     ui->splitter->setStretchFactor (1,1);
-    ui->noteText->setStyleSheet("QPlainTextEdit { padding: 5% 5% 0 5%; color: white; background-color: #252525; border:none; }");
+    ui->noteText->setStyleSheet(darkStyles);
     ui->openedNotePath->setStyleSheet("color: white;");
     ui->actionDark->setChecked(true);
+    ui->fileList->setWordWrap(true);
+
+    // changing font size is required to fix the inconsistent
+    // word wrapping/ellipsis of fileList items
+    QFont font = ui->fileList->font();
+    font.setPointSize(13);
+    ui->fileList->setFont(font);
 
     highlighter = new Highlighter(this);
     highlighter->setDocument(ui->noteText->document());
+
     fileSaved = true;
     openedFile = true;
     showWordCount = false;
@@ -55,11 +66,8 @@ void MainWindow::init() {
         ui->noteText->setFont(font);
     }
 
-    if (db.displayModeExists()) {
-        if (db.getDisplayMode() == "light") {
-            setDisplayModeLight();
-        }
-        // default is `dark`. else is not needed
+    if (db.displayModeExists() && db.getDisplayMode() == "light") {
+        setDisplayModeLight();
     }
 
     resetFileList();
@@ -80,6 +88,7 @@ void MainWindow::openFile(QString &filePath) {
             msgBox.setInformativeText("It seems like the note '.md' file was deleted!\n Do you want to delete the record?");
             msgBox.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
             msgBox.setDefaultButton(QMessageBox::Yes);
+
             // this is required to make the MessageBox wider
             QSpacerItem* horizontalSpacer = new QSpacerItem(300, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
             QGridLayout* layout = (QGridLayout*)msgBox.layout();
@@ -221,17 +230,25 @@ void MainWindow::resetFileList() {
     ui->fileListOptions->blockSignals(false);
 }
 
+void MainWindow::openedFileHelper() {
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), QDir::homePath(), tr("Markdown (*.md)"));
+    if (fileName.size() > 0) {
+        openFile(fileName);
+        resetFileList();
+    }
+}
+
 void MainWindow::setDisplayModeLight() {
     ui->actionLight->setChecked(true);
     ui->actionDark->setChecked(false);
-    ui->noteText->setStyleSheet("QPlainTextEdit { padding: 5% 5% 0 5%; color: #454545; background-color: #FAFAFA; border:none; }");
+    ui->noteText->setStyleSheet(lightStyles);
     db.insertDisplayMode("light");
 }
 
 void MainWindow::setDisplayModeDark() {
     ui->actionDark->setChecked(true);
     ui->actionLight->setChecked(false);
-    ui->noteText->setStyleSheet("QPlainTextEdit { padding: 5% 5% 0 5%; color: white; background-color: #252525; border:none; }");
+    ui->noteText->setStyleSheet(darkStyles);
     db.insertDisplayMode("dark");
 }
 
@@ -266,19 +283,11 @@ void MainWindow::on_newNoteBtn_clicked() {
 }
 
 void MainWindow::on_openNoteBtn_clicked() {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), QDir::homePath(), tr("Markdown (*.md)"));
-    if (fileName.size() > 0) {
-        openFile(fileName);
-        resetFileList();
-    }
+    openedFileHelper();
 }
 
 void MainWindow::on_actionOpen_triggered() {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), QDir::homePath(), tr("Markdown (*.md)"));
-    if (fileName.size() > 0) {
-        openFile(fileName);
-        resetFileList();
-    }
+    openedFileHelper();
 }
 
 void MainWindow::on_actionSave_triggered() {
@@ -427,7 +436,7 @@ void MainWindow::on_noteText_textChanged() {
 
 void MainWindow::on_actionChange_Font_triggered() {
     bool changed;
-    QFont font = QFontDialog::getFont(&changed);
+    QFont font = QFontDialog::getFont(&changed, ui->noteText->font());
     if (changed) {
         db.insertFontConfig(font.toString());
         ui->noteText->setFont(font);
@@ -453,7 +462,7 @@ void MainWindow::on_actionShow_Word_Count_triggered() {
     this->showWordCount = (!this->showWordCount);
     QString text = "";
     if (openedFile && !fileName.isEmpty())
-        text = "| Path: " + fileName;
+        text = " | Path: " + fileName;
     if (this->showWordCount) {
         text = "Word Count: " + getWordCount() + text;
     }
