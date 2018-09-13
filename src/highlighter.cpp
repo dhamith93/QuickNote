@@ -89,16 +89,20 @@ Highlighter::Highlighter(QObject *parent) : QSyntaxHighlighter(parent) {
     rule.format = headerFormat;
     highlightingRules.append(rule);
 
-    keywordFormat.setFontWeight(QFont::Bold);
-    keywordFormat.setForeground(QColor("#437bce"));
-    QStringList keywordPatterns;
-    keywordPatterns
+    codeBlockFormat.setForeground(QColor("#FF6B33"));
+    codeStartExpression = QRegExp("^```(\\w|\\d|.[^\\s]){0,}\\^$");
+    codeEndExpression = QRegExp("^```$");
+
+    symbolFormat.setFontWeight(QFont::Bold);
+    symbolFormat.setForeground(QColor("#437bce"));
+    QStringList symbolPatterns;
+    symbolPatterns
             << "^(```)" << "^\\s*\\*\\s" << "^\\s*\\-\\s"  << "^(\\s*>){1,}"
             << "^(\\s*\\d+\\.\\s)" << "\\*" << "`" << "\\~\\~" << "\\(" << "\\)"
             << "\\[" << "\\]";
-    foreach (const QString &pattern, keywordPatterns) {
+    foreach (const QString &pattern, symbolPatterns) {
         rule.pattern = QRegularExpression(pattern);
-        rule.format = keywordFormat;
+        rule.format = symbolFormat;
         highlightingRules.append(rule);
     }
 
@@ -115,5 +119,23 @@ void Highlighter::highlightBlock(const QString &text) {
     }
 
     setCurrentBlockState(0);
+
+    int startIndex = 0;
+    if (previousBlockState() != 1)
+        startIndex = codeStartExpression.indexIn(text);
+
+    while (startIndex >= 0) {
+        int endIndex = codeEndExpression.indexIn(text, startIndex);
+        int commentLength;
+        if (endIndex == -1) {
+            setCurrentBlockState(1);
+            commentLength = text.length() - startIndex;
+        } else {
+            commentLength = endIndex - startIndex
+                            + codeEndExpression.matchedLength();
+        }
+        setFormat(startIndex, commentLength, codeBlockFormat);
+        startIndex = codeStartExpression.indexIn(text, startIndex + commentLength);
+    }
 
 }

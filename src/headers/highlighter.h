@@ -21,10 +21,10 @@ class Highlighter : public QSyntaxHighlighter
         QRegularExpression commentStartExpression;
         QRegularExpression commentEndExpression;
 
-        QRegularExpression codeStartExpression;
-        QRegularExpression codeEndExpression;
+        QRegExp codeStartExpression;
+        QRegExp codeEndExpression;
 
-        QTextCharFormat keywordFormat;
+        QTextCharFormat symbolFormat;
         QTextCharFormat headerFormat;
         QTextCharFormat h1Format;
         QTextCharFormat h2Format;
@@ -34,7 +34,7 @@ class Highlighter : public QSyntaxHighlighter
         QTextCharFormat h6Format;
         QTextCharFormat listFormat;
         QTextCharFormat blockquoteFormat;
-        QTextCharFormat codeFormat;
+        QTextCharFormat codeBlockFormat;
         QTextCharFormat linkFormat;
         QTextCharFormat inlineCodeFormat;
         QTextCharFormat strongFormat;
