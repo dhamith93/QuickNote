@@ -126,16 +126,16 @@ void Highlighter::highlightBlock(const QString &text) {
 
     while (startIndex >= 0) {
         int endIndex = codeEndExpression.indexIn(text, startIndex);
-        int commentLength;
+        int codeLength;
         if (endIndex == -1) {
             setCurrentBlockState(1);
-            commentLength = text.length() - startIndex;
+            codeLength = text.length() - startIndex;
         } else {
-            commentLength = endIndex - startIndex
+            codeLength = endIndex - startIndex
                             + codeEndExpression.matchedLength();
         }
-        setFormat(startIndex, commentLength, codeBlockFormat);
-        startIndex = codeStartExpression.indexIn(text, startIndex + commentLength);
+        setFormat(startIndex, codeLength, codeBlockFormat);
+        startIndex = codeStartExpression.indexIn(text, startIndex + codeLength);
     }
 
 }
