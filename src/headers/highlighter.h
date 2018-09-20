@@ -16,10 +16,8 @@ class Highlighter : public QSyntaxHighlighter
             QRegularExpression pattern;
             QTextCharFormat format;
         };
-        QVector<HighlightingRule> highlightingRules;
 
-        QRegularExpression commentStartExpression;
-        QRegularExpression commentEndExpression;
+        QVector<HighlightingRule> highlightingRules;
 
         QRegExp codeStartExpression;
         QRegExp codeEndExpression;
@@ -35,6 +33,7 @@ class Highlighter : public QSyntaxHighlighter
         QTextCharFormat listFormat;
         QTextCharFormat blockquoteFormat;
         QTextCharFormat codeBlockFormat;
+        QTextCharFormat commentBlockFormat;
         QTextCharFormat linkFormat;
         QTextCharFormat inlineCodeFormat;
         QTextCharFormat strongFormat;

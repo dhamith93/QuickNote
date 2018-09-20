@@ -9,6 +9,7 @@ class Tokenizer {
         Tree tree;
         std::vector<std::string> tags;
 
+        bool comment(std::string &str);
         bool header(std::string &str);
         bool list(std::string str);
         bool subList(std::string str);

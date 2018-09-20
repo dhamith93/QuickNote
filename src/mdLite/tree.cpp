@@ -39,8 +39,10 @@ std::string Tree::traversTree() {
 
 void Tree::printToken(Token &token, std::string s, std::string &output) {
 
-    if (!token.tag.empty()) {
-        if (token.isImage) {
+    if (!token.tag.empty() || token.isComment) {
+        if (token.isComment) {
+            output += token.text + "\n";
+        } else if (token.isImage) {
             output += s + "<" + token.tag + " src=\"" + token.src + "\" title=\"" + token.text + "\" />\n";
         } else if (token.isLink) {
             output += s + "<" + token.tag + " href=" + token.href + ">";
@@ -58,7 +60,7 @@ void Tree::printToken(Token &token, std::string s, std::string &output) {
                 }
             }
             output += "</" + token.tag + ">\n";
-        } else {
+        } else {             
             std::string styles = (!token.styles.empty()) ? " style=\"" + token.styles + "\"" : "";
             std::string classes = (token.htmlClass != "") ? " class=\"" + token.htmlClass + "\" " : "";
             output += s + "<" + token.tag + classes + styles + ">\n";

@@ -461,10 +461,13 @@ void MainWindow::closeEvent (QCloseEvent *event) {
 void MainWindow::on_actionShow_Word_Count_triggered() {
     this->showWordCount = (!this->showWordCount);
     QString text = "";
-    if (openedFile && !fileName.isEmpty())
-        text = " | Path: " + fileName;
     if (this->showWordCount) {
-        text = "Word Count: " + getWordCount() + text;
+        text = "Word Count: " + getWordCount();
+    }
+    if (openedFile && !fileName.isEmpty()) {
+        if (this->showWordCount)
+            text += " | ";
+        text += "Path: " + fileName;
     }
     ui->openedNotePath->setText(text);
 }

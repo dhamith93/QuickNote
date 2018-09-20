@@ -16,8 +16,11 @@ formatted text as HTML.
 - Recent note list
 - Organize notes with tags
 - Change editor font
+- Dark/Light modes
+- Word counter
 
 ### Screenshots
 
-![](screenshots/main.png)
+![](screenshots/MainWindow_dark.png)
 
+![](screenshots/MainWindow_light.png)

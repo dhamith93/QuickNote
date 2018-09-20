@@ -27,6 +27,14 @@ void Tokenizer::tokenize(std::string &input) {
     int emptyLineCount = 0;
     for (auto &line : lines) {
         token.isEmpty = true;
+        if (comment(line)) {
+            token.text = line;
+            token.isComment = true;
+            token.isEmpty = false;
+            tree.insert(token);
+            token = { };
+            continue;
+        }
         if (!codeStarted) {
             if (header(line)) {
                 token = createHeader(line);
@@ -125,7 +133,6 @@ void Tokenizer::tokenize(std::string &input) {
 
                 if (!token.isEmpty) {
                     tree.insert(token);
-                    token = { };
                 }
 
                 token = { };
@@ -204,6 +211,15 @@ std::string Tokenizer::extractBetweenBrackets(std::string &str) {
     }
 
     return output;
+}
+
+bool Tokenizer::comment(std::string &str) {
+    std::string pattern = "^<!--(.){0,}-->";
+    const boost::regex regex(pattern);
+
+    return (
+        boost::regex_search(str, regex, boost::match_partial)
+    );
 }
 
 /**

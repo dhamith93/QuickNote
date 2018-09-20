@@ -93,13 +93,18 @@ Highlighter::Highlighter(QObject *parent) : QSyntaxHighlighter(parent) {
     codeStartExpression = QRegExp("^```(\\w|\\d|.[^\\s]){0,}\\^$");
     codeEndExpression = QRegExp("^```$");
 
+    commentBlockFormat.setForeground(QColor("#0DFFC8"));
+    commentBlockFormat.setFontItalic(true);
+    rule.pattern = QRegularExpression("<!--(.){0,}-->");
+    rule.format = commentBlockFormat;
+    highlightingRules.append(rule);
+
     symbolFormat.setFontWeight(QFont::Bold);
     symbolFormat.setForeground(QColor("#437bce"));
     QStringList symbolPatterns;
     symbolPatterns
             << "^(```)" << "^\\s*\\*\\s" << "^\\s*\\-\\s"  << "^(\\s*>){1,}"
-            << "^(\\s*\\d+\\.\\s)" << "\\*" << "`" << "\\~\\~" << "\\(" << "\\)"
-            << "\\[" << "\\]";
+            << "^(\\s*\\d+\\.\\s)" << "\\*" << "`" << "\\~\\~";
     foreach (const QString &pattern, symbolPatterns) {
         rule.pattern = QRegularExpression(pattern);
         rule.format = symbolFormat;
@@ -137,5 +142,4 @@ void Highlighter::highlightBlock(const QString &text) {
         setFormat(startIndex, codeLength, codeBlockFormat);
         startIndex = codeStartExpression.indexIn(text, startIndex + codeLength);
     }
-
 }

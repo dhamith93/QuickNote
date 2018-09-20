@@ -8,7 +8,6 @@
 struct Token {
         std::string tokenType;
         std::string text;
-        //std::string classes[];
         std::string htmlClass = "";
         std::string id;
         std::string styles;
@@ -24,6 +23,7 @@ struct Token {
         bool isParaghraph = false;
         bool isStrong = false;
         bool isEm = false;
+        bool isComment = false;
         bool isInlineCode = false;
         bool isBlockquote = false;
         bool isBlockquoteText = false;
