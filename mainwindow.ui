@@ -429,6 +429,7 @@ QListView::item:hover {
     <addaction name="actionChange_Font"/>
     <addaction name="menuDisplay_Mode"/>
     <addaction name="actionShow_Word_Count"/>
+    <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuNote">
     <property name="title">
@@ -514,6 +515,11 @@ QListView::item:hover {
    </property>
    <property name="text">
     <string>Show Word Count</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

@@ -36,6 +36,8 @@ class MainWindow : public QMainWindow
         void on_actionDark_triggered();
         void on_actionShow_Word_Count_triggered();
 
+        void on_actionAbout_triggered();
+
     private:
         Ui::MainWindow *ui;
         Highlighter *highlighter;

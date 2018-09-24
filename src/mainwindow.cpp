@@ -6,7 +6,6 @@
 #include "mdLite/token.h"
 #include "mdLite/tokenizer.h"
 #include <QClipboard>
-#include <QDebug>
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -470,4 +469,18 @@ void MainWindow::on_actionShow_Word_Count_triggered() {
         text += "Path: " + fileName;
     }
     ui->openedNotePath->setText(text);
+}
+
+void MainWindow::on_actionAbout_triggered() {
+    QMessageBox msgBox;
+    msgBox.setText("QuickNote v3.4.1");
+    msgBox.setInformativeText("QuickNote is a simple note app with markdown support.\nhttps:\\\\www.github.com/dhamith93/QuickNote");
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    QSpacerItem* horizontalSpacer = new QSpacerItem(300, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    QGridLayout* layout = (QGridLayout*)msgBox.layout();
+    layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
+
+    msgBox.exec();
+
 }
