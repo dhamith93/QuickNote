@@ -133,10 +133,9 @@ void Tokenizer::tokenize(std::string &input) {
 
                 if (!token.isEmpty) {
                     tree.insert(token);
-                    token = { };
                 }
 
-                // token = { };
+                token = { };
             }
         } else if (codeStarted) {
             if (code(line)) {

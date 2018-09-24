@@ -35,7 +35,6 @@ class MainWindow : public QMainWindow
         void on_actionLight_triggered();
         void on_actionDark_triggered();
         void on_actionShow_Word_Count_triggered();
-
         void on_actionAbout_triggered();
 
     private:
@@ -63,10 +62,11 @@ class MainWindow : public QMainWindow
         void setDisplayModeLight();
         void setDisplayModeDark();
         QString getWordCount();
-        bool previousLineIsListItem(QString &line);
-        bool unorderedListItem(QString &line);
+        bool checkListItem(QString &line);
+        bool checkUnorderedListItem(QString &line);
         int getSpaceCount(QString &line);
         QString getNextNumber(QString &line);
+        void reverseTab();
 };
 
 #endif // MAINWINDOW_H

@@ -13,6 +13,7 @@
 #include <QFontDialog>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QShortcut>
 #include <QTextDocumentFragment>
 #include <sstream>
 #include <fstream>
@@ -27,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
                 QMainWindow(parent),
                 ui(new Ui::MainWindow) {
     ui->setupUi(this);
+    QShortcut *shortcut = new QShortcut(QKeySequence(Qt::SHIFT + Qt::Key_Tab), this);
+    QObject::connect(shortcut, &QShortcut::activated, this, &MainWindow::reverseTab);
     init();
 }
 
@@ -269,13 +272,13 @@ std::string MainWindow::getFileContent(std::string path) {
     return "";
 }
 
-bool MainWindow::previousLineIsListItem(QString &line) {
+bool MainWindow::checkListItem(QString &line) {
     QRegularExpression regex1("^\\s*\\*\\s");
     QRegularExpression regex2("^\\s*\\d*\\.\\s");
     return (regex1.match(line).hasMatch() || regex2.match(line).hasMatch());
 }
 
-bool MainWindow::unorderedListItem(QString &line) {
+bool MainWindow::checkUnorderedListItem(QString &line) {
     QRegularExpression regex("^\\s*\\*\\s");
     return (regex.match(line).hasMatch());
 }
@@ -309,6 +312,21 @@ QString MainWindow::getNextNumber(QString &line) {
         }
     } else {
         return "";
+    }
+}
+
+void MainWindow::reverseTab() {
+    QTextCursor tempCursor = ui->noteText->textCursor();
+    QString line = tempCursor.block().text();
+    if (checkListItem(line) && getSpaceCount(line) >= 4) {
+        int pos = tempCursor.positionInBlock();
+        ui->noteText->blockSignals(true);
+        tempCursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+        tempCursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, 4);
+        tempCursor.removeSelectedText();
+        tempCursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, pos - 4);
+        ui->noteText->setTextCursor(tempCursor);
+        ui->noteText->blockSignals(false);
     }
 }
 
@@ -479,12 +497,12 @@ void MainWindow::on_noteText_textChanged() {
     QTextBlock textBlock = ui->noteText->textCursor().block();
     QString prevLine = textBlock.previous().text();
 
-    if (previousLineIsListItem(prevLine)) {
+    if (checkListItem(prevLine)) {
         if (textBlock.text().length() == 0) {
             int spaceCount = getSpaceCount(prevLine);
             QString newLine = QString("").leftJustified(spaceCount, ' ');
 
-            if (unorderedListItem(prevLine)) {
+            if (checkUnorderedListItem(prevLine)) {
                 newLine += "* ";
             } else {
                 newLine += getNextNumber(prevLine) + ". ";
