@@ -58,7 +58,6 @@ void MainWindow::init() {
     fileSaved = true;
     openedFile = true;
     showWordCount = false;
-    textIndented = false;
     changeCount = 0;
 
     if (db.fontConfigExists()) {

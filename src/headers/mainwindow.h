@@ -50,7 +50,6 @@ class MainWindow : public QMainWindow
         bool openedFile;
         bool showWordCount;
         int changeCount;
-        bool textIndented;
         std::string displayMode;
 
         void closeEvent(QCloseEvent *event);
