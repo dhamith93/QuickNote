@@ -358,8 +358,8 @@ void MainWindow::on_actionExport_HTML_triggered() {
     std::string footerPath = "html/footer.html";
 
     #ifdef Q_OS_DARWIN
-    headerPath = "../Resources/header.html";
-    footerPath = "../Resources/footer.html";
+    headerPath = QString(QApplication::applicationDirPath() + "/../Resources/header.html").toStdString();
+    footerPath = QString(QApplication::applicationDirPath() + "/../Resources/footer.html").toStdString();
     #endif
 
     std::string output = getFileContent(headerPath);
