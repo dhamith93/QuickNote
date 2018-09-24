@@ -7,17 +7,18 @@ formatting. QuickNote also lets you export the note to HTML or copy selected
 formatted text as HTML. 
 
 ### Features
-- Markdown Formatting
-- Markdown syntax highlighting
-- Note encryption/decryption
-- Export to HTML
-- Copy selection as HTML
-- Save as .md
-- Recent note list
-- Organize notes with tags
-- Change editor font
-- Dark/Light modes
-- Word counter
+* Markdown Formatting
+* Markdown syntax highlighting
+* List indentation and auto numbering
+* Note encryption/decryption
+* Export to HTML
+* Copy selection as HTML
+* Save as .md
+* Recent note list
+* Organize notes with tags
+* Change editor font
+* Dark/Light modes
+* Word counter
 
 ### Screenshots
 
