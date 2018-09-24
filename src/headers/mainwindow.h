@@ -50,6 +50,7 @@ class MainWindow : public QMainWindow
         bool openedFile;
         bool showWordCount;
         int changeCount;
+        bool textIndented;
         std::string displayMode;
 
         void closeEvent(QCloseEvent *event);
@@ -63,6 +64,10 @@ class MainWindow : public QMainWindow
         void setDisplayModeLight();
         void setDisplayModeDark();
         QString getWordCount();
+        bool previousLineIsListItem(QString &line);
+        bool unorderedListItem(QString &line);
+        int getSpaceCount(QString &line);
+        QString getNextNumber(QString &line);
 };
 
 #endif // MAINWINDOW_H

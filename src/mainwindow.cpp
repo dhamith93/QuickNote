@@ -7,6 +7,7 @@
 #include "mdLite/tokenizer.h"
 #include <QClipboard>
 #include <QDir>
+#include <QDebug>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFontDialog>
@@ -57,6 +58,7 @@ void MainWindow::init() {
     fileSaved = true;
     openedFile = true;
     showWordCount = false;
+    textIndented = false;
     changeCount = 0;
 
     if (db.fontConfigExists()) {
@@ -268,6 +270,49 @@ std::string MainWindow::getFileContent(std::string path) {
     return "";
 }
 
+bool MainWindow::previousLineIsListItem(QString &line) {
+    QRegularExpression regex1("^\\s*\\*\\s");
+    QRegularExpression regex2("^\\s*\\d*\\.\\s");
+    return (regex1.match(line).hasMatch() || regex2.match(line).hasMatch());
+}
+
+bool MainWindow::unorderedListItem(QString &line) {
+    QRegularExpression regex("^\\s*\\*\\s");
+    return (regex.match(line).hasMatch());
+}
+
+int MainWindow::getSpaceCount(QString &line) {
+    int count = 0;
+    for (auto& c : line) {
+        if (c == ' ') {
+            count += 1;
+        } else {
+            break;
+        }
+    }
+    return count;
+}
+
+QString MainWindow::getNextNumber(QString &line) {
+    QString number = "";
+    QString trimmedLine = line.trimmed();
+    for (auto& c : trimmedLine) {
+        if (!c.isDigit())
+            break;
+        number += c;
+    }
+    if (number != "") {
+        try {
+            int newNumber = number.toInt() + 1;
+            return QString::number(newNumber);
+        } catch (std::exception &ex) {
+            return "";
+        }
+    } else {
+        return "";
+    }
+}
+
 void MainWindow::on_newNoteBtn_clicked() {
     if (openedFile && !fileSaved) {
         if (!fileSavePromt())
@@ -304,7 +349,7 @@ void MainWindow::on_actionCopy_selection_as_HTML_triggered() {
 }
 
 void MainWindow::on_actionExport_HTML_triggered() {
-    std::string text = ui->noteText->toPlainText().toStdString();
+    std::string text = ui->noteText->toPlainText().toStdString() + "\n";
     Tokenizer tokenizer;
     tokenizer.tokenize(text);
 
@@ -430,6 +475,24 @@ void MainWindow::on_noteText_textChanged() {
         if (openedFile)
             wordCountText += " | Path: " + fileName;
         ui->openedNotePath->setText(wordCountText);
+    }
+
+    QTextBlock textBlock = ui->noteText->textCursor().block();
+    QString prevLine = textBlock.previous().text();
+
+    if (previousLineIsListItem(prevLine)) {
+        if (textBlock.text().length() == 0) {
+            int spaceCount = getSpaceCount(prevLine);
+            QString newLine = QString("").leftJustified(spaceCount, ' ');
+
+            if (unorderedListItem(prevLine)) {
+                newLine += "* ";
+            } else {
+                newLine += getNextNumber(prevLine) + ". ";
+            }
+
+            ui->noteText->textCursor().insertText(newLine);
+        }
     }
 }
 

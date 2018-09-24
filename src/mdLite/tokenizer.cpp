@@ -50,7 +50,7 @@ void Tokenizer::tokenize(std::string &input) {
                 t.isListItem = true;
 
                 if (oList(line))
-                    t.styles = "display:block;margin:0.5em;margin-left:-17px;";
+                    t.styles = "display:block;margin:0.5em;margin-left:-16px;";
 
                 if (prevToken != "list") {
                     token = createList();
@@ -133,9 +133,10 @@ void Tokenizer::tokenize(std::string &input) {
 
                 if (!token.isEmpty) {
                     tree.insert(token);
+                    token = { };
                 }
 
-                token = { };
+                // token = { };
             }
         } else if (codeStarted) {
             if (code(line)) {
