@@ -16,8 +16,8 @@ bool PlainTextEdit::checkEmptyListItem(QString &line) {
     return (regex1.match(line).hasMatch() || regex2.match(line).hasMatch());
 }
 
-QTextCursor PlainTextEdit::getModifiedTextCursor(QTextCursor textCursorIn, QString text) {
-    QTextCursor tempCursor = textCursorIn;
+QTextCursor PlainTextEdit::getModifiedTextCursor(QString text) {
+    QTextCursor tempCursor = textCursor();
     tempCursor.movePosition(QTextCursor::StartOfLine);
     tempCursor.movePosition(QTextCursor::EndOfLine);
     tempCursor.select(QTextCursor::LineUnderCursor);
@@ -55,7 +55,7 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
         if (checkEmptyListItem(str)) {
             event->ignore();
             this->blockSignals(true);
-            this->setTextCursor(getModifiedTextCursor(this->textCursor(), "\n"));
+            this->setTextCursor(getModifiedTextCursor("\n"));
             this->blockSignals(false);
             return;
         }
@@ -67,7 +67,7 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
         if (block.text().length() == 1 && checkListItem(str)) {
             event->ignore();
             this->blockSignals(true);
-            this->setTextCursor(getModifiedTextCursor(this->textCursor(), ""));
+            this->setTextCursor(getModifiedTextCursor(""));
             this->blockSignals(false);
             return;
         }

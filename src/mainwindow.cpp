@@ -28,13 +28,36 @@ MainWindow::MainWindow(QWidget *parent) :
                 QMainWindow(parent),
                 ui(new Ui::MainWindow) {
     ui->setupUi(this);
+
     QShortcut *shortcut = new QShortcut(QKeySequence(Qt::SHIFT + Qt::Key_Tab), this);
     QObject::connect(shortcut, &QShortcut::activated, this, &MainWindow::reverseTab);
+
+    ui->noteText->installEventFilter(this);
+
     init();
 }
 
 MainWindow::~MainWindow() {
     delete ui;
+}
+
+
+// Overriding `undo (control/command + Z)` event to prevent
+// list releted methods from running on empty list item lines
+// when undoing changes
+bool MainWindow::eventFilter(QObject *watched, QEvent *event) {
+    if (event->type() == QEvent::ShortcutOverride) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->modifiers().testFlag(Qt::ControlModifier) && keyEvent->key() == 'Z') {
+            ui->noteText->blockSignals(true);
+            ui->noteText->undo();
+            ui->noteText->blockSignals(false);
+            event->ignore();
+            return true;
+        }
+    }
+
+    return QMainWindow::eventFilter(watched, event);
 }
 
 void MainWindow::init() {    
@@ -494,11 +517,11 @@ void MainWindow::on_noteText_textChanged() {
         ui->openedNotePath->setText(wordCountText);
     }
 
-    QTextBlock textBlock = ui->noteText->textCursor().block();
-    QString prevLine = textBlock.previous().text();
+    QTextBlock textBlock = ui->noteText->textCursor().block();    
 
-    if (checkListItem(prevLine)) {
-        if (textBlock.text().length() == 0) {
+    if (textBlock.text().length() == 0) {
+        QString prevLine = textBlock.previous().text();
+        if (checkListItem(prevLine)) {
             int spaceCount = getSpaceCount(prevLine);
             QString newLine = QString("").leftJustified(spaceCount, ' ');
 

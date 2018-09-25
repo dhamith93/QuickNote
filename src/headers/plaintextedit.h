@@ -11,7 +11,7 @@ class PlainTextEdit : public QPlainTextEdit {
     private:
         bool checkListItem(QString &line);
         bool checkEmptyListItem(QString &line);
-        QTextCursor getModifiedTextCursor(QTextCursor textCursorIn, QString text);
+        QTextCursor getModifiedTextCursor(QString text);
     protected:
         virtual void keyPressEvent(QKeyEvent *event);
         virtual void focusOutEvent(QFocusEvent* e);        
