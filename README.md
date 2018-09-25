@@ -20,7 +20,7 @@ QuickNote is a simple note app that uses subset of markdown syntax for formattin
 
 ### Using lists
 Unordered or ordered list can be created using `* test` or numbering items like `10. test`. Sublists can be created with indentation (4 spaces OR 1 tab).
-Once the list is started, next items will get auto indented (and auto numbered if list is a ordered one) to the previous item's level and by pressing `SHIFT + TAB` the indentation can be reduced by one level.
+Once the list is started, next items will get auto indented (and auto numbered if list is a ordered one) to the previous item's level and by pressing `SHIFT + TAB` the indentation can be reduced by one level. Pressing `ENTER` on a empty list item ends the list.
 #### Example 
 ```text
 * test
