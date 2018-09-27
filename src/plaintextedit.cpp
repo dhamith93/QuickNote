@@ -27,6 +27,35 @@ QTextCursor PlainTextEdit::getModifiedTextCursor(QString text) {
 }
 
 void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
+
+#ifdef Q_OS_DARWIN
+
+    // macos only
+    // Override macos native HOME & END keypress events
+
+    if (event->key() == Qt::Key_Home || event->key() == Qt::Key_End) {
+        event->ignore();
+        QTextCursor tempCursor = this->textCursor();
+        if (event->modifiers().testFlag(Qt::ShiftModifier)) {
+            tempCursor.setPosition(tempCursor.position(), QTextCursor::KeepAnchor);
+            if (event->key() == Qt::Key_Home) {
+                tempCursor.movePosition(QTextCursor::StartOfLine, QTextCursor::KeepAnchor);
+            } else {
+                tempCursor.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+            }
+        } else {
+            if (event->key() == Qt::Key_Home) {
+                tempCursor.movePosition(QTextCursor::StartOfLine);
+            } else {
+                tempCursor.movePosition(QTextCursor::EndOfLine);
+            }
+        }
+        setTextCursor(tempCursor);
+        return;
+    }
+
+#endif
+
     if(event->key() == Qt::Key_Tab) {
         event->ignore();
         QTextCursor tempCursor = this->textCursor();

@@ -46,8 +46,8 @@ MainWindow::~MainWindow() {
 // list releted methods from running on empty list item lines
 // when undoing changes
 bool MainWindow::eventFilter(QObject *watched, QEvent *event) {
-    if (event->type() == QEvent::ShortcutOverride) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+    if (event->type() == QEvent::ShortcutOverride) {        
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);        
         if (keyEvent->modifiers().testFlag(Qt::ControlModifier) && keyEvent->key() == 'Z') {
             ui->noteText->blockSignals(true);
             ui->noteText->undo();
