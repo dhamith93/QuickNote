@@ -48,9 +48,13 @@ MainWindow::~MainWindow() {
 bool MainWindow::eventFilter(QObject *watched, QEvent *event) {
     if (event->type() == QEvent::ShortcutOverride) {        
         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);        
-        if (keyEvent->modifiers().testFlag(Qt::ControlModifier) && keyEvent->key() == 'Z') {
-            ui->noteText->blockSignals(true);
-            ui->noteText->undo();
+        if (keyEvent->modifiers().testFlag(Qt::ControlModifier) && keyEvent->key() == 'Z') {            
+            ui->noteText->blockSignals(true);            
+            if (keyEvent->modifiers().testFlag(Qt::ShiftModifier)) {
+                ui->noteText->redo();
+            } else {
+                ui->noteText->undo();
+            }
             ui->noteText->blockSignals(false);
             event->ignore();
             return true;
