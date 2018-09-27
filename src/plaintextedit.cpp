@@ -56,6 +56,20 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
 
 #endif
 
+    if (event->type() == QEvent::ShortcutOverride) {
+        if (event->modifiers().testFlag(Qt::ControlModifier) && event->key() == 'Z') {
+            this->blockSignals(true);
+            if (event->modifiers().testFlag(Qt::ShiftModifier)) {
+                this->redo();
+            } else {
+                this->undo();
+            }
+            this->blockSignals(false);
+            event->ignore();
+            return;
+        }
+    }
+
     if(event->key() == Qt::Key_Tab) {
         event->ignore();
         QTextCursor tempCursor = this->textCursor();

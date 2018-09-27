@@ -52,7 +52,6 @@ class MainWindow : public QMainWindow
         std::string displayMode;
 
         void closeEvent(QCloseEvent *event);
-        bool eventFilter(QObject *watched, QEvent *event);
         void init();
         void resetFileList();        
         void openFile(QString &filePath);
