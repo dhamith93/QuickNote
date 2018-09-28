@@ -53,6 +53,7 @@ class MainWindow : public QMainWindow
         QVector<QString> paths;
 
         void closeEvent(QCloseEvent *event);
+        bool eventFilter(QObject *watched, QEvent *event);
         void init();
         void resetFileList();
         void setFileList();

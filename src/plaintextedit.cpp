@@ -1,6 +1,9 @@
 #include "headers/plaintextedit.h"
-#include "QTextBlock"
-#include "QRegularExpression"
+#include <QTextBlock>
+#include <QRegularExpression>
+#include <QTextDocumentFragment>
+
+#include "QDebug"
 
 PlainTextEdit::PlainTextEdit(QWidget *parent) : QPlainTextEdit(parent) { }
 
@@ -56,20 +59,6 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
 
 #endif
 
-    if (event->type() == QEvent::ShortcutOverride) {
-        if (event->modifiers().testFlag(Qt::ControlModifier) && event->key() == 'Z') {
-            this->blockSignals(true);
-            if (event->modifiers().testFlag(Qt::ShiftModifier)) {
-                this->redo();
-            } else {
-                this->undo();
-            }
-            this->blockSignals(false);
-            event->ignore();
-            return;
-        }
-    }
-
     if(event->key() == Qt::Key_Tab) {
         event->ignore();
         QTextCursor tempCursor = this->textCursor();
@@ -113,6 +102,66 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
             this->setTextCursor(getModifiedTextCursor(""));
             this->blockSignals(false);
             return;
+        }
+    }
+
+    // Autocomplete (, [, {, *, `, ', "
+    if (event->key() == Qt::Key_BraceLeft || event->key() == Qt::Key_BracketLeft
+            || event->key() == Qt::Key_ParenLeft || event->key() == Qt::Key_Apostrophe
+            || event->key() == Qt::Key_QuoteDbl || event->key() == Qt::Key_Asterisk
+            || event->key() == Qt::Key_QuoteLeft || event->key() == Qt::Key_AsciiTilde) {
+
+        // if `*` pressed on an empty line (i.e. list item)
+        // run the defualt keypress event
+        if (event->key() == Qt::Key_Asterisk && this->textCursor().block().text().isEmpty()) {
+            QPlainTextEdit::keyPressEvent(event);
+            return;
+        }
+
+        QString str = "";
+
+        switch (event->key()) {
+            case Qt::Key_BraceLeft:
+                str = "}";
+                break;
+            case Qt::Key_BracketLeft:
+                str = "]";
+                break;
+            case Qt::Key_ParenLeft:
+                str = ")";
+                break;
+            case Qt::Key_Apostrophe:
+                str = "'";
+                break;
+            case Qt::Key_QuoteDbl:
+                str = "\"";
+                break;
+            case Qt::Key_Asterisk:
+                str = "*";
+                break;
+            case Qt::Key_QuoteLeft:
+                str = "`";
+                break;
+            case Qt::Key_AsciiTilde:
+                str = "~";
+                break;
+            default:
+                break;
+        }
+
+        QTextCursor tempCursor = this->textCursor();
+        if (tempCursor.hasSelection()) {
+            int pos = tempCursor.selectionStart() + 1;
+            QString out = event->text() + tempCursor.selection().toPlainText() + str;
+            tempCursor.insertText(out);
+            tempCursor.setPosition(pos, QTextCursor::MoveAnchor);
+            tempCursor.setPosition((pos - 2) + out.length(), QTextCursor::KeepAnchor);
+            this->setTextCursor(tempCursor);
+            return; // this avoids adding extra key char into text
+        } else {
+            tempCursor.insertText(str);
+            tempCursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor);
+            this->setTextCursor(tempCursor);
         }
     }
 

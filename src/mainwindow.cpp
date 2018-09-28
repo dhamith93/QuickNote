@@ -30,11 +30,35 @@ MainWindow::MainWindow(QWidget *parent) :
     QShortcut *shortcut = new QShortcut(QKeySequence(Qt::SHIFT + Qt::Key_Tab), this);
     QObject::connect(shortcut, &QShortcut::activated, this, &MainWindow::reverseTab);
 
+    ui->noteText->installEventFilter(this);
+
     init();
 }
 
 MainWindow::~MainWindow() {
     delete ui;
+}
+
+// Overriding `undo (control/command + Z)` event to prevent
+// list releted methods from running on empty list item lines
+// when undoing changes
+bool MainWindow::eventFilter(QObject *watched, QEvent *event) {
+    if (event->type() == QEvent::ShortcutOverride) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->modifiers().testFlag(Qt::ControlModifier) && keyEvent->key() == 'Z') {
+            ui->noteText->blockSignals(true);
+            if (keyEvent->modifiers().testFlag(Qt::ShiftModifier)) {
+                ui->noteText->redo();
+            } else {
+                ui->noteText->undo();
+            }
+            ui->noteText->blockSignals(false);
+            event->ignore();
+            return true;
+        }
+    }
+
+    return QMainWindow::eventFilter(watched, event);
 }
 
 void MainWindow::init() {    
