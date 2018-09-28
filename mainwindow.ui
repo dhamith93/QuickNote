@@ -62,7 +62,7 @@
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>20</width>
+            <width>0</width>
             <height>20</height>
            </size>
           </property>
@@ -86,13 +86,13 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>80</width>
               <height>40</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>130</width>
+              <width>100</width>
               <height>40</height>
              </size>
             </property>
@@ -134,7 +134,7 @@ QPushButton:pressed {
 }</string>
             </property>
             <property name="text">
-             <string>New Note</string>
+             <string>New</string>
             </property>
            </widget>
           </item>
@@ -148,13 +148,13 @@ QPushButton:pressed {
             </property>
             <property name="minimumSize">
              <size>
-              <width>130</width>
+              <width>80</width>
               <height>40</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>130</width>
+              <width>100</width>
               <height>40</height>
              </size>
             </property>
@@ -196,7 +196,7 @@ QPushButton:pressed {
 }</string>
             </property>
             <property name="text">
-             <string>Open Note</string>
+             <string>Open</string>
             </property>
            </widget>
           </item>
@@ -212,25 +212,25 @@ QPushButton:pressed {
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>5</width>
+            <width>0</width>
             <height>20</height>
            </size>
           </property>
          </spacer>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="0">
           <item>
            <widget class="QComboBox" name="fileListOptions">
             <property name="minimumSize">
              <size>
-              <width>250</width>
+              <width>200</width>
               <height>0</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>250</width>
+              <width>200</width>
               <height>16777215</height>
              </size>
             </property>
@@ -256,7 +256,7 @@ QPushButton:pressed {
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>20</width>
+            <width>0</width>
             <height>10</height>
            </size>
           </property>
@@ -266,7 +266,7 @@ QPushButton:pressed {
          <widget class="QListWidget" name="fileList">
           <property name="minimumSize">
            <size>
-            <width>300</width>
+            <width>150</width>
             <height>0</height>
            </size>
           </property>
@@ -279,6 +279,9 @@ QPushButton:pressed {
           <property name="styleSheet">
            <string notr="true">QListView {
     show-decoration-selected: 1; 
+	color: #DADADA;
+	background-color: #353535;
+     border: none;
 }
 
 QListView::item {
@@ -291,19 +294,20 @@ QListView::item:alternate {
 }
 
 QListView::item:selected {
-    border: 1px solid #448EF2;
+    border: 1px solid #6D6D6D;
+	color: #FFFFFF
 }
 
 QListView::item:selected:!active {
-    background: #77AFFC;
+    background: #6D6D6D;
 }
 
 QListView::item:selected:active {
-    background: #448EF2;
+    background: #6D6D6D;
 }
 
 QListView::item:hover {
-    background: #009EFF;
+    background: #898989;
     color: #FFFFFF
 }</string>
           </property>

@@ -44,10 +44,15 @@ void MainWindow::init() {
     this->setStyleSheet("QMainWindow { background-color: #505050; border: none; }");
     ui->splitter->setStretchFactor (0,0);
     ui->splitter->setStretchFactor (1,1);
+    ui->splitter->setSizes(QList<int>() << 200 << 160000);
     ui->noteText->setStyleSheet(darkStyles);
     ui->openedNotePath->setStyleSheet("color: white;");
     ui->actionDark->setChecked(true);
     ui->fileList->setWordWrap(true);
+
+#ifdef Q_OS_DARWIN
+    ui->fileList->setAttribute(Qt::WA_MacShowFocusRect, false);
+#endif
 
     // changing font size is required to fix the inconsistent
     // word wrapping/ellipsis of fileList items
