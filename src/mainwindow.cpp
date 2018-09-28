@@ -73,6 +73,7 @@ void MainWindow::init() {
         setDisplayModeLight();
     }
 
+    this->paths = db.getRecents();
     resetFileList();
 }
 
@@ -134,13 +135,13 @@ void MainWindow::openFile(QString &filePath) {
             db.updateOpenedDate(filePath);
         }
 
-        #ifdef Q_OS_DARWIN
+#ifdef Q_OS_DARWIN
         setWindowModified(false);
-        #endif
+#endif
     } else {
-        #ifdef Q_OS_DARWIN
+#ifdef Q_OS_DARWIN
         setWindowModified(true);
-        #endif
+#endif
     }
 }
 
@@ -181,9 +182,9 @@ bool MainWindow::saveFile() {
         fileSaved = true;
         openedFile = true;
 
-        #ifdef Q_OS_DARWIN
+#ifdef Q_OS_DARWIN
         setWindowModified(false);
-        #endif
+#endif
 
         Tokenizer tokenizer;
         tokenizer.tokenize(output);
@@ -204,9 +205,7 @@ bool MainWindow::saveFile() {
         resetFileList();
     } catch (std::exception& ex) {
         fileSaved = false;
-        QMessageBox msgBox;
-        msgBox.setText("There was an error! please try again.");
-        msgBox.exec();
+        displayMessage("There was an error! please try again.");
         return false;
     }
 
@@ -219,18 +218,38 @@ void MainWindow::resetFileList() {
     ui->fileListOptions->clear();
     ui->fileListOptions->addItem("Recent Notes");
     ui->fileListOptions->addItem("All Notes");
-    QVector<QString> recentPaths = db.getRecents();
+
     QVector<QString> tags = db.getTags();
-    if (recentPaths.size() > 0) {
-        for (auto& path : recentPaths)
-            ui->fileList->addItem(path);
-    }
+
+    setFileList();
+
     if (tags.size() > 0) {
         QStringList tagList = tags.toList();
         tagList.removeDuplicates();
         ui->fileListOptions->addItems(tagList);
     }
+
     ui->fileListOptions->blockSignals(false);
+}
+
+void MainWindow::setFileList() {
+#ifdef Q_OS_WIN
+    QString splitPattern = "\\";
+#else
+    QString splitPattern = "\/";
+#endif
+
+    if (!this->paths.empty()) {
+        ui->fileList->clear();
+        for (auto& path : this->paths) {
+            QStringList list = path.split(splitPattern);
+            if (!list.empty()) {
+                QRegularExpression regex("(.+?)(\\.[^.]*$|$)");
+                QRegularExpressionMatch match = regex.match(list.at(list.size() - 1));
+                ui->fileList->addItem(match.captured(1));
+            }
+        }
+    }
 }
 
 void MainWindow::openedFileHelper() {
@@ -330,6 +349,12 @@ void MainWindow::reverseTab() {
     }
 }
 
+void MainWindow::displayMessage(QString message) {
+    QMessageBox msgBox;
+    msgBox.setText(message);
+    msgBox.exec();
+}
+
 void MainWindow::on_newNoteBtn_clicked() {
     if (openedFile && !fileSaved) {
         if (!fileSavePromt())
@@ -375,10 +400,10 @@ void MainWindow::on_actionExport_HTML_triggered() {
     std::string headerPath = "html/header.html";
     std::string footerPath = "html/footer.html";
 
-    #ifdef Q_OS_DARWIN
+#ifdef Q_OS_DARWIN
     headerPath = QString(QApplication::applicationDirPath() + "/../Resources/header.html").toStdString();
     footerPath = QString(QApplication::applicationDirPath() + "/../Resources/footer.html").toStdString();
-    #endif
+#endif
 
     std::string output = getFileContent(headerPath);
     output += tokenizer.getHTML();
@@ -402,9 +427,7 @@ void MainWindow::on_actionEncrypt_note_triggered() {
                     );
 
     if (pswd != pswd1) {
-        QMessageBox msgBox;
-        msgBox.setText("Passphrase don't match!");
-        msgBox.exec();
+        displayMessage("Passphrase don't match!");
         return;
     }
 
@@ -419,9 +442,7 @@ void MainWindow::on_actionEncrypt_note_triggered() {
     if (!encryptedText.empty()) {
         ui->noteText->setPlainText(QString::fromStdString(encryptedText));
     } else {
-        QMessageBox msgBox;
-        msgBox.setText("Something went wrong during encryption...");
-        msgBox.exec();
+        displayMessage("Something went wrong during encryption...");
     }
 }
 
@@ -438,9 +459,7 @@ void MainWindow::on_actionDecrypt_Note_triggered() {
     if (!decryptedText.empty()) {
         ui->noteText->setPlainText(QString::fromStdString(decryptedText));
     } else {
-        QMessageBox msgBox;
-        msgBox.setText("It seems like your note is not encrypted...");
-        msgBox.exec();
+        displayMessage("It seems like your note is not encrypted...");
     }
 }
 
@@ -448,32 +467,25 @@ void MainWindow::on_fileListOptions_currentTextChanged(const QString &arg1) {
     std::string tag = arg1.toUtf8().constData();
     if (tag == "Recent Notes" || tag == "All Notes") {
         ui->fileList->clear();
-        QVector<QString> paths;
         if (tag == "All Notes") {
-            paths = db.getNotes();
+            this->paths = db.getNotes();
         } else {
-            paths = db.getRecents();
-        }
-        if (paths.size() > 0) {
-            for (auto& path : paths)
-                ui->fileList->addItem(path);
+            this->paths = db.getRecents();
         }
     } else {
-        QVector<QString> notesBytag = db.getNotesByTag(tag);
-        if (notesBytag.size() > 0) {
-            ui->fileList->clear();
-            for (auto& note : notesBytag)
-                ui->fileList->addItem(note);
-        }
+        this->paths = db.getNotesByTag(tag);
     }
+
+    setFileList();
 }
 
 void MainWindow::on_fileList_itemClicked(QListWidgetItem *item) {
-    QString filePath = item->text().toUtf8().constData();
+    QString filePath = this->paths.at(ui->fileList->currentRow());
     if (fileSaved && filePath == fileName)
         return;
     openFile(filePath);
     if (ui->fileListOptions->currentText() == "Recent Notes") {
+        this->paths = db.getRecents();
         resetFileList();
         ui->fileList->setCurrentIndex(ui->fileList->model()->index(0, 0));
     }
@@ -482,10 +494,10 @@ void MainWindow::on_fileList_itemClicked(QListWidgetItem *item) {
 void MainWindow::on_noteText_textChanged() {
     changeCount += 1;
     fileSaved = (openedFile) ? (changeCount == 1) ? true : false : false;
-    #ifdef Q_OS_DARWIN
+#ifdef Q_OS_DARWIN
     if (!fileSaved)
         setWindowModified(true);
-    #endif
+#endif
 
     if (showWordCount) {
         QString wordCountText = "Word Count: " + getWordCount();
@@ -562,5 +574,4 @@ void MainWindow::on_actionAbout_triggered() {
     layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
 
     msgBox.exec();
-
 }

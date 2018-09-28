@@ -50,10 +50,12 @@ class MainWindow : public QMainWindow
         bool showWordCount;
         int changeCount;
         std::string displayMode;
+        QVector<QString> paths;
 
         void closeEvent(QCloseEvent *event);
         void init();
-        void resetFileList();        
+        void resetFileList();
+        void setFileList();
         void openFile(QString &filePath);
         bool fileSavePromt();
         bool saveFile();
@@ -67,6 +69,7 @@ class MainWindow : public QMainWindow
         int getSpaceCount(QString &line);
         QString getNextNumber(QString &line);
         void reverseTab();
+        void displayMessage(QString message);
 };
 
 #endif // MAINWINDOW_H
