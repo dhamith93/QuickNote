@@ -256,6 +256,7 @@ void MainWindow::openedFileHelper() {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), QDir::homePath(), tr("Markdown (*.md)"));
     if (fileName.size() > 0) {
         openFile(fileName);
+        this->paths = db.getRecents();
         resetFileList();
     }
 }
