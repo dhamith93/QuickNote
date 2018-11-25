@@ -23,9 +23,7 @@ Database::Database() {
         query.exec();
         query.prepare("CREATE TABLE IF NOT EXISTS recent_notes (note_id INT NOT NULL, date_opened TEXT NOT NULL)");
         query.exec();
-        query.prepare("CREATE TABLE IF NOT EXISTS font_config (font TEXT NOT NULL)");
-        query.exec();
-        query.prepare("CREATE TABLE IF NOT EXISTS display_mode (mode TEXT NOT NULL)");
+        query.prepare("CREATE TABLE IF NOT EXISTS config (font TEXT, display_mode TEXT, last_open_path TEXT)");
         query.exec();
    }
 }
@@ -236,7 +234,7 @@ QVector<QString> Database::getRecents() {
 }
 
 bool Database::fontConfigExists() {
-    QSqlQuery query("SELECT COUNT(*) FROM font_config");
+    QSqlQuery query("SELECT COUNT(*) FROM config WHERE font != \"\"");
     query.first();
     int count = 0;
     count = query.value(0).toInt();
@@ -246,22 +244,22 @@ bool Database::fontConfigExists() {
 bool Database::insertFontConfig(const QString& font) {
     QSqlQuery query;
     if (fontConfigExists()) {
-        query.prepare("UPDATE font_config SET font = :font WHERE rowid = 1");
+        query.prepare("UPDATE config SET font = :font WHERE rowid = 1");
     } else {
-        query.prepare("INSERT INTO font_config (font) VALUES (:font)");
+        query.prepare("INSERT INTO config (font) VALUES (:font)");
     }
     query.bindValue(":font", font);
     return query.exec();
 }
 
 QString Database::getFontConfig() {
-    QSqlQuery query("SELECT font FROM font_config WHERE rowid = 1");
+    QSqlQuery query("SELECT font FROM config WHERE rowid = 1");
     query.next();
     return query.value(0).toString();
 }
 
 bool Database::displayModeExists() {
-    QSqlQuery query("SELECT COUNT(*) FROM display_mode");
+    QSqlQuery query("SELECT COUNT(*) FROM config WHERE display_mode != \"\"");
     query.first();
     int count = 0;
     count = query.value(0).toInt();
@@ -271,16 +269,41 @@ bool Database::displayModeExists() {
 bool Database::insertDisplayMode(const QString& mode) {
     QSqlQuery query;
     if (displayModeExists()) {
-        query.prepare("UPDATE display_mode SET mode = :mode WHERE rowid = 1");
+        query.prepare("UPDATE config SET display_mode = :mode WHERE rowid = 1");
     } else {
-        query.prepare("INSERT INTO display_mode (mode) VALUES (:mode)");
+        query.prepare("INSERT INTO config (display_mode) VALUES (:mode)");
     }
     query.bindValue(":mode", mode);
     return query.exec();
 }
 
 QString Database::getDisplayMode() {
-    QSqlQuery query("SELECT mode FROM display_mode WHERE rowid = 1");
+    QSqlQuery query("SELECT display_mode FROM config WHERE rowid = 1");
+    query.next();
+    return query.value(0).toString();
+}
+
+bool Database::lastOpenPathExists() {
+    QSqlQuery query("SELECT COUNT(*) FROM config WHERE last_open_path != \"\"");
+    query.first();
+    int count = 0;
+    count = query.value(0).toInt();
+    return (count > 0);
+}
+
+bool Database::insertLastOpenPath(const QString& path) {
+    QSqlQuery query;
+    if (displayModeExists()) {
+        query.prepare("UPDATE config SET last_open_path = :path WHERE rowid = 1");
+    } else {
+        query.prepare("INSERT INTO config (last_open_path) VALUES (:path)");
+    }
+    query.bindValue(":path", path);
+    return query.exec();
+}
+
+QString Database::getLastOpenPath() {
+    QSqlQuery query("SELECT last_open_path FROM config WHERE rowid = 1");
     query.next();
     return query.value(0).toString();
 }

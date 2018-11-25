@@ -34,6 +34,9 @@ class Database
         bool displayModeExists();
         bool insertDisplayMode(const QString& font);
         QString getDisplayMode();
+        bool lastOpenPathExists();
+        bool insertLastOpenPath(const QString& path);
+        QString getLastOpenPath();
 };
 
 #endif // DATABASE_H

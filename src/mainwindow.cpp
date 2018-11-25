@@ -195,7 +195,10 @@ bool MainWindow::fileSavePromt() {
 bool MainWindow::saveFile() {
     try {
         if (!openedFile || fileName.isEmpty() || fileName == "") {
-            fileName = QFileDialog::getSaveFileName(this, tr("Save Note"), QDir::homePath(), tr("Markdown (*.md)"));
+            QString path = QDir::homePath();
+            if (db.lastOpenPathExists())
+                path = db.getLastOpenPath();
+            fileName = QFileDialog::getSaveFileName(this, tr("Save Note"), path, tr("Markdown (*.md)"));
             if (fileName.isEmpty())
                 return false;
         }
@@ -282,11 +285,17 @@ void MainWindow::setFileList() {
 }
 
 void MainWindow::openedFileHelper() {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), QDir::homePath(), tr("Markdown (*.md)"));
-    if (fileName.size() > 0) {
+    QString path = QDir::homePath();
+    if (db.lastOpenPathExists())
+        path = db.getLastOpenPath();
+
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), path, tr("Markdown (*.md)"));
+    QFileInfo info(fileName);
+    if (fileName.size() > 0 && info.isFile()) {
         openFile(fileName);
         this->paths = db.getRecents();
         resetFileList();
+        db.insertLastOpenPath(info.absolutePath());
     }
 }
 
