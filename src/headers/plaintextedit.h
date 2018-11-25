@@ -14,7 +14,7 @@ class PlainTextEdit : public QPlainTextEdit {
         QTextCursor getModifiedTextCursor(QString text);
     protected:
         virtual void keyPressEvent(QKeyEvent *event);
-        virtual void focusOutEvent(QFocusEvent* e);        
+        virtual void focusOutEvent(QFocusEvent* e);
 };
 
 #endif // PLAINTEXTEDIT_H

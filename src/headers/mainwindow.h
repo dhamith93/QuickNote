@@ -37,6 +37,10 @@ class MainWindow : public QMainWindow
         void on_actionShow_Word_Count_triggered();
         void on_actionAbout_triggered();
 
+    protected:
+        void dragEnterEvent(QDragEnterEvent *event);
+        void dropEvent(QDropEvent *event);
+
     private:
         Ui::MainWindow *ui;
         Highlighter *highlighter;

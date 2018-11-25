@@ -13,6 +13,7 @@
 #include <QFontDialog>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QMimeData>
 #include <QShortcut>
 #include <QTextDocumentFragment>
 #include <sstream>
@@ -73,6 +74,8 @@ void MainWindow::init() {
     ui->openedNotePath->setStyleSheet("color: white;");
     ui->actionDark->setChecked(true);
     ui->fileList->setWordWrap(true);
+    ui->noteText->setAcceptDrops(false);
+    setAcceptDrops(true);
 
 #ifdef Q_OS_DARWIN
     ui->fileList->setAttribute(Qt::WA_MacShowFocusRect, false);
@@ -418,6 +421,30 @@ void MainWindow::on_actionOpen_triggered() {
 void MainWindow::on_actionSave_triggered() {
     if (!fileSaved)
         saveFile();
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event) {
+    if (event->mimeData()->hasFormat("text/uri-list"))
+        event->acceptProposedAction();
+}
+
+void MainWindow::dropEvent(QDropEvent *event) {
+    QList<QUrl> urls = event->mimeData()->urls();
+    if (urls.isEmpty())
+        return;
+
+    QString path = urls.first().toLocalFile();
+    if (path.isEmpty())
+        return;
+
+    QFileInfo info(path);
+
+    if (info.isFile() && info.suffix() == "md") {
+        openFile(path);
+        this->paths = db.getRecents();
+        resetFileList();
+    }
+
 }
 
 void MainWindow::on_actionCopy_selection_as_HTML_triggered() {
