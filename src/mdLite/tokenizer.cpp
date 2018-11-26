@@ -9,22 +9,27 @@
 
 Tokenizer::Tokenizer() {
     Token t;
-    t.tag = "div";
+    t.tag = "body";
     t.isEmpty = false;
     tree.insert(t);
 }
 
 void Tokenizer::tokenize(std::string &input) {
     std::vector<std::string> lines;
+    std::vector<std::string> tableStrings;
+
     splitInput(lines, input);
+
     std::string prevToken;
     bool codeStarted = false;
     bool blockquoteStarted = false;
+    bool tableStarted = false;
     std::string codeLines = "";
     std::string codeLanguage = "";
     Token token;
     int nesting = 1;
-    int emptyLineCount = 0;
+    int emptyLineCount = 0;    
+
     for (auto &line : lines) {
         token.isEmpty = true;
         if (comment(line)) {
@@ -34,6 +39,18 @@ void Tokenizer::tokenize(std::string &input) {
             tree.insert(token);
             token = { };
             continue;
+        }
+        if (tableStarted) {
+            if (tableRow(line)) {
+                tableStrings.push_back(line);
+                continue;
+            } else {
+                tableStarted = false;
+                token = createTable(tableStrings);
+                tree.insert(token);
+                tableStrings.clear();
+                token = { };
+            }
         }
         if (!codeStarted) {
             if (header(line)) {
@@ -105,15 +122,16 @@ void Tokenizer::tokenize(std::string &input) {
                 }
             } else if (tag(line)) {
                 tags.push_back(extractTag(line));
+            } else if (tableRow(line)) {
+                tableStarted = true;
+                tableStrings.push_back(line);
             } else {
-                if (prevToken == "list") {
+                if (prevToken == "list")
                     tree.insert(token);
-                }
 
                 if (blockquoteStarted) {
                     blockquoteStarted = false;
                     tree.insert(token);
-
                 }
 
                 if (line.length() == 0) {
@@ -131,9 +149,8 @@ void Tokenizer::tokenize(std::string &input) {
                     token.isEmpty = false;
                 }
 
-                if (!token.isEmpty) {
+                if (!token.isEmpty)
                     tree.insert(token);
-                }
 
                 token = { };
             }
@@ -222,10 +239,6 @@ bool Tokenizer::comment(std::string &str) {
     );
 }
 
-/**
- * START: List related functions
- */
-
 bool Tokenizer::list(std::string str) {
     str.erase(str.begin(), std::find_if(str.begin(), str.end(), [](int ch) {
         return !std::isspace(ch);
@@ -280,6 +293,10 @@ Token Tokenizer::createListItem(std::string &str) {
     token.isListItem = true;
     token.tag = "li";
     trimListItem(str);
+    replaceWithStrong(str);
+    replaceWithStrikethrough(str);
+    replaceWithCode(str);
+    replaceWithLink(str);
     token.text = str;
     return token;
 }
@@ -294,10 +311,6 @@ void Tokenizer::trimListItem(std::string &line) {
             line = line.substr(2, end);
     }
 }
-
-/**
- * START: Header related functions
- */
 
 bool Tokenizer::header(std::string &str) {
     std::string pattern = "^#{1,6}\\s\\w";
@@ -334,12 +347,8 @@ Token Tokenizer::createHeader(std::string &str) {
     return token;
 }
 
-/**
- * START: Image related function
- */
-
 bool Tokenizer::image(std::string &str) {
-    std::string pattern = "!\\[\\w{0,}\\]\\((\\w|.){1,}\\)";
+    std::string pattern = "^!\\[\\w{0,}\\]\\((\\w|.){1,}\\)$";
     const boost::regex regex(pattern);
 
     return (
@@ -355,10 +364,6 @@ Token Tokenizer::createImage(std::string &str) {
     token.isImage = true;
     return token;
 }
-
-/**
- * START: Link related function
- */
 
 bool Tokenizer::link(std::string &str) {
     std::string pattern = "^(\\s)?\\[.{0,}\\]\\((https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\\.[^\\s]{2,}|https?:\\/\\/(?:www\\.|(?!www))[a-zA-Z0-9]\\.[^\\s]{2,}|www\\.[a-zA-Z0-9]\\.[^\\s]{2,})\\)";
@@ -379,10 +384,6 @@ Token Tokenizer::createLink(std::string &str) {
     token.isLink = true;
     return token;
 }
-
-/**
- * START: Code related function
- */
 
 bool Tokenizer::code(std::string &str) {
     return (str.length() >= 3 && str.substr(0, 3) == "```");
@@ -407,10 +408,6 @@ Token Tokenizer::createCodeBlock(std::string &str, std::string &lanugage) {
     pre.subTokens.push_back(code);
     return pre;
 }
-
-/**
- * START: Blockquote related function
- */
 
 bool Tokenizer::blockquote(std::string &str) {
     std::string pattern = "^(\\s*>){1,}.";
@@ -477,10 +474,6 @@ Token Tokenizer::createBlockquote(std::string &str) {
     return blockquote;
 }
 
-/**
- * START: Tag related function
- */
-
 bool Tokenizer::tag(std::string &str) {
     std::string pattern = "^#{1}\\w";
     const boost::regex regex(pattern);
@@ -488,6 +481,121 @@ bool Tokenizer::tag(std::string &str) {
     return (
         boost::regex_search(str, regex, boost::match_partial)
     );
+}
+
+bool Tokenizer::tableRow(std::string &str) {
+    std::string pattern = "^((\\|[^|\\r\\n]*)+\\|(\\r?\\n|\\r)?)+$";
+    const boost::regex regex(pattern);
+
+    return (
+        boost::regex_search(str, regex, boost::match_partial)
+    );
+}
+
+std::vector<int> Tokenizer::parseTableOptions(std::string &line) {
+    std::vector<int> options;
+    std::string patterns[] = {
+        "^\\s*[-]{3,}\\s*$",
+        "^\\s*:[-]{3,}\\s*$",
+        "^\\s*:[-]{3,}:\\s*$",
+        "^\\s*[-]{3,}:\\s*$"
+    };
+    std::vector<std::string> cols;
+    std::string text = "";
+
+    for (auto &c : line) {
+        if (c == '|') {
+            if (text != "")
+                cols.push_back(text);
+            text = "";
+            continue;
+        }
+
+        text += c;
+    }
+
+    for (auto &col : cols) {
+        for (int i = 0; i < 4; i++) {
+            std::string pattern = patterns[i];
+            const boost::regex regex(pattern);
+            if (boost::regex_search(col, regex, boost::match_partial)) {
+                if (i == 0) {
+                    options.push_back(-1);
+                } else if (i == 2) {
+                    options.push_back(0);
+                } else if (i == 3) {
+                    options.push_back(1);
+                } else {
+                    options.push_back(-1);
+                }
+                break;
+            }
+        }
+    }
+
+    return options;
+}
+
+Token Tokenizer::createTableRow(std::string &str, std::vector<int> &options, bool isHeader) {
+    std::vector<std::string> cols;
+    std::string text = "";
+    for (auto &c : str) {
+        if (c == '|') {
+            if (text != "")
+                cols.push_back(text);
+            text = "";
+            continue;
+        }
+
+        text += c;
+    }
+
+    Token tr;
+    tr.tag = "tr";
+
+    for (int i = 0; i < cols.size(); i++) {
+        Token td;
+        td.tag = (isHeader) ? "th" : "td";
+        std::string colText = cols.at(i);
+        replaceWithStrong(colText);
+        replaceWithEm(colText);
+        replaceWithStrikethrough(colText);
+        replaceWithCode(colText);
+        replaceWithLink(colText);
+        td.text = colText;
+        if ((options.size() != 0) && (options.size() >= i)) {
+            if ((options.at(i) == 0 || options.at(i) == 1)) {
+                std::string style = "";
+
+                if (options.at(i) == 0)
+                    style = "text-align:center";
+                if (options.at(i) == 1)
+                    style = "text-align:right";
+
+                td.styles = style;
+            }
+        }
+        tr.subTokens.push_back(td);
+    }
+
+    return tr;
+}
+
+Token Tokenizer::createTable(std::vector<std::string> &lines) {
+    Token table;
+    table.tag = "table";
+
+    if (lines.size() >= 2) {
+        std::vector<int> options = parseTableOptions(lines.at(1));
+
+        for (int i = 0; i < lines.size(); i++) {
+            if (options.size() > 0 && i == 1)
+                continue;
+            table.subTokens.push_back(createTableRow(lines.at(i), options, (i == 0)));
+        }
+    }
+
+    return table;
 }
 
 std::string Tokenizer::extractTag(std::string &str) {
@@ -501,10 +609,6 @@ std::string Tokenizer::extractTag(std::string &str) {
     }
     return output;
 }
-
-/**
- * START: Paragraph related function
- */
 
 void Tokenizer::replaceWithStrong(std::string &str) {
     std::string p = "(\\*\\*)(.*?)(\\*\\*)";

@@ -19,6 +19,7 @@ class Tokenizer {
         bool blockquote(std::string &str);
         bool code(std::string &str);
         bool tag(std::string &str);
+        bool tableRow(std::string &str);
         Token createHeader(std::string &str);
         Token createList();
         Token createListItem(std::string &str);
@@ -27,6 +28,8 @@ class Tokenizer {
         Token createLink(std::string &str);
         Token createParagraph(std::string &str);
         Token createCodeBlock(std::string &str, std::string &lanugage);
+        Token createTableRow(std::string &str, std::vector<int> &options, bool isHeader = false);
+        Token createTable(std::vector<std::string> &lines);
         std::string extractBetweenParentheses(std::string &str);
         std::string extractBetweenBrackets(std::string &str);
         std::string extractCodeLanguage(std::string &str);
@@ -44,6 +47,7 @@ class Tokenizer {
         void insertLastList(Token &token, Token &newToken);
         int getNesting(std::string &line);
         void trimListItem(std::string &line);
+        std::vector<int> parseTableOptions(std::string &line);
         void splitInput(std::vector<std::string> &lines, std::string &input);
 
     public:
