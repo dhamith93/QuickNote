@@ -202,8 +202,12 @@ bool MainWindow::saveFile() {
             if (db.lastOpenPathExists())
                 path = db.getLastOpenPath();
             fileName = QFileDialog::getSaveFileName(this, tr("Save Note"), path, tr("Markdown (*.md)"));
+
             if (fileName.isEmpty())
                 return false;
+
+            QFileInfo info(fileName);
+            db.insertLastOpenPath(info.absolutePath());
         }
     } catch (std::exception& ex) {
         return false;
@@ -461,7 +465,16 @@ void MainWindow::on_actionExport_HTML_triggered() {
     Tokenizer tokenizer;
     tokenizer.tokenize(text);
 
-    QString htmlSavePath = QFileDialog::getSaveFileName(this, tr("Export HTML File"), QDir::homePath(), tr("HTML (*.html)"));
+    QString path = QDir::homePath();
+    if (db.lastOpenPathExists())
+        path = db.getLastOpenPath();
+
+    QString htmlSavePath = QFileDialog::getSaveFileName(this, tr("Export HTML File"), path, tr("HTML (*.html)"));
+
+    QFileInfo info(htmlSavePath);
+    if (htmlSavePath.size() > 0 && info.isFile())
+        db.insertLastOpenPath(info.absolutePath());
+
     std::ofstream out(htmlSavePath.toUtf8().constData());
     std::string headerPath = "html/header.html";
     std::string footerPath = "html/footer.html";
