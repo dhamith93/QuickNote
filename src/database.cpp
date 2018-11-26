@@ -293,7 +293,7 @@ bool Database::lastOpenPathExists() {
 
 bool Database::insertLastOpenPath(const QString& path) {
     QSqlQuery query;
-    if (displayModeExists()) {
+    if (lastOpenPathExists()) {
         query.prepare("UPDATE config SET last_open_path = :path WHERE rowid = 1");
     } else {
         query.prepare("INSERT INTO config (last_open_path) VALUES (:path)");
