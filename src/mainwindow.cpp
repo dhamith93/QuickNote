@@ -342,6 +342,39 @@ std::string MainWindow::getFileContent(std::string path) {
     return "";
 }
 
+std::vector<std::string> MainWindow::split(std::string &str, char delimiter) {
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(str);
+
+    while (std::getline(tokenStream, token, delimiter))
+       tokens.push_back(token);
+
+    return tokens;
+}
+
+void MainWindow::makeList(std::string type) {
+    std::string selection = ui->noteText->textCursor().selection().toPlainText().toStdString();
+    std::vector<std::string> lines = split(selection, '\n');
+
+    if (type == "unordered") {
+        for (auto &line : lines) {
+            if (!line.empty())
+                line = "* " + line;
+        }
+    } else if (type == "ordered") {
+        for (int i = 0; i < lines.size(); i++)
+            lines.at(i) = std::to_string(i + 1) + ". " + lines.at(i);
+    }
+
+    std::string text = "";
+
+    for (auto &line : lines)
+        text += line + "\n";
+
+    ui->noteText->insertPlainText(QString::fromStdString(text));
+}
+
 bool MainWindow::checkListItem(QString &line) {
     QRegularExpression regex1("^\\s*\\*\\s");
     QRegularExpression regex2("^\\s*\\d*\\.\\s");
@@ -551,6 +584,14 @@ void MainWindow::on_actionInsert_Table_triggered() {
             ui->noteText->insertPlainText(QString::fromStdString(table));
         }
     }
+}
+
+void MainWindow::on_actionMake_Unordered_List_triggered() {
+    makeList("unordered");
+}
+
+void MainWindow::on_actionMake_Ordered_List_triggered() {
+    makeList("ordered");
 }
 
 void MainWindow::on_actionCopy_selection_as_HTML_triggered() {

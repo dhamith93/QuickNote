@@ -30,6 +30,8 @@ class MainWindow : public QMainWindow
         void on_actionChange_Font_triggered();
         void on_actionCopy_selection_as_HTML_triggered();
         void on_actionInsert_Table_triggered();
+        void on_actionMake_Unordered_List_triggered();
+        void on_actionMake_Ordered_List_triggered();
         void on_actionExport_HTML_triggered();
         void on_actionEncrypt_note_triggered();
         void on_actionDecrypt_Note_triggered();
@@ -66,6 +68,8 @@ class MainWindow : public QMainWindow
         bool fileSavePromt();
         bool saveFile();
         std::string getFileContent(std::string path);
+        std::vector<std::string> split(std::string& str, char delimiter);
+        void makeList(std::string type);
         void openedFileHelper();
         void setDisplayModeLight();
         void setDisplayModeDark();

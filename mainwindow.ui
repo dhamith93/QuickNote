@@ -440,6 +440,8 @@ QListView::item:hover {
      <string>Note</string>
     </property>
     <addaction name="actionInsert_Table"/>
+    <addaction name="actionMake_Unordered_List"/>
+    <addaction name="actionMake_Ordered_List"/>
     <addaction name="actionCopy_selection_as_HTML"/>
     <addaction name="actionExport_HTML"/>
     <addaction name="actionEncrypt_note"/>
@@ -474,7 +476,7 @@ QListView::item:hover {
   </action>
   <action name="actionEncrypt_note">
    <property name="text">
-    <string>Encrypt note</string>
+    <string>Encrypt Note</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+E</string>
@@ -533,6 +535,22 @@ QListView::item:hover {
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+T</string>
+   </property>
+  </action>
+  <action name="actionMake_Unordered_List">
+   <property name="text">
+    <string>Make Unordered List</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+L</string>
+   </property>
+  </action>
+  <action name="actionMake_Ordered_List">
+   <property name="text">
+    <string>Make Ordered List</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+O</string>
    </property>
   </action>
  </widget>
