@@ -1,5 +1,6 @@
 #include "token.h"
 #include "tokenizer.h"
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <map>
@@ -390,8 +391,11 @@ bool Tokenizer::code(std::string &str) {
 }
 
 std::string Tokenizer::extractCodeLanguage(std::string &str) {
-    if (str.length() > 3)
-        return str.substr(3, str.length());
+    if (str.length() > 3) {
+        std::string lang = str.substr(3, str.length());
+        lang.erase(std::remove(lang.begin(), lang.end(), '^'), lang.end());
+        return lang;
+    }
     return "";
 }
 
