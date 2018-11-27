@@ -439,6 +439,7 @@ QListView::item:hover {
     <property name="title">
      <string>Note</string>
     </property>
+    <addaction name="actionInsert_Table"/>
     <addaction name="actionCopy_selection_as_HTML"/>
     <addaction name="actionExport_HTML"/>
     <addaction name="actionEncrypt_note"/>
@@ -524,6 +525,14 @@ QListView::item:hover {
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionInsert_Table">
+   <property name="text">
+    <string>Insert Table</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+T</string>
    </property>
   </action>
  </widget>

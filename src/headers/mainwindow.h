@@ -29,6 +29,7 @@ class MainWindow : public QMainWindow
         void on_actionSave_triggered();
         void on_actionChange_Font_triggered();
         void on_actionCopy_selection_as_HTML_triggered();
+        void on_actionInsert_Table_triggered();
         void on_actionExport_HTML_triggered();
         void on_actionEncrypt_note_triggered();
         void on_actionDecrypt_Note_triggered();

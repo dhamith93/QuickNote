@@ -6,14 +6,19 @@
 #include "mdLite/token.h"
 #include "mdLite/tokenizer.h"
 #include <QClipboard>
+#include <QCheckBox>
 #include <QDir>
+#include <QDialogButtonBox>
 #include <QDebug>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFontDialog>
+#include <QFormLayout>
+#include <QGroupBox>
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QRadioButton>
 #include <QShortcut>
 #include <QTextDocumentFragment>
 #include <sstream>
@@ -449,6 +454,103 @@ void MainWindow::dropEvent(QDropEvent *event) {
         resetFileList();
     }
 
+}
+
+void MainWindow::on_actionInsert_Table_triggered() {
+    int rows = 0;
+    int cols = 0;
+
+    QDialog dialog(this);
+    dialog.setWindowTitle("Insert table");
+
+    QFormLayout form(&dialog);
+    QList<QLineEdit *> fields;
+
+    QLineEdit *lineEdit = new QLineEdit(&dialog);
+    form.addRow("Rows", lineEdit);
+    fields << lineEdit;
+
+    lineEdit = new QLineEdit(&dialog);
+    form.addRow("Colums", lineEdit);
+    fields << lineEdit;
+
+    QGroupBox *groupBox = new QGroupBox();
+    QRadioButton *radio1 = new QRadioButton(tr("Left"));
+    QRadioButton *radio2 = new QRadioButton(tr("Center"));
+    QRadioButton *radio3 = new QRadioButton(tr("Right"));
+
+    radio1->setChecked(true);
+
+    QHBoxLayout *hbox = new QHBoxLayout;
+    hbox->addWidget(radio1);
+    hbox->addWidget(radio2);
+    hbox->addWidget(radio3);
+    hbox->addStretch(0);
+    groupBox->setLayout(hbox);
+
+    form.addRow("Text align", groupBox);
+
+    QCheckBox *checkBox = new QCheckBox(&dialog);
+    form.addRow("Minified", checkBox);
+
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                               Qt::Horizontal, &dialog);
+    form.addRow(&buttonBox);
+
+    QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+    if (dialog.exec() == QDialog::Accepted) {
+        std::string r = fields.at(0)->text().toStdString();
+        std::string c = fields.at(1)->text().toStdString();
+
+        if (!r.empty() && !c.empty()) {
+            try {
+                rows = std::stoi(r);
+                cols = std::stoi(c);
+            } catch(std::exception &ex) {
+                // ignore invalid input
+                return;
+            }
+
+            bool minified = checkBox->isChecked();
+
+            std::string align = " --- ";
+
+            if (radio2->isChecked())
+                align = ":---:";
+
+            if (radio3->isChecked())
+                align = " ---:";
+
+            if (rows > 100)
+                rows = 100;
+
+            if (cols > 25)
+                cols = 25;
+
+            std::string table;
+
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    if (i == 1) {
+                        table += "|" + align;
+                    } else {
+                        table += "|";
+                        if (!minified)
+                            table += "     ";
+                    }
+
+                    if (j == cols - 1)
+                        table += "|";
+                }
+
+                table += "\n";
+            }
+
+            ui->noteText->insertPlainText(QString::fromStdString(table));
+        }
+    }
 }
 
 void MainWindow::on_actionCopy_selection_as_HTML_triggered() {
