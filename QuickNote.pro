@@ -61,6 +61,7 @@ macx {
     BUNDLE = $$OUT_PWD/$$TARGET$$quote(.app)/Contents
     QMAKE_POST_LINK += ditto \"$$PWD/html/header.html\" \"$$BUNDLE/Resources/\";
     QMAKE_POST_LINK += ditto \"$$PWD/html/footer.html\" \"$$BUNDLE/Resources/\";
+    QMAKE_POST_LINK += ditto \"$$PWD/help.md\" \"$$BUNDLE/Resources/\";
 
     INCLUDEPATH += "/Users/dhamith/Downloads/cryptopp700/"
     LIBS += "/Users/dhamith/Downloads/cryptopp700/libcryptopp.a"
@@ -72,6 +73,11 @@ win32 {
             -llibboost_regex-mgw53-mt-d-x32-1_67 \
             -llibboost_filesystem-mgw53-mt-d-x32-1_67 \
             -llibboost_system-mgw53-mt-d-x32-1_67
+
+    BUNDLE = $$OUT_PWD/
+    QMAKE_POST_LINK += ditto \"$$PWD/html/header.html\" \"$$BUNDLE/html/\";
+    QMAKE_POST_LINK += ditto \"$$PWD/html/footer.html\" \"$$BUNDLE/html/\";
+    QMAKE_POST_LINK += ditto \"$$PWD/help.md\" \"$$BUNDLE/\";
 
     INCLUDEPATH += C:/dev/cryptopp700/
     LIBS += -LC:/dev/cryptopp700/release/ -llibcryptopp

@@ -112,6 +112,14 @@ void MainWindow::init() {
 
     this->paths = db.getRecents();
     resetFileList();
+#ifdef Q_OS_DARWIN
+    QString helpFilePath = QApplication::applicationDirPath() + "/../Resources/help.md";
+#elif Q_OS_WIN
+    QString helpFilePath = "help.md";
+#else
+    QString helpFilePath = "~/.QuickNote/help.md";
+#endif
+    openFile(helpFilePath);
 }
 
 void MainWindow::openFile(QString &filePath) {
@@ -246,6 +254,7 @@ bool MainWindow::saveFile() {
                 db.updateTags(fileName, tagArr);            
         }
 
+        this->paths = db.getRecents();
         resetFileList();
     } catch (std::exception& ex) {
         fileSaved = false;
@@ -787,7 +796,7 @@ void MainWindow::on_actionShow_Word_Count_triggered() {
 
 void MainWindow::on_actionAbout_triggered() {
     QMessageBox msgBox;
-    msgBox.setText("QuickNote v3.4.1");
+    msgBox.setText("QuickNote v4.0");
     msgBox.setInformativeText("QuickNote is a simple note app with markdown support.\nhttps:\\\\www.github.com/dhamith93/QuickNote");
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setDefaultButton(QMessageBox::Ok);
