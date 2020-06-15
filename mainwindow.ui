@@ -432,7 +432,6 @@ QListView::item:hover {
     <addaction name="actionSave"/>
     <addaction name="actionChange_Font"/>
     <addaction name="menuDisplay_Mode"/>
-    <addaction name="actionShow_Word_Count"/>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuNote">
@@ -443,12 +442,25 @@ QListView::item:hover {
     <addaction name="actionMake_Unordered_List"/>
     <addaction name="actionMake_Ordered_List"/>
     <addaction name="actionCopy_selection_as_HTML"/>
-    <addaction name="actionExport_HTML"/>
+    <addaction name="actionShow_Word_Count"/>
+   </widget>
+   <widget class="QMenu" name="menuEncryption">
+    <property name="title">
+     <string>Encryption</string>
+    </property>
     <addaction name="actionEncrypt_note"/>
     <addaction name="actionDecrypt_Note"/>
    </widget>
+   <widget class="QMenu" name="menuExport">
+    <property name="title">
+     <string>Export</string>
+    </property>
+    <addaction name="actionExport_HTML"/>
+   </widget>
    <addaction name="menuOpen"/>
    <addaction name="menuNote"/>
+   <addaction name="menuEncryption"/>
+   <addaction name="menuExport"/>
   </widget>
   <action name="actionOpen">
    <property name="text">

@@ -50,7 +50,7 @@ FORMS += \
 
 macx {
     QMAKE_CXXFLAGS += -std=c++11
-    _BOOST_PATH = /usr/local/Cellar/boost/1.66.0
+    _BOOST_PATH = /usr/local/Cellar/boost/1.72.0_3
     INCLUDEPATH += "$${_BOOST_PATH}/include/"
     LIBS += -L$${_BOOST_PATH}/lib
     LIBS += -lboost_system -lboost_filesystem -lboost_regex
