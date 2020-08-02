@@ -92,7 +92,7 @@
             </property>
             <property name="maximumSize">
              <size>
-              <width>100</width>
+              <width>150</width>
               <height>40</height>
              </size>
             </property>
@@ -119,7 +119,7 @@
             </property>
             <property name="styleSheet">
              <string notr="true">QPushButton  {
-	border-radius: 20%; 
+	border-radius: 10%; 
 	background-color: #d63a3a;
 	color: #ffffff; 
 }
@@ -135,68 +135,6 @@ QPushButton:pressed {
             </property>
             <property name="text">
              <string>New</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="openNoteBtn">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>80</width>
-              <height>40</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>100</width>
-              <height>40</height>
-             </size>
-            </property>
-            <property name="baseSize">
-             <size>
-              <width>100</width>
-              <height>100</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <family>Roboto Mono for Powerline</family>
-              <pointsize>20</pointsize>
-             </font>
-            </property>
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="toolTip">
-             <string>New Note</string>
-            </property>
-            <property name="layoutDirection">
-             <enum>Qt::LeftToRight</enum>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton  {
-	border-radius: 20%; 
-	background-color: #00ce90;
-	color: #ffffff; 
-}
-
-QPushButton:hover  {
-	background-color: #09f1ac; 
-	/*color: #3b3b3b; */
-}
-
-QPushButton:pressed {
-	background-color: #00a573;
-}</string>
-            </property>
-            <property name="text">
-             <string>Open</string>
             </property>
            </widget>
           </item>

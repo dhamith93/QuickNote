@@ -23,9 +23,7 @@ class MainWindow : public QMainWindow
         void on_newNoteBtn_clicked();
         void on_fileListOptions_currentTextChanged(const QString &arg1);
         void on_fileList_itemClicked(QListWidgetItem *item);
-        void on_actionOpen_triggered();
         void on_noteText_textChanged();
-        void on_openNoteBtn_clicked();
         void on_actionSave_triggered();
         void on_actionChange_Font_triggered();
         void on_actionCopy_selection_as_HTML_triggered();
@@ -41,8 +39,6 @@ class MainWindow : public QMainWindow
         void on_actionAbout_triggered();
 
     protected:
-        void dragEnterEvent(QDragEnterEvent *event);
-        void dropEvent(QDropEvent *event);
 
     private:
         Ui::MainWindow *ui;
@@ -52,34 +48,30 @@ class MainWindow : public QMainWindow
         QString darkStyles;
         QString lightStyles;
         std::vector<std::string> tagArr;
-        bool fileSaved;
-        bool openedFile;
+        bool noteSaved;
         bool showWordCount;
         int changeCount;
+        bool isHelpFile;
         std::string displayMode;
-        QVector<QString> paths;
+        QVector<QVector<QString>> paths;
+
+        int noteId;
+        bool openedNote;
 
         void closeEvent(QCloseEvent *event);
         bool eventFilter(QObject *watched, QEvent *event);
         void init();
-        void resetFileList();
-        void setFileList();
-        void openFile(QString &filePath);
-        bool fileSavePromt();
-        bool saveFile();
-        std::string getFileContent(std::string path);
-        std::vector<std::string> split(std::string& str, char delimiter);
-        void makeList(std::string type);
-        void openedFileHelper();
+        void resetNoteList();
+        void setNoteList();
+        void openHelpFile(QString &filePath);
+        bool noteSavePrompt();
+        bool saveNote();
         void setDisplayModeLight();
         void setDisplayModeDark();
-        QString getWordCount();
-        bool checkListItem(QString &line);
-        bool checkUnorderedListItem(QString &line);
-        int getSpaceCount(QString &line);
-        QString getNextNumber(QString &line);
         void reverseTab();
         void displayMessage(QString message);
+
+        Q_INVOKABLE void getDatabasePath();
 };
 
 #endif // MAINWINDOW_H

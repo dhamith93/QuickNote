@@ -8,35 +8,20 @@
 class Database
 {
     private:
-        static bool createConnection();
+        static bool createConnection(const QString& path);
     public:
-        Database();
-        bool insertNote(const QString& notePath);
-        bool insertNoteWithTags(const QString& notePath, const std::vector<std::string>& tags);
-        bool insertRecentNote(const int noteId);
-        bool updateOpenedDate(const QString& notePath);
-        bool updateTags(const QString& notePath, const std::vector<std::string>& tags);
-        int getRowId(const std::string& path);
-        bool insertTag(const std::string& tag, const int& noteId);
+        bool createNoteDb(const QString& path);
+        int save(const std::string &output);
+        bool save(const int noteId, const std::string &output);
+        bool open(const QString &path);
+        bool addTags(int &noteId, std::vector<std::string> &tags);
+        bool addTag(int &noteId, std::string &tag);
+        QVector<QVector<QString>> getRecents();
+        QString getNote(int &noteId);
+        QVector<QVector<QString>> getNotes();
         bool deleteTags(const int& noteId);
-        QVector<QString> getNotes();
         QVector<QString> getTags();
-        QVector<QString> getNotesByTag(std::string& tag);
-        bool noteExists(const QString& notePath);
-        bool recentNoteExists(const QString& notePath);
-        bool taggedNoteExists(const QString& notePath);
-        bool deletePath(const QString& notePath);
-        bool deleteTaggedPath(const QString& notePath);
-        QVector<QString> getRecents();
-        bool fontConfigExists();
-        bool insertFontConfig(const QString& font);
-        QString getFontConfig();
-        bool displayModeExists();
-        bool insertDisplayMode(const QString& font);
-        QString getDisplayMode();
-        bool lastOpenPathExists();
-        bool insertLastOpenPath(const QString& path);
-        QString getLastOpenPath();
+        QVector<QVector<QString> > getNotesByTag(std::string& tag);
 };
 
 #endif // DATABASE_H
