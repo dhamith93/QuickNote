@@ -33,7 +33,9 @@ SOURCES += \
         src/database.cpp \
         src/encryption.cpp \
         src/mdLite/tree.cpp \
-        src/mdLite/tokenizer.cpp
+        src/mdLite/tokenizer.cpp \
+    src/config.cpp \
+    src/libs/helpers.cpp
 
 HEADERS += \
         src/headers/mainwindow.h \
@@ -43,7 +45,9 @@ HEADERS += \
         src/headers/encryption.h \
         src/mdLite/token.h \
         src/mdLite/tree.h \
-        src/mdLite/tokenizer.h
+        src/mdLite/tokenizer.h \
+    src/headers/config.h \
+    src/libs/include/helpers.h
 
 FORMS += \
         mainwindow.ui
