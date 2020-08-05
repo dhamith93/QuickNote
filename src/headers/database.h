@@ -21,7 +21,9 @@ class Database
         QVector<QVector<QString>> getNotes();
         bool deleteTags(const int& noteId);
         QVector<QString> getTags();
-        QVector<QVector<QString> > getNotesByTag(std::string& tag);
+        QVector<QVector<QString>> getNotesByTag(std::string &tag);
+        QVector<QVector<QString>> search(QString &key);
+
 };
 
 #endif // DATABASE_H

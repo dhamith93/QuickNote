@@ -38,13 +38,16 @@ class MainWindow : public QMainWindow
         void on_actionShow_Word_Count_triggered();
         void on_actionAbout_triggered();
 
+        void on_actionSupported_Markdown_triggered();
+
+        void on_searchText_textChanged(const QString &arg1);
+
     protected:
 
     private:
         Ui::MainWindow *ui;
         Highlighter *highlighter;
         Database db;
-        QString fileName;
         QString darkStyles;
         QString lightStyles;
         std::vector<std::string> tagArr;
@@ -53,7 +56,8 @@ class MainWindow : public QMainWindow
         int changeCount;
         bool isHelpFile;
         std::string displayMode;
-        QVector<QVector<QString>> paths;
+        QVector<QVector<QString>> noteList;
+        QString helpFilePath;
 
         int noteId;
         bool openedNote;

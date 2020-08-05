@@ -53,22 +53,6 @@
          <enum>QLayout::SetDefaultConstraint</enum>
         </property>
         <item>
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Fixed</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>0</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <property name="spacing">
            <number>6</number>
@@ -175,6 +159,9 @@ QPushButton:pressed {
             <property name="styleSheet">
              <string notr="true"/>
             </property>
+            <property name="editable">
+             <bool>true</bool>
+            </property>
             <item>
              <property name="text">
               <string>Recent Notes</string>
@@ -186,6 +173,44 @@ QPushButton:pressed {
         </item>
         <item>
          <spacer name="verticalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>0</width>
+            <height>10</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="searchText">
+          <property name="focusPolicy">
+           <enum>Qt::ClickFocus</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+	border-radius: 10%; 
+	margin-left: 10px;
+	margin-right: 10px;
+	padding-left: 2px;
+    padding-right: 2px;
+}</string>
+          </property>
+          <property name="frame">
+           <bool>true</bool>
+          </property>
+          <property name="placeholderText">
+           <string>Search notes</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -395,10 +420,17 @@ QListView::item:hover {
     </property>
     <addaction name="actionExport_HTML"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionSupported_Markdown"/>
+   </widget>
    <addaction name="menuOpen"/>
    <addaction name="menuNote"/>
    <addaction name="menuEncryption"/>
    <addaction name="menuExport"/>
+   <addaction name="menuHelp"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -501,6 +533,11 @@ QListView::item:hover {
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+O</string>
+   </property>
+  </action>
+  <action name="actionSupported_Markdown">
+   <property name="text">
+    <string>Supported Markdown</string>
    </property>
   </action>
  </widget>

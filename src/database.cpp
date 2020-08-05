@@ -143,3 +143,20 @@ bool Database::deleteTags(const int& noteId) {
     query.bindValue(":note_id", noteId);
     return query.exec();
 }
+
+QVector<QVector<QString>> Database::search(QString &key) {
+    QSqlQuery query;
+    query.prepare("SELECT ROWID, title FROM note WHERE content LIKE :key ORDER BY modified_date DESC");
+    query.bindValue(":key", "%" + key + "%");
+    QVector<QVector<QString>> notes;
+    QVector<QString> note;
+    if (query.exec()) {
+        while (query.next()) {
+            note.append(query.value(0).toString());
+            note.append(query.value(1).toString());
+            notes.append(note);
+            note.clear();
+        }
+    }
+    return notes;
+}

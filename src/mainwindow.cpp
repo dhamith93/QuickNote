@@ -103,6 +103,7 @@ void MainWindow::init() {
 
 #ifdef Q_OS_DARWIN
     ui->fileList->setAttribute(Qt::WA_MacShowFocusRect, false);
+    ui->searchText->setAttribute(Qt::WA_MacShowFocusRect, false);
 #endif
 
     // changing font size is required to fix the inconsistent
@@ -128,10 +129,10 @@ void MainWindow::init() {
         setDisplayModeLight();
     }   
 
-    this->paths = db.getRecents();
+    this->noteList = db.getRecents();
     resetNoteList();
 #ifdef Q_OS_DARWIN
-    QString helpFilePath = QApplication::applicationDirPath() + "/../Resources/help.md";
+    helpFilePath = QApplication::applicationDirPath() + "/../Resources/help.md";
 #elif Q_OS_WIN
     QString helpFilePath = "help.md";
 #else
@@ -196,7 +197,7 @@ bool MainWindow::saveNote() {
         tagArr = tokenizer.getTags();
         db.deleteTags(noteId);
         db.addTags(noteId, tagArr);
-        this->paths = db.getRecents();
+        this->noteList = db.getRecents();
         resetNoteList();
     } catch (std::exception& ex) {
         noteSaved = false;
@@ -228,9 +229,9 @@ void MainWindow::resetNoteList() {
 }
 
 void MainWindow::setNoteList() {
-    if (!this->paths.empty()) {
+    if (!this->noteList.empty()) {
         ui->fileList->clear();
-        for (auto& path : this->paths) {
+        for (auto& path : this->noteList) {
             ui->fileList->addItem(path.at(1));
         }
     }
@@ -278,7 +279,6 @@ void MainWindow::on_newNoteBtn_clicked() {
     }
     noteSaved = false;
     openedNote = false;
-    fileName = "";
     ui->openedNotePath->setText("");
     ui->noteText->setPlainText("# title");
     changeCount = 0;
@@ -474,20 +474,24 @@ void MainWindow::on_fileListOptions_currentTextChanged(const QString &arg1) {
     if (tag == "Recent Notes" || tag == "All Notes") {
         ui->fileList->clear();
         if (tag == "All Notes") {
-            this->paths = db.getNotes();
+            this->noteList = db.getNotes();
         } else {
-            this->paths = db.getRecents();
+            this->noteList = db.getRecents();
         }
     } else {
-        this->paths = db.getNotesByTag(tag);
+        this->noteList = db.getNotesByTag(tag);
     }
+
+    ui->searchText->blockSignals(true);
+    ui->searchText->clear();
+    ui->searchText->blockSignals(false);
 
     setNoteList();
 }
 
 void MainWindow::on_fileList_itemClicked(QListWidgetItem *item) {
-    int note = this->paths.at(ui->fileList->currentRow()).at(0).toInt();
-    if (note == noteId) {
+    int note = this->noteList.at(ui->fileList->currentRow()).at(0).toInt();
+    if (note == noteId && !isHelpFile) {
         return;
     }
 
@@ -578,6 +582,14 @@ void MainWindow::on_actionShow_Word_Count_triggered() {
     ui->openedNotePath->setText(text);
 }
 
+void MainWindow::on_actionSupported_Markdown_triggered() {
+    if (!noteSaved && !isHelpFile) {
+        if (!noteSavePrompt())
+            return;
+    }
+    openHelpFile(helpFilePath);
+}
+
 void MainWindow::on_actionAbout_triggered() {
     QMessageBox msgBox;
     msgBox.setText("QuickNote v5.0");
@@ -588,4 +600,15 @@ void MainWindow::on_actionAbout_triggered() {
     QGridLayout* layout = (QGridLayout*)msgBox.layout();
     layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
     msgBox.exec();
+}
+
+void MainWindow::on_searchText_textChanged(const QString &arg1) {
+    QString key = arg1.trimmed();
+
+    if (key.isEmpty()) {
+        return;
+    }
+
+    this->noteList = db.search(key);
+    this->resetNoteList();
 }
