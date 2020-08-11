@@ -90,7 +90,7 @@ void MainWindow::init() {
     darkStyles = "QPlainTextEdit { padding: 5% 5% 0 5%; color: white; background-color: #252525; border:none; }";
     lightStyles = "QPlainTextEdit { padding: 5% 5% 0 5%; color: #454545; background-color: #FAFAFA; border:none; }";
 
-    this->setStyleSheet("QMainWindow { background-color: #505050; border: none; }");
+    this->setStyleSheet("QMainWindow { background-color: #252525; border: none; }");
     ui->splitter->setStretchFactor (0,0);
     ui->splitter->setStretchFactor (1,1);
     ui->splitter->setSizes(QList<int>() << 200 << 160000);
