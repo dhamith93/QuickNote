@@ -384,17 +384,9 @@ QListView::item:hover {
     <property name="title">
      <string>File</string>
     </property>
-    <widget class="QMenu" name="menuDisplay_Mode">
-     <property name="title">
-      <string>Display Mode</string>
-     </property>
-     <addaction name="actionLight"/>
-     <addaction name="actionDark"/>
-    </widget>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
-    <addaction name="actionChange_Font"/>
-    <addaction name="menuDisplay_Mode"/>
+    <addaction name="actionDisplay_Options"/>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuNote">
@@ -540,6 +532,11 @@ QListView::item:hover {
     <string>Supported Markdown</string>
    </property>
   </action>
+  <action name="actionDisplay_Options">
+   <property name="text">
+    <string>Display Options</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -549,6 +546,12 @@ QListView::item:hover {
    <header>src/headers/plaintextedit.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>noteText</tabstop>
+  <tabstop>fileList</tabstop>
+  <tabstop>fileListOptions</tabstop>
+  <tabstop>newNoteBtn</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

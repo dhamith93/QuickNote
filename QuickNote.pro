@@ -34,8 +34,9 @@ SOURCES += \
         src/encryption.cpp \
         src/mdLite/tree.cpp \
         src/mdLite/tokenizer.cpp \
-    src/config.cpp \
-    src/libs/helpers.cpp
+        src/config.cpp \
+        src/libs/helpers.cpp \
+    src/displayconfigdialog.cpp
 
 HEADERS += \
         src/headers/mainwindow.h \
@@ -46,11 +47,13 @@ HEADERS += \
         src/mdLite/token.h \
         src/mdLite/tree.h \
         src/mdLite/tokenizer.h \
-    src/headers/config.h \
-    src/libs/include/helpers.h
+        src/headers/config.h \
+        src/libs/include/helpers.h \
+    src/headers/displayconfigdialog.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    displayconfigdialog.ui
 
 macx {
     QMAKE_CXXFLAGS += -std=c++11

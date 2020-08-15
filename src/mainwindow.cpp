@@ -7,6 +7,7 @@
 #include "src/libs/include/helpers.h"
 #include "mdLite/token.h"
 #include "mdLite/tokenizer.h"
+#include "headers/displayconfigdialog.h"
 #include <QClipboard>
 #include <QCheckBox>
 #include <QDir>
@@ -87,16 +88,11 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event) {
 }
 
 void MainWindow::init() {    
-    darkStyles = "QPlainTextEdit { padding: 5% 5% 0 5%; color: white; background-color: #252525; border:none; }";
-    lightStyles = "QPlainTextEdit { padding: 5% 5% 0 5%; color: #454545; background-color: #FAFAFA; border:none; }";
-
     this->setStyleSheet("QMainWindow { background-color: #252525; border: none; }");
     ui->splitter->setStretchFactor (0,0);
     ui->splitter->setStretchFactor (1,1);
     ui->splitter->setSizes(QList<int>() << 200 << 160000);
-    ui->noteText->setStyleSheet(darkStyles);
     ui->openedNotePath->setStyleSheet("color: white;");
-    ui->actionDark->setChecked(true);
     ui->fileList->setWordWrap(true);
     ui->noteText->setAcceptDrops(false);
     setAcceptDrops(true);
@@ -112,22 +108,11 @@ void MainWindow::init() {
     font.setPointSize(13);
     ui->fileList->setFont(font);
 
-    highlighter = new Highlighter(this);
-    highlighter->setDocument(ui->noteText->document());
+    setNoteStyles();
 
     noteSaved = true;
     showWordCount = false;
     changeCount = 0;
-
-    if (!Config::getInstance().get(Config::getInstance().FONT).isEmpty()) {
-        QFont font;
-        font.fromString(Config::getInstance().get(Config::getInstance().FONT));
-        ui->noteText->setFont(font);
-    }
-
-    if (Config::getInstance().get(Config::getInstance().DISPLAY_MODE) == "light") {
-        setDisplayModeLight();
-    }   
 
     this->noteList = db.getRecents();
     resetNoteList();
@@ -235,20 +220,6 @@ void MainWindow::setNoteList() {
             ui->fileList->addItem(path.at(1));
         }
     }
-}
-
-void MainWindow::setDisplayModeLight() {
-    ui->actionLight->setChecked(true);
-    ui->actionDark->setChecked(false);
-    ui->noteText->setStyleSheet(lightStyles);
-    Config::getInstance().set(Config::getInstance().DISPLAY_MODE, "light");
-}
-
-void MainWindow::setDisplayModeDark() {
-    ui->actionDark->setChecked(true);
-    ui->actionLight->setChecked(false);
-    ui->noteText->setStyleSheet(darkStyles);
-    Config::getInstance().set(Config::getInstance().DISPLAY_MODE, "dark");
 }
 
 void MainWindow::reverseTab() {
@@ -548,23 +519,6 @@ void MainWindow::on_noteText_textChanged() {
     }
 }
 
-void MainWindow::on_actionChange_Font_triggered() {
-    bool changed;
-    QFont font = QFontDialog::getFont(&changed, ui->noteText->font());
-    if (changed) {
-        Config::getInstance().set(Config::getInstance().FONT, font.toString());
-        ui->noteText->setFont(font);
-    }
-}
-
-void MainWindow::on_actionLight_triggered() {
-    setDisplayModeLight();
-}
-
-void MainWindow::on_actionDark_triggered() {
-    setDisplayModeDark();
-}
-
 void MainWindow::closeEvent (QCloseEvent *event) {
     if (!noteSaved && !isHelpFile) {
         if (!noteSavePrompt())
@@ -611,4 +565,29 @@ void MainWindow::on_searchText_textChanged(const QString &arg1) {
 
     this->noteList = db.search(key);
     this->resetNoteList();
+}
+
+void MainWindow::on_actionDisplay_Options_triggered() {
+    if (isConfigDialogActive)
+        return;
+
+    isConfigDialogActive = true;
+    DisplayConfigDialog *configDialog = new DisplayConfigDialog();
+    configDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+    connect(configDialog, SIGNAL(destroyed(QObject*)), SLOT(setNoteStyles()));
+    configDialog->show();
+}
+
+void MainWindow::setNoteStyles() {
+    styles = "QPlainTextEdit { padding: 5% 5% 0 5%; color: " + Config::getInstance().get(Config::getInstance().FOREGROUND) + "; background-color: " + Config::getInstance().get(Config::getInstance().BACKGROUND) + "; border:none; }";
+    ui->noteText->setStyleSheet(styles);
+    if (!Config::getInstance().get(Config::getInstance().FONT).isEmpty()) {
+        QFont font;
+        font.fromString(Config::getInstance().get(Config::getInstance().FONT));
+        ui->noteText->setFont(font);
+    }
+    highlighter = new Highlighter(this);
+    highlighter->setDocument(ui->noteText->document());
+    highlighter->rehighlight();
+    isConfigDialogActive = false;
 }

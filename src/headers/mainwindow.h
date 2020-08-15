@@ -6,6 +6,7 @@
 #include <QCloseEvent>
 #include "highlighter.h"
 #include "database.h"
+#include "displayconfigdialog.h"
 
 namespace Ui {
     class MainWindow;
@@ -25,7 +26,6 @@ class MainWindow : public QMainWindow
         void on_fileList_itemClicked(QListWidgetItem *item);
         void on_noteText_textChanged();
         void on_actionSave_triggered();
-        void on_actionChange_Font_triggered();
         void on_actionCopy_selection_as_HTML_triggered();
         void on_actionInsert_Table_triggered();
         void on_actionMake_Unordered_List_triggered();
@@ -33,14 +33,12 @@ class MainWindow : public QMainWindow
         void on_actionExport_HTML_triggered();
         void on_actionEncrypt_note_triggered();
         void on_actionDecrypt_Note_triggered();
-        void on_actionLight_triggered();
-        void on_actionDark_triggered();
         void on_actionShow_Word_Count_triggered();
         void on_actionAbout_triggered();
-
         void on_actionSupported_Markdown_triggered();
-
         void on_searchText_textChanged(const QString &arg1);
+        void on_actionDisplay_Options_triggered();
+        void setNoteStyles();
 
     protected:
 
@@ -48,7 +46,7 @@ class MainWindow : public QMainWindow
         Ui::MainWindow *ui;
         Highlighter *highlighter;
         Database db;
-        QString darkStyles;
+        QString styles;
         QString lightStyles;
         std::vector<std::string> tagArr;
         bool noteSaved;
@@ -58,9 +56,9 @@ class MainWindow : public QMainWindow
         std::string displayMode;
         QVector<QVector<QString>> noteList;
         QString helpFilePath;
-
         int noteId;
         bool openedNote;
+        bool isConfigDialogActive;
 
         void closeEvent(QCloseEvent *event);
         bool eventFilter(QObject *watched, QEvent *event);
@@ -70,10 +68,8 @@ class MainWindow : public QMainWindow
         void openHelpFile(QString &filePath);
         bool noteSavePrompt();
         bool saveNote();
-        void setDisplayModeLight();
-        void setDisplayModeDark();
         void reverseTab();
-        void displayMessage(QString message);
+        void displayMessage(QString message);        
 
         Q_INVOKABLE void getDatabasePath();
 };
