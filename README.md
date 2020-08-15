@@ -14,8 +14,7 @@ QuickNote is a simple note app that uses subset of markdown syntax for formattin
 * Save as .md
 * Recent note list
 * Organize notes with tags
-* Change editor font
-* Dark/Light modes
+* Customize font, syntax highlighting colors
 * Word counter
 
 ### Screenshots
