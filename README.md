@@ -24,7 +24,7 @@ QuickNote is a simple note app that uses subset of markdown syntax for formattin
 
 ![](screenshots/MainWindow_light.png)
 
-![](screenshots/new_note_.png)
+![](screenshots/new_note.png)
 
 
 ### Using lists
