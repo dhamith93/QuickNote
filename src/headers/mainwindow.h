@@ -40,6 +40,8 @@ class MainWindow : public QMainWindow
         void on_actionDisplay_Options_triggered();
         void setNoteStyles();
 
+        void on_actionDelete_triggered();
+
     protected:
 
     private:

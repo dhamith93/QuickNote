@@ -137,6 +137,19 @@ QVector<QVector<QString>> Database::getNotesByTag(std::string& tag) {
     return paths;
 }
 
+bool Database::deleteNote(const int &noteId) {
+    QSqlQuery query;
+    query.prepare("DELETE FROM note WHERE ROWID = (:note_id)");
+    query.bindValue(":note_id", noteId);
+
+    if (query.exec()) {
+        deleteTags(noteId);
+        return true;
+    }
+
+    return false;
+}
+
 bool Database::deleteTags(const int& noteId) {
     QSqlQuery query;
     query.prepare("DELETE FROM tag WHERE note_id = (:note_id)");

@@ -19,6 +19,7 @@ class Database
         QVector<QVector<QString>> getRecents();
         QString getNote(int &noteId);
         QVector<QVector<QString>> getNotes();
+        bool deleteNote(const int& noteId);
         bool deleteTags(const int& noteId);
         QVector<QString> getTags();
         QVector<QVector<QString>> getNotesByTag(std::string &tag);

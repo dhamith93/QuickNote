@@ -126,6 +126,20 @@ void MainWindow::init() {
     openHelpFile(helpFilePath);
 }
 
+void MainWindow::setNoteStyles() {
+    styles = "QPlainTextEdit { padding: 5% 5% 0 5%; color: " + Config::getInstance().get(Config::getInstance().FOREGROUND) + "; background-color: " + Config::getInstance().get(Config::getInstance().BACKGROUND) + "; border:none; }";
+    ui->noteText->setStyleSheet(styles);
+    if (!Config::getInstance().get(Config::getInstance().FONT).isEmpty()) {
+        QFont font;
+        font.fromString(Config::getInstance().get(Config::getInstance().FONT));
+        ui->noteText->setFont(font);
+    }
+    highlighter = new Highlighter(this);
+    highlighter->setDocument(ui->noteText->document());
+    highlighter->rehighlight();
+    isConfigDialogActive = false;
+}
+
 void MainWindow::openHelpFile(QString &filePath) {
     bool fileExists = QFileInfo::exists(filePath) && QFileInfo(filePath).isFile();
 
@@ -253,7 +267,10 @@ void MainWindow::on_newNoteBtn_clicked() {
     ui->openedNotePath->setText("");
     ui->noteText->setPlainText("# title");
     changeCount = 0;
+    noteId = -1;
     isHelpFile = false;
+    ui->fileList->setCurrentRow(-1);
+    ui->fileList->selectionModel()->clearSelection();
 }
 
 void MainWindow::on_actionSave_triggered() {
@@ -544,6 +561,34 @@ void MainWindow::on_actionSupported_Markdown_triggered() {
     openHelpFile(helpFilePath);
 }
 
+void MainWindow::on_actionDelete_triggered() {
+    QListWidgetItem *currentItem = ui->fileList->currentItem();
+    if (currentItem == NULL) {
+        return;
+    }
+
+    QString noteTitle = currentItem->text();
+
+    QMessageBox msgBox;
+    msgBox.setText("Delete " + noteTitle);
+    msgBox.setStyleSheet("QLabel{min-width: 350px;}");
+    msgBox.setInformativeText("Do you want to delete \"" + noteTitle + "\"");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::No);
+    int ret = msgBox.exec();
+
+    if (ret == QMessageBox::Yes) {
+        if (db.deleteNote(noteId)) {
+            displayMessage("Note " + noteTitle + " deleted...");
+            openHelpFile(helpFilePath);
+            noteList = db.getRecents();
+            resetNoteList();
+        } else {
+            displayMessage("Unable to delete " + noteTitle);
+        }
+    }
+}
+
 void MainWindow::on_actionAbout_triggered() {
     QMessageBox msgBox;
     msgBox.setText("QuickNote v5.0");
@@ -576,18 +621,4 @@ void MainWindow::on_actionDisplay_Options_triggered() {
     configDialog->setAttribute(Qt::WA_DeleteOnClose, true);
     connect(configDialog, SIGNAL(destroyed(QObject*)), SLOT(setNoteStyles()));
     configDialog->show();
-}
-
-void MainWindow::setNoteStyles() {
-    styles = "QPlainTextEdit { padding: 5% 5% 0 5%; color: " + Config::getInstance().get(Config::getInstance().FOREGROUND) + "; background-color: " + Config::getInstance().get(Config::getInstance().BACKGROUND) + "; border:none; }";
-    ui->noteText->setStyleSheet(styles);
-    if (!Config::getInstance().get(Config::getInstance().FONT).isEmpty()) {
-        QFont font;
-        font.fromString(Config::getInstance().get(Config::getInstance().FONT));
-        ui->noteText->setFont(font);
-    }
-    highlighter = new Highlighter(this);
-    highlighter->setDocument(ui->noteText->document());
-    highlighter->rehighlight();
-    isConfigDialogActive = false;
 }
