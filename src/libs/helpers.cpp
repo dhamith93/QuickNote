@@ -144,7 +144,7 @@ std::string Helpers::makeList(std::string type, std::string &selection) {
                 line = "* " + line;
         }
     } else if (type == "ordered") {
-        for (int i = 0; i < lines.size(); i++)
+        for (size_t i = 0; i < lines.size(); i++)
             lines.at(i) = std::to_string(i + 1) + ". " + lines.at(i);
     }
 

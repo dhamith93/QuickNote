@@ -557,7 +557,7 @@ Token Tokenizer::createTableRow(std::string &str, std::vector<int> &options, boo
     Token tr;
     tr.tag = "tr";
 
-    for (int i = 0; i < cols.size(); i++) {
+    for (size_t i = 0; i < cols.size(); i++) {
         Token td;
         td.tag = (isHeader) ? "th" : "td";
         std::string colText = cols.at(i);
@@ -592,7 +592,7 @@ Token Tokenizer::createTable(std::vector<std::string> &lines) {
     if (lines.size() >= 2) {
         std::vector<int> options = parseTableOptions(lines.at(1));
 
-        for (int i = 0; i < lines.size(); i++) {
+        for (size_t i = 0; i < lines.size(); i++) {
             if (options.size() > 0 && i == 1)
                 continue;
             table.subTokens.push_back(createTableRow(lines.at(i), options, (i == 0)));

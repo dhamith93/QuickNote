@@ -55,7 +55,7 @@ void Tree::printToken(Token &token, std::string s, std::string &output) {
             output += "<" + token.tag + classes + ">\n";
             output += token.text + "\n";
             if (!token.subTokens.empty()) {
-                for (int i = 0; i < token.subTokens.size(); i++) {
+                for (size_t i = 0; i < token.subTokens.size(); i++) {
                     printToken(token.subTokens.at(i), "", output);
                 }
             }
@@ -68,7 +68,7 @@ void Tree::printToken(Token &token, std::string s, std::string &output) {
             output += s + "    " + token.text + "\n";
 
             if (!token.subTokens.empty()) {
-                for (int i = 0; i < token.subTokens.size(); i++) {
+                for (size_t i = 0; i < token.subTokens.size(); i++) {
                     printToken(token.subTokens.at(i), s + "    ", output);
                 }
             }
