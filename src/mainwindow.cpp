@@ -258,7 +258,7 @@ void MainWindow::displayMessage(QString message) {
 }
 
 void MainWindow::on_newNoteBtn_clicked() {
-    if (openedNote && !noteSaved && !isHelpFile) {
+    if (!noteSaved && !isHelpFile) {
         if (!noteSavePrompt())
             return;
     }
@@ -279,9 +279,6 @@ void MainWindow::on_actionSave_triggered() {
 }
 
 void MainWindow::on_actionInsert_Table_triggered() {
-    int rows = 0;
-    int cols = 0;
-
     QDialog dialog(this);
     dialog.setWindowTitle("Insert table");
 
@@ -322,56 +319,52 @@ void MainWindow::on_actionInsert_Table_triggered() {
     QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
     QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
 
-    if (dialog.exec() == QDialog::Accepted) {
-        std::string r = fields.at(0)->text().toStdString();
-        std::string c = fields.at(1)->text().toStdString();
+    if (dialog.exec() != QDialog::Accepted)
+        return;
 
-        if (!r.empty() && !c.empty()) {
-            try {
-                rows = std::stoi(r);
-                cols = std::stoi(c);
-            } catch(std::exception &ex) {
-                // ignore invalid input
-                return;
-            }
+    std::string r = fields.at(0)->text().toStdString();
+    std::string c = fields.at(1)->text().toStdString();
 
-            bool minified = checkBox->isChecked();
-
-            std::string align = " --- ";
-
-            if (radio2->isChecked())
-                align = ":---:";
-
-            if (radio3->isChecked())
-                align = " ---:";
-
+    if (!r.empty() && !c.empty()) {
+        int rows = 0;
+        int cols = 0;
+        try {
+            rows = std::stoi(r);
+            cols = std::stoi(c);
             if (rows > 100)
                 rows = 100;
-
             if (cols > 25)
                 cols = 25;
-
-            std::string table;
-
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < cols; j++) {
-                    if (i == 1) {
-                        table += "|" + align;
-                    } else {
-                        table += "|";
-                        if (!minified)
-                            table += "     ";
-                    }
-
-                    if (j == cols - 1)
-                        table += "|";
-                }
-
-                table += "\n";
-            }
-
-            ui->noteText->insertPlainText(QString::fromStdString(table));
+        } catch(std::exception &ex) {
+            // ignore invalid input
+            return;
         }
+
+        bool minified = checkBox->isChecked();
+        std::string align = " --- ";
+
+        if (radio2->isChecked())
+            align = ":---:";
+        if (radio3->isChecked())
+            align = " ---:";
+
+        std::string table;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (i == 1) {
+                    table += "|" + align;
+                } else {
+                    table += "|";
+                    if (!minified)
+                        table += "     ";
+                }
+                if (j == cols - 1)
+                    table += "|";
+            }
+            table += "\n";
+        }
+        ui->noteText->insertPlainText(QString::fromStdString(table));
     }
 }
 

@@ -14,7 +14,7 @@ class Database
         int save(const std::string &output);
         bool save(const int noteId, const std::string &output);
         bool open(const QString &path);
-        bool addTags(int &noteId, std::vector<std::string> &tags);
+        bool addTags(int &noteId, const std::vector<std::string> &tags);
         bool addTag(int &noteId, std::string &tag);
         QVector<QVector<QString>> getRecents();
         QString getNote(int &noteId);
@@ -23,7 +23,7 @@ class Database
         bool deleteTags(const int& noteId);
         QVector<QString> getTags();
         QVector<QVector<QString>> getNotesByTag(std::string &tag);
-        QVector<QVector<QString>> search(QString &key);
+        QVector<QVector<QString>> search(const QString &key);
 
 };
 

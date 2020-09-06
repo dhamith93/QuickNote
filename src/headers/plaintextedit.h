@@ -10,7 +10,6 @@ class PlainTextEdit : public QPlainTextEdit {
         PlainTextEdit(QWidget *parent = 0);
     private:
         QTextCursor getModifiedTextCursor(QString text);
-        bool isAutocompletionChar(QChar &c);
     protected:
         virtual void keyPressEvent(QKeyEvent *event);
         virtual void focusOutEvent(QFocusEvent* e);

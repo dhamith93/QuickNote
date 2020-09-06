@@ -37,7 +37,7 @@ std::string Tree::traversTree() {
     return output;
 }
 
-void Tree::printToken(Token &token, std::string s, std::string &output) {
+void Tree::printToken(Token &token, const std::string &s, std::string &output) {
 
     if (!token.tag.empty() || token.isComment) {
         if (token.isComment) {

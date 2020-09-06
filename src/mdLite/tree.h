@@ -7,7 +7,7 @@ class Tree {
     private:
         Token root;
         void addToNesting(Token &token, Token &root, int &nesting, int count);
-        void printToken(Token &token, std::string s, std::string &output);
+        void printToken(Token &token, const std::string &s, std::string &output);
     public:
         Tree();
         Token *last;

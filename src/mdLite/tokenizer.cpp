@@ -61,7 +61,7 @@ void Tokenizer::tokenize(std::string &input) {
             } else if (list(line) || oList(line)) {
                 std::string tempLine = line;
 
-                int nesting = getNesting(tempLine);
+                nesting = getNesting(tempLine);
 
                 Token t = createListItem(tempLine);
                 t.nesting = nesting;
@@ -155,7 +155,7 @@ void Tokenizer::tokenize(std::string &input) {
 
                 token = { };
             }
-        } else if (codeStarted) {
+        } else {
             if (code(line)) {
                 codeStarted = false;
                 token = createCodeBlock(codeLines, codeLanguage);
@@ -182,7 +182,7 @@ std::vector<std::string> Tokenizer::getTags() {
     return tags;
 }
 
-int Tokenizer::getNesting(std::string &line) {
+int Tokenizer::getNesting(const std::string &line) {
     int count = 0;
 
     for (auto &c : line) {
@@ -251,7 +251,7 @@ bool Tokenizer::list(std::string str) {
     );
 }
 
-bool Tokenizer::subList(std::string str) {
+bool Tokenizer::subList(const std::string &str) {
     return (getNesting(str) > 3);
 }
 
@@ -322,7 +322,7 @@ bool Tokenizer::header(std::string &str) {
     );
 }
 
-int Tokenizer::getHeaderCount(std::string &str) {
+int Tokenizer::getHeaderCount(const std::string &str) {
     int count = 0;
     for (auto& s : str) {
         if (s != '#')
@@ -333,7 +333,7 @@ int Tokenizer::getHeaderCount(std::string &str) {
     return count;
 }
 
-void Tokenizer::trimHeader(std::string &str, int &headerCount) {
+void Tokenizer::trimHeader(std::string &str, const int &headerCount) {
     str = str.substr(headerCount + 1, str.length() - 1);
 }
 
@@ -399,7 +399,7 @@ std::string Tokenizer::extractCodeLanguage(std::string &str) {
     return "";
 }
 
-Token Tokenizer::createCodeBlock(std::string &str, std::string &lanugage) {
+Token Tokenizer::createCodeBlock(const std::string &str, const std::string &lanugage) {
     Token pre;
     pre.tag = "pre";
     pre.isPre = true;
@@ -422,7 +422,7 @@ bool Tokenizer::blockquote(std::string &str) {
     );
 }
 
-int Tokenizer::getBlockquoteLevel(std::string &str) {
+int Tokenizer::getBlockquoteLevel(const std::string &str) {
     int count = -1;
     for (auto& c : str) {
         if (c != '>')
@@ -433,11 +433,11 @@ int Tokenizer::getBlockquoteLevel(std::string &str) {
     return (count > 0) ? count : 0;
 }
 
-void Tokenizer::trimBlockquote(std::string &str, int &level) {
+void Tokenizer::trimBlockquote(std::string &str, const int &level) {
     str = str.substr(level + 1, str.length());
 }
 
-Token Tokenizer::createBlockquote(std::string &str) {
+Token Tokenizer::createBlockquote(const std::string &str) {
     Token blockquote;
     blockquote.tag = "blockquote";
     blockquote.nesting = 0;
@@ -496,7 +496,7 @@ bool Tokenizer::tableRow(std::string &str) {
     );
 }
 
-std::vector<int> Tokenizer::parseTableOptions(std::string &line) {
+std::vector<int> Tokenizer::parseTableOptions(const std::string &line) {
     std::vector<int> options;
     std::string patterns[] = {
         "^\\s*[-]{3,}\\s*$",
@@ -540,7 +540,7 @@ std::vector<int> Tokenizer::parseTableOptions(std::string &line) {
     return options;
 }
 
-Token Tokenizer::createTableRow(std::string &str, std::vector<int> &options, bool isHeader) {
+Token Tokenizer::createTableRow(const std::string &str, std::vector<int> &options, bool isHeader) {
     std::vector<std::string> cols;
     std::string text = "";
     for (auto &c : str) {

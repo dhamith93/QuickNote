@@ -155,3 +155,8 @@ std::string Helpers::makeList(std::string type, std::string &selection) {
 
     return text;
 }
+
+bool Helpers::isAutocompletionChar(QChar &c) {
+    return (c == '{' || c == '[' ||  c == '(' ||  c == '\'' ||  c == '"' ||  c == '*'
+            ||  c == '`' ||  c == '~' || c == '}' || c == ']' ||  c == ')');
+}

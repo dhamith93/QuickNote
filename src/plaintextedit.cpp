@@ -101,7 +101,7 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
         if (length > 1 && pos > 0 && pos < length) {
             QChar c = block.text().at(pos - 1);
             QChar c1 = block.text().at(pos);
-            if (isAutocompletionChar(c) && isAutocompletionChar(c1)) {
+            if (Helpers::isAutocompletionChar(c) && Helpers::isAutocompletionChar(c1)) {
                 this->blockSignals(true);
                 this->textCursor().deleteChar();
                 this->blockSignals(false);
@@ -178,9 +178,4 @@ void PlainTextEdit::focusOutEvent(QFocusEvent *event) {
         return;
     }
     QPlainTextEdit::focusOutEvent(event);
-}
-
-bool PlainTextEdit::isAutocompletionChar(QChar &c) {
-    return (c == '{' || c == '[' ||  c == '(' ||  c == '\'' ||  c == '"' ||  c == '*'
-            ||  c == '`' ||  c == '~' || c == '}' || c == ']' ||  c == ')');
 }

@@ -16,6 +16,7 @@ class Helpers {
         static bool checkListItem(QString &line);
         static bool checkUnorderedListItem(QString &line);
         static bool checkEmptyListItem(QString &line);
+        static bool isAutocompletionChar(QChar &c);
         static int getSpaceCount(QString &line);
         static QString getNextNumber(QString &line);
         static void exportHTML(std::string &htmlSavePath, std::string &content);

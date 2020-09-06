@@ -54,7 +54,7 @@ bool Database::save(const int noteId, const std::string &output) {
     return query.exec();
 }
 
-bool Database::addTags(int &noteId, std::vector<std::string> &tags) {
+bool Database::addTags(int &noteId, const std::vector<std::string> &tags) {
     bool res = false;
     for (auto tag : tags) {
         res = addTag(noteId, tag);
@@ -157,7 +157,7 @@ bool Database::deleteTags(const int& noteId) {
     return query.exec();
 }
 
-QVector<QVector<QString>> Database::search(QString &key) {
+QVector<QVector<QString>> Database::search(const QString &key) {
     QSqlQuery query;
     query.prepare("SELECT ROWID, title FROM note WHERE content LIKE :key ORDER BY modified_date DESC");
     query.bindValue(":key", "%" + key + "%");
