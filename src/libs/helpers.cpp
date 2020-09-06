@@ -78,6 +78,13 @@ bool Helpers::checkUnorderedListItem(QString &line) {
     return (regex.match(line).hasMatch());
 }
 
+bool Helpers::checkEmptyListItem(QString &line) {
+    QRegularExpression regex1("^\\s*\\*([[:blank:]]){1,}$");
+    QRegularExpression regex2("^\\s*\\d*\\.([[:blank:]]){1,}$");
+    return (regex1.match(line).hasMatch() || regex2.match(line).hasMatch());
+}
+
+
 int Helpers::getSpaceCount(QString &line) {
     int count = 0;
     for (auto& c : line) {

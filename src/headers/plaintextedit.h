@@ -9,9 +9,8 @@ class PlainTextEdit : public QPlainTextEdit {
     public:
         PlainTextEdit(QWidget *parent = 0);
     private:
-        bool checkListItem(QString &line);
-        bool checkEmptyListItem(QString &line);
         QTextCursor getModifiedTextCursor(QString text);
+        bool isAutocompletionChar(QChar &c);
     protected:
         virtual void keyPressEvent(QKeyEvent *event);
         virtual void focusOutEvent(QFocusEvent* e);

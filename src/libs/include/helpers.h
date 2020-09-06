@@ -15,6 +15,7 @@ class Helpers {
         static std::vector<std::string> split(std::string &str, char delimiter);
         static bool checkListItem(QString &line);
         static bool checkUnorderedListItem(QString &line);
+        static bool checkEmptyListItem(QString &line);
         static int getSpaceCount(QString &line);
         static QString getNextNumber(QString &line);
         static void exportHTML(std::string &htmlSavePath, std::string &content);

@@ -2,22 +2,11 @@
 #include <QTextBlock>
 #include <QRegularExpression>
 #include <QTextDocumentFragment>
+#include "src/libs/include/helpers.h"
 
 #include "QDebug"
 
 PlainTextEdit::PlainTextEdit(QWidget *parent) : QPlainTextEdit(parent) { }
-
-bool PlainTextEdit::checkListItem(QString &line) {
-    QRegularExpression regex1("^\\s*\\*\\s");
-    QRegularExpression regex2("^\\s*\\d*\\.\\s");
-    return (regex1.match(line).hasMatch() || regex2.match(line).hasMatch());
-}
-
-bool PlainTextEdit::checkEmptyListItem(QString &line) {
-    QRegularExpression regex1("^\\s*\\*([[:blank:]]){1,}$");
-    QRegularExpression regex2("^\\s*\\d*\\.([[:blank:]]){1,}$");
-    return (regex1.match(line).hasMatch() || regex2.match(line).hasMatch());
-}
 
 QTextCursor PlainTextEdit::getModifiedTextCursor(QString text) {
     QTextCursor tempCursor = textCursor();
@@ -64,7 +53,7 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
         QTextCursor tempCursor = this->textCursor();
         QTextBlock block = this->textCursor().block();
         QString str = block.text();
-        bool listItem = checkListItem(str);
+        bool listItem = Helpers::checkListItem(str);
         int pos = tempCursor.positionInBlock();
 
         if (listItem)
@@ -84,7 +73,7 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
         QTextBlock block = this->textCursor().block();
         QString str = block.text();
 
-        if (checkEmptyListItem(str)) {
+        if (Helpers::checkEmptyListItem(str)) {
             event->ignore();
             this->blockSignals(true);
             this->setTextCursor(getModifiedTextCursor("\n"));
@@ -95,13 +84,25 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
 
     if (event->key() == Qt::Key_Backspace) {
         QTextBlock block = this->textCursor().block();
-        QString str = block.previous().text();
-        if (block.text().length() == 1 && checkListItem(str)) {
+        QString prevString = block.previous().text();
+        size_t length = block.text().length();
+
+        if (length == 1 && Helpers::checkListItem(prevString)) {
             event->ignore();
             this->blockSignals(true);
             this->setTextCursor(getModifiedTextCursor(""));
             this->blockSignals(false);
             return;
+        }
+
+        if (length > 0) {
+            int pos = this->textCursor().positionInBlock();
+            QChar c = block.text().at(pos - 1);
+            if (isAutocompletionChar(c) && pos < length) {
+                this->blockSignals(true);
+                this->textCursor().deleteChar();
+                this->blockSignals(false);
+            }
         }
     }
 
@@ -174,4 +175,8 @@ void PlainTextEdit::focusOutEvent(QFocusEvent *event) {
         return;
     }
     QPlainTextEdit::focusOutEvent(event);
+}
+
+bool PlainTextEdit::isAutocompletionChar(QChar &c) {
+    return (c == '{' || c == '[' ||  c == '(' ||  c == '\'' ||  c == '"' ||  c == '*' ||  c == '`' ||  c == '~');
 }
