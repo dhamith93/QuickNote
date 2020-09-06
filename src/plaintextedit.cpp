@@ -87,6 +87,7 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
         QString prevString = block.previous().text();
         size_t length = block.text().length();
 
+        // handle backspace on lists
         if (length == 1 && Helpers::checkListItem(prevString)) {
             event->ignore();
             this->blockSignals(true);
@@ -95,6 +96,7 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
             return;
         }
 
+        // if autocompletion char is deleted, remove the closing char as well
         if (length > 0) {
             int pos = this->textCursor().positionInBlock();
             QChar c = block.text().at(pos - 1);
