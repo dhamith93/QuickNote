@@ -36,14 +36,14 @@ std::string Encryption::decrypt(std::string content, std::string passphrase) {
 
     StringSource(content, true, new Base64Decoder(new StringSink(base64Decoded)));
 
-    if (base64Decoded.substr(0, 9) != "encrypted")
+    if (base64Decoded.substr(0, ENCRYPTED_LENGTH) != "encrypted")
         return "";
 
-    unsigned first = base64Decoded.find("encrypted") + 9; // 9 = "encrypted" length
+    unsigned first = base64Decoded.find("encrypted") + ENCRYPTED_LENGTH;
     unsigned last = base64Decoded.find("__ENDIV");
     ivString = base64Decoded.substr(first, last - first);
 
-    first = base64Decoded.find("__ENDIV") + 7; // 7 = "__ENDIV" length
+    first = base64Decoded.find("__ENDIV") + ENDIV_LENGTH;
 
     base64Decoded = base64Decoded.substr(first);
 
@@ -62,4 +62,10 @@ std::string Encryption::decrypt(std::string content, std::string passphrase) {
     }
 
     return decrypted;
+}
+
+bool Encryption::isEncrypted(std::string content) {
+    std::string base64Decoded;
+    StringSource(content, true, new Base64Decoder(new StringSink(base64Decoded)));
+    return (base64Decoded.substr(0, ENCRYPTED_LENGTH) == "encrypted");
 }

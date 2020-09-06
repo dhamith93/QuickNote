@@ -13,9 +13,13 @@
 
 
 class Encryption {
+    private:
+        const static int ENCRYPTED_LENGTH = 9;
+        const static int ENDIV_LENGTH = 7;
     public:
         static std::string encrypt(std::string content, std::string passphrase);
         static std::string decrypt(std::string content, std::string passphrase);
+        static bool isEncrypted(std::string content);
 };
 
 #endif // ENCRYPTION_H

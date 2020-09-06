@@ -51,7 +51,7 @@ void Tree::printToken(Token &token, std::string s, std::string &output) {
         } else if (token.isBlockquoteText) {
             output += token.text;
         } else if (token.isCode || token.isPre) {
-            std::string classes = (token.htmlClass != "") ? " class=\"" + token.htmlClass + "\" " : "";
+            std::string classes = (!token.htmlClass.empty()) ? " class=\"" + token.htmlClass + "\" " : "";
             output += "<" + token.tag + classes + ">\n";
             output += token.text + "\n";
             if (!token.subTokens.empty()) {
@@ -60,9 +60,9 @@ void Tree::printToken(Token &token, std::string s, std::string &output) {
                 }
             }
             output += "</" + token.tag + ">\n";
-        } else {             
+        } else {
             std::string styles = (!token.styles.empty()) ? " style=\"" + token.styles + "\"" : "";
-            std::string classes = (token.htmlClass != "") ? " class=\"" + token.htmlClass + "\" " : "";
+            std::string classes = (!token.htmlClass.empty()) ? " class=\"" + token.htmlClass + "\" " : "";
             output += s + "<" + token.tag + classes + styles + ">\n";
 
             output += s + "    " + token.text + "\n";

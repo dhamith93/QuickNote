@@ -1,4 +1,4 @@
-#include "headers/mainwindow.h"
+﻿#include "headers/mainwindow.h"
 #include "ui_mainwindow.h"
 #include "headers/database.h"
 #include "headers/highlighter.h"
@@ -435,6 +435,10 @@ void MainWindow::on_actionEncrypt_note_triggered() {
 
     if (!encryptedText.empty()) {
         ui->noteText->setPlainText(QString::fromStdString(encryptedText));
+        this->noteSaved = false;
+#ifdef Q_OS_DARWIN
+        setWindowModified(true);
+#endif
     } else {
         displayMessage("Something went wrong during encryption...");
     }
@@ -452,6 +456,10 @@ void MainWindow::on_actionDecrypt_Note_triggered() {
 
     if (!decryptedText.empty()) {
         ui->noteText->setPlainText(QString::fromStdString(decryptedText));
+        this->noteSaved = false;
+#ifdef Q_OS_DARWIN
+        setWindowModified(true);
+#endif
     } else {
         displayMessage("It seems like your note is not encrypted...");
     }
