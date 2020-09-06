@@ -86,6 +86,7 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
         QTextBlock block = this->textCursor().block();
         QString prevString = block.previous().text();
         size_t length = block.text().length();
+        size_t pos = this->textCursor().positionInBlock();
 
         // handle backspace on lists
         if (length == 1 && Helpers::checkListItem(prevString)) {
@@ -97,10 +98,10 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
         }
 
         // if autocompletion char is deleted, remove the closing char as well
-        if (length > 0) {
-            int pos = this->textCursor().positionInBlock();
+        if (length > 1 && pos > 0 && pos < length) {
             QChar c = block.text().at(pos - 1);
-            if (isAutocompletionChar(c) && pos < length) {
+            QChar c1 = block.text().at(pos);
+            if (isAutocompletionChar(c) && isAutocompletionChar(c1)) {
                 this->blockSignals(true);
                 this->textCursor().deleteChar();
                 this->blockSignals(false);
@@ -180,5 +181,6 @@ void PlainTextEdit::focusOutEvent(QFocusEvent *event) {
 }
 
 bool PlainTextEdit::isAutocompletionChar(QChar &c) {
-    return (c == '{' || c == '[' ||  c == '(' ||  c == '\'' ||  c == '"' ||  c == '*' ||  c == '`' ||  c == '~');
+    return (c == '{' || c == '[' ||  c == '(' ||  c == '\'' ||  c == '"' ||  c == '*'
+            ||  c == '`' ||  c == '~' || c == '}' || c == ']' ||  c == ')');
 }
