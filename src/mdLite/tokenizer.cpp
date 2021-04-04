@@ -158,6 +158,7 @@ void Tokenizer::tokenize(std::string &input) {
         } else {
             if (code(line)) {
                 codeStarted = false;
+                encode(codeLines);
                 token = createCodeBlock(codeLines, codeLanguage);
                 codeLines = "";
                 codeLanguage = "";
@@ -633,6 +634,7 @@ void Tokenizer::replaceWithStrikethrough(std::string &str) {
 }
 
 void Tokenizer::replaceWithCode(std::string &str) {
+    encode(str);
     std::string p = "(`)(.*?)(`)";
     boost::regex pattern(p);
     str = boost::regex_replace(str, pattern, "<code>$2</code>");
@@ -656,4 +658,20 @@ Token Tokenizer::createParagraph(std::string &str) {
     token.text = str;
 
     return token;
+}
+
+void Tokenizer::encode(std::string& data) {
+    std::string buffer;
+    buffer.reserve(data.size());
+    for(size_t pos = 0; pos != data.size(); ++pos) {
+        switch(data[pos]) {
+            case '&':  buffer.append("&amp;");       break;
+            case '\"': buffer.append("&quot;");      break;
+            case '\'': buffer.append("&apos;");      break;
+            case '<':  buffer.append("&lt;");        break;
+            case '>':  buffer.append("&gt;");        break;
+            default:   buffer.append(&data[pos], 1); break;
+        }
+    }
+    data.swap(buffer);
 }

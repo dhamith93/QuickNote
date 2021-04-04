@@ -49,6 +49,7 @@ class Tokenizer {
         void trimListItem(std::string &line);
         std::vector<int> parseTableOptions(const std::string &line);
         void splitInput(std::vector<std::string> &lines, std::string &input);
+        void encode(std::string &data);
 
     public:
         Tokenizer();
