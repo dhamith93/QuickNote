@@ -57,7 +57,7 @@ FORMS += \
 
 macx {
     QMAKE_CXXFLAGS += -std=c++11
-    _BOOST_PATH = /usr/local/Cellar/boost/1.72.0_3
+    _BOOST_PATH = /usr/local/Cellar/boost/1.75.0_2/
     INCLUDEPATH += "$${_BOOST_PATH}/include/"
     LIBS += -L$${_BOOST_PATH}/lib
     LIBS += -lboost_system -lboost_filesystem -lboost_regex
@@ -70,8 +70,8 @@ macx {
     QMAKE_POST_LINK += ditto \"$$PWD/html/footer.html\" \"$$BUNDLE/Resources/\";
     QMAKE_POST_LINK += ditto \"$$PWD/help.md\" \"$$BUNDLE/Resources/\";
 
-    INCLUDEPATH += "/Users/dhamith/Downloads/cryptopp700/"
-    LIBS += "/Users/dhamith/Downloads/cryptopp700/libcryptopp.a"
+    INCLUDEPATH += "/Users/dhamith93/dev/dep/cryptopp840/"
+    LIBS += "/Users/dhamith93/dev/dep/cryptopp840/libcryptopp.a"
 }
 
 win32 {
