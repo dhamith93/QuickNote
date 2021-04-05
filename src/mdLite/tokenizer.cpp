@@ -295,9 +295,10 @@ Token Tokenizer::createListItem(std::string &str) {
     token.isListItem = true;
     token.tag = "li";
     trimListItem(str);
-    replaceWithStrong(str);
-    replaceWithStrikethrough(str);
     replaceWithCode(str);
+    replaceWithStrong(str);
+    replaceWithEm(str);
+    replaceWithStrikethrough(str);
     replaceWithLink(str);
     token.text = str;
     return token;
@@ -625,6 +626,9 @@ void Tokenizer::replaceWithEm(std::string &str) {
     std::string p = "(\\*)(.*?)(\\*)";
     boost::regex pattern(p);
     str = boost::regex_replace(str, pattern, "<em>$2</em>");
+    p = "(\\_)(.*?)(\\_)";
+    boost::regex pattern2(p);
+    str = boost::regex_replace(str, pattern2, "<em>$2</em>");
 }
 
 void Tokenizer::replaceWithStrikethrough(std::string &str) {
@@ -647,10 +651,10 @@ void Tokenizer::replaceWithLink(std::string &str) {
 }
 
 Token Tokenizer::createParagraph(std::string &str) {
+    replaceWithCode(str);
     replaceWithStrong(str);
     replaceWithEm(str);
     replaceWithStrikethrough(str);
-    replaceWithCode(str);
     replaceWithLink(str);
 
     Token token;

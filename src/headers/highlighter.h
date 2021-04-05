@@ -38,6 +38,7 @@ class Highlighter : public QSyntaxHighlighter
         QTextCharFormat inlineCodeFormat;
         QTextCharFormat strongFormat;
         QTextCharFormat emFormat;
+        QTextCharFormat emUnderscoreFormat;
         QTextCharFormat strikeFormat;
         QTextCharFormat tagFormat;
 };

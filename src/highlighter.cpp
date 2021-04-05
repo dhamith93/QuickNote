@@ -18,6 +18,13 @@ Highlighter::Highlighter(QObject *parent) : QSyntaxHighlighter(parent) {
     rule.format = emFormat;
     highlightingRules.append(rule);
 
+    emUnderscoreFormat.setFontItalic(true);
+    emUnderscoreFormat.setForeground(QColor(Config::getInstance().get(Config::getInstance().ITALIC)));
+    emUnderscoreFormat.setFontWeight(QFont::Normal);
+    rule.pattern = QRegularExpression("(\\_)(.*?)(\\_)");
+    rule.format = emUnderscoreFormat;
+    highlightingRules.append(rule);
+
     strongFormat.setFontWeight(QFont::Bold);
     strongFormat.setForeground(QColor(Config::getInstance().get(Config::getInstance().BOLD)));
     rule.pattern = QRegularExpression("(\\*\\*)(.*?)(\\*\\*)");
