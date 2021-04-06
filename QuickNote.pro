@@ -49,11 +49,11 @@ HEADERS += \
         src/mdLite/tokenizer.h \
         src/headers/config.h \
         src/libs/include/helpers.h \
-    src/headers/displayconfigdialog.h
+        src/headers/displayconfigdialog.h
 
 FORMS += \
-        mainwindow.ui \
-    displayconfigdialog.ui
+        src/mainwindow.ui \
+        src/displayconfigdialog.ui
 
 macx {
     QMAKE_CXXFLAGS += -std=c++11

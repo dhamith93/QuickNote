@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DisplayConfigDialog</class>
+ <widget class="QDialog" name="DisplayConfigDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>504</width>
+    <height>452</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>504</width>
+    <height>452</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>504</width>
+    <height>452</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Display Settings</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QPushButton  {
+	border-radius: 3%; 
+	background-color: #CFCFCF;
+	color: #000000; 
+}
+
+QPushButton:hover  {
+	background-color: #B9B9B9; 
+	/*color: #3b3b3b; */
+}
+
+QPushButton:pressed {
+	background-color: #ABABAB;
+}</string>
+  </property>
+  <widget class="QLabel" name="label_12">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>350</y>
+     <width>58</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Tags</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txtFont">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>20</y>
+     <width>221</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txtTagsColor">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>350</y>
+     <width>221</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>80</y>
+     <width>121</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Background Color</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>110</y>
+     <width>41</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Italic</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_9">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>170</y>
+     <width>111</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Strikethrough</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnReset">
+   <property name="geometry">
+    <rect>
+     <x>399</x>
+     <y>400</y>
+     <width>71</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton  {
+	border-radius: 3%; 
+	background-color: #d63a3a;
+	color: #ffffff; 
+}
+
+QPushButton:hover  {
+	background-color: #ff6767; 
+	/*color: #3b3b3b; */
+}
+
+QPushButton:pressed {
+	background-color: #ff3e3e;
+}</string>
+   </property>
+   <property name="text">
+    <string>Reset</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txtBgColor">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>80</y>
+     <width>221</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>58</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Font</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txtFontColor">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>50</y>
+     <width>221</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_11">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>320</y>
+     <width>58</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Symbols</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txtBoldColor">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>140</y>
+     <width>221</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txtBQuotesColor">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>230</y>
+     <width>221</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_7">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>230</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Blockquotes</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>140</y>
+     <width>58</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Bold</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>260</y>
+     <width>58</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Codes</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txtSymbolsColor">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>320</y>
+     <width>221</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_10">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>290</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Comments</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txtItalicColor">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>110</y>
+     <width>221</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txtHeadersColor">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>200</y>
+     <width>221</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txtSThroughColor">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>170</y>
+     <width>221</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_6">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>200</y>
+     <width>58</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Headers</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txtCommentsColor">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>290</y>
+     <width>221</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>50</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Font Color</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txtCodesColor">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>260</y>
+     <width>221</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnFontChange">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>20</y>
+     <width>71</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnFontColorChange">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>50</y>
+     <width>71</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnBgColorChange">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>80</y>
+     <width>71</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnItalicColorChange">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>110</y>
+     <width>71</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnBoldColorChange">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>140</y>
+     <width>71</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnSThroughColorColor">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>170</y>
+     <width>71</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnHeadersColorChange">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>200</y>
+     <width>71</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnBQuotesColorChange">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>230</y>
+     <width>71</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnCodeColorChange">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>260</y>
+     <width>71</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnCommentsColorChange">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>290</y>
+     <width>71</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnSymbolsColorChange">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>320</y>
+     <width>71</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnTagsColorChange">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>350</y>
+     <width>71</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change</string>
+   </property>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>txtFont</tabstop>
+  <tabstop>txtFontColor</tabstop>
+  <tabstop>txtBgColor</tabstop>
+  <tabstop>txtItalicColor</tabstop>
+  <tabstop>txtBoldColor</tabstop>
+  <tabstop>txtSThroughColor</tabstop>
+  <tabstop>txtHeadersColor</tabstop>
+  <tabstop>txtBQuotesColor</tabstop>
+  <tabstop>txtCodesColor</tabstop>
+  <tabstop>txtCommentsColor</tabstop>
+  <tabstop>txtSymbolsColor</tabstop>
+  <tabstop>txtTagsColor</tabstop>
+  <tabstop>btnFontChange</tabstop>
+  <tabstop>btnFontColorChange</tabstop>
+  <tabstop>btnBgColorChange</tabstop>
+  <tabstop>btnItalicColorChange</tabstop>
+  <tabstop>btnBoldColorChange</tabstop>
+  <tabstop>btnSThroughColorColor</tabstop>
+  <tabstop>btnHeadersColorChange</tabstop>
+  <tabstop>btnBQuotesColorChange</tabstop>
+  <tabstop>btnCodeColorChange</tabstop>
+  <tabstop>btnCommentsColorChange</tabstop>
+  <tabstop>btnSymbolsColorChange</tabstop>
+  <tabstop>btnTagsColorChange</tabstop>
+  <tabstop>btnReset</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
