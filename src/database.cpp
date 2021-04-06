@@ -88,7 +88,7 @@ QString Database::getNote(int &noteId) {
     query.prepare("SELECT content FROM note WHERE ROWID = :noteId");
     query.bindValue(":noteId", noteId);
     if (!query.exec()) {
-         qDebug() << "SQL error: "<< query.lastError().text() << endl;
+         qDebug() << "SQL error: "<< query.lastError().text() << Qt::endl;
     }
     while (query.next()) {
         return query.value(0).toString();
