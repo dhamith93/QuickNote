@@ -93,9 +93,11 @@ void MainWindow::init() {
     ui->splitter->setStretchFactor (1,1);
     ui->splitter->setSizes(QList<int>() << 200 << 160000);
     ui->openedNotePath->setStyleSheet("color: white;");
+    ui->openedNotePath->setHidden(true);
     ui->fileList->setWordWrap(true);
     ui->noteText->setAcceptDrops(false);
     setAcceptDrops(true);
+    toggleFindWidgets();
 
 #ifdef Q_OS_DARWIN
     ui->fileList->setAttribute(Qt::WA_MacShowFocusRect, false);
@@ -548,8 +550,11 @@ void MainWindow::on_actionShow_Word_Count_triggered() {
     this->showWordCount = (!this->showWordCount);
     QString text = "";
     if (this->showWordCount) {
+        ui->openedNotePath->setHidden(false);
         QString content = ui->noteText->toPlainText();
         text = "Word Count: " + Helpers::getWordCount(content);
+    } else {
+        ui->openedNotePath->setHidden(true);
     }
     ui->openedNotePath->setText(text);
 }
@@ -588,6 +593,34 @@ void MainWindow::on_actionDelete_triggered() {
             displayMessage("Unable to delete " + noteTitle);
         }
     }
+}
+
+
+void MainWindow::on_actionFind_triggered() {
+    toggleFindWidgets();
+}
+
+void MainWindow::toggleFindWidgets() {
+    if (ui->txtSearchKey->isHidden()) {
+        ui->txtSearchKey->setHidden(false);
+        ui->txtSearchKey->setFocus();
+        ui->btnFindNext->setHidden(false);
+        ui->btnFindPrev->setHidden(false);
+    } else {
+        ui->txtSearchKey->setHidden(true);
+        ui->btnFindNext->setHidden(true);
+        ui->btnFindPrev->setHidden(true);
+    }
+}
+
+void MainWindow::on_btnFindNext_clicked() {
+    QString searchText = ui->txtSearchKey->text();
+    ui->noteText->find(searchText);
+}
+
+void MainWindow::on_btnFindPrev_clicked() {
+    QString searchText = ui->txtSearchKey->text();
+    ui->noteText->find(searchText, QTextDocument::FindBackward);
 }
 
 void MainWindow::on_actionAbout_triggered() {

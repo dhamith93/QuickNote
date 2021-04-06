@@ -42,7 +42,13 @@ class MainWindow : public QMainWindow
 
         void on_actionDelete_triggered();
 
-    protected:
+        void on_actionFind_triggered();
+
+        void on_btnFindNext_clicked();
+
+        void on_btnFindPrev_clicked();
+
+protected:
 
     private:
         Ui::MainWindow *ui;
@@ -71,7 +77,8 @@ class MainWindow : public QMainWindow
         bool noteSavePrompt();
         bool saveNote();
         void reverseTab();
-        void displayMessage(QString message);        
+        void displayMessage(QString message);
+        void toggleFindWidgets();
 
         Q_INVOKABLE void getDatabasePath();
 };
