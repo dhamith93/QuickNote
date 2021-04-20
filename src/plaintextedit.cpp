@@ -113,7 +113,8 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_BraceLeft || event->key() == Qt::Key_BracketLeft
             || event->key() == Qt::Key_ParenLeft || event->key() == Qt::Key_Apostrophe
             || event->key() == Qt::Key_QuoteDbl || event->key() == Qt::Key_Asterisk
-            || event->key() == Qt::Key_QuoteLeft || event->key() == Qt::Key_AsciiTilde) {
+            || event->key() == Qt::Key_QuoteLeft || event->key() == Qt::Key_AsciiTilde
+            || event->key() == Qt::Key_Underscore) {
 
         // if `*` pressed on an empty line (i.e. list item)
         // run the defualt keypress event
@@ -125,6 +126,7 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
         QString str = "";
 
         switch (event->key()) {
+            qDebug() << event->key();
             case Qt::Key_BraceLeft:
                 str = "}";
                 break;
@@ -148,6 +150,9 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
                 break;
             case Qt::Key_AsciiTilde:
                 str = "~";
+                break;
+            case Qt::Key_Underscore:
+                str = "_";
                 break;
             default:
                 break;
