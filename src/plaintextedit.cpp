@@ -126,7 +126,6 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *event) {
         QString str = "";
 
         switch (event->key()) {
-            qDebug() << event->key();
             case Qt::Key_BraceLeft:
                 str = "}";
                 break;
