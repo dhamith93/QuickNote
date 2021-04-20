@@ -31,6 +31,12 @@ Highlighter::Highlighter(QObject *parent) : QSyntaxHighlighter(parent) {
     rule.format = strongFormat;
     highlightingRules.append(rule);
 
+    strongUnderscoreFormat.setFontWeight(QFont::Bold);
+    strongUnderscoreFormat.setForeground(QColor(Config::getInstance().get(Config::getInstance().BOLD)));
+    rule.pattern = QRegularExpression("(\\_\\_)(.*?)(\\_\\_)");
+    rule.format = strongUnderscoreFormat;
+    highlightingRules.append(rule);
+
     strikeFormat.setFontStrikeOut(true);
     strikeFormat.setFontItalic(true);
     strikeFormat.setForeground(QColor(Config::getInstance().get(Config::getInstance().STRIKETHROUGH)));

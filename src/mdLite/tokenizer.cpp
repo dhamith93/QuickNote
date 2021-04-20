@@ -620,6 +620,9 @@ void Tokenizer::replaceWithStrong(std::string &str) {
     std::string p = "(\\*\\*)(.*?)(\\*\\*)";
     boost::regex pattern(p);
     str = boost::regex_replace(str, pattern, "<strong>$2</strong>");
+    p = "(\\_\\_)(.*?)(\\_\\_)";
+    boost::regex pattern2(p);
+    str = boost::regex_replace(str, pattern2, "<strong>$2</strong>");
 }
 
 void Tokenizer::replaceWithEm(std::string &str) {
